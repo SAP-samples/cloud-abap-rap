@@ -57,5 +57,8 @@ Service Definitions and service bindings cannot yet be generated. But these are 
 The sample code is provided "as-is".
 
 ## How to obtain support
-If you have problems or questions you can post them in the SAP community https://answers.sap.com/questions/ask.html using the primary tag "SAP Cloud Platform, ABAP Environment" or "ABAP RESTful Programming Model"
+If you have problems or questions you can [post them in the SAP Community](https://answers.sap.com/questions/ask.html) using either the primary tag "[SAP Cloud Platform, ABAP environment](https://answers.sap.com/tags/73555000100800001164)" or "[ABAP RESTful Programming Model](https://answers.sap.com/tags/7e44126e-7b27-471d-a379-df205a12b1ff)".
 
+## License
+Copyright (c) 2020 SAP SE or an SAP affiliate company. All rights reserved. 
+This file is licensed under the Apache Software License, version 2.0 except as noted otherwise in the [LICENSE](LICENSE) file.
