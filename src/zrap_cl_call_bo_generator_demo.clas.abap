@@ -25,12 +25,12 @@ CLASS zrap_cl_call_bo_generator_demo IMPLEMENTATION.
         out->write( 'start' ).
 
 *        DATA(rap_bo_generator) = NEW zrap_cl_bo_generator(
-*          iv_package            =  'ZRAP_FLIGHT_M_DEMO'
+*          iv_package            =  'ZRAP_FLIGHT_M_####'
 *          iv_namespace = 'ZRAP_'
-*          iv_header_table       = 'ZRAP_TRAVEL_DEMO'
+*          iv_header_table       = 'ZRAP_TRAVEL_####'
 *          iv_header_entity_name = 'Travel'
 *          iv_header_semantic_key = 'TRAVEL_ID'
-*          iv_suffix = '_demo'
+*          iv_suffix = '_####'
 *          iv_item_table         = 'ZRAP_BOOK_DEMO'
 *          iv_item_entity_name   = 'Booking'
 *          iv_item_semantic_key = 'BOOKING_ID'
@@ -38,12 +38,12 @@ CLASS zrap_cl_call_bo_generator_demo IMPLEMENTATION.
 
 
         DATA(rap_bo_generator) = NEW zrap_cl_bo_generator(
-          iv_package            =  'ZRAP_INVENTORY_M_DEMO'
+          iv_package            =  'ZRAP_INVENTORY_M_###'
           iv_namespace = 'ZRAP_'
-          iv_header_table       = 'ZRAP_INVEN_DEMO'
+          iv_header_table       = 'ZRAP_INVEN_####'
           iv_header_entity_name = 'Inventory'
           iv_header_semantic_key = 'INVENTORY_ID'
-          iv_suffix = '_DEMO'
+          iv_suffix = '_####'
           "iv_item_table         = '<item table>'
           "iv_item_entity_name   = 'Items'
           " iv_item_semantic_key = '<semantic key for items>'
