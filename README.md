@@ -37,14 +37,13 @@ ZRAP_CL_BIL_BOOKING_#### – for Booking
 
 ## Requirements
 
-This sample code does currently only work in SAP Cloud Platform, ABAP Environment where the XCO framework has been enabled via an appropriate feature toggle.
-It is not yet available by default in customer systems but can be used in the trial systems of SAP Cloud Platform ABAP Environment. 
-For more detailed information please checked out the following blog post:
-https://blogs.sap.com/2020/05/17/the-rap-generator
+This sample code does currently only work in SAP Cloud Platform, ABAP environment where the XCO framework has been enabled via an appropriate feature toggle.
+It is not yet available by default in customer systems but can be used in the trial systems of SAP Cloud Platform, ABAP environment. 
+For more detailed information please checked out the associated blog post [The RAP Generator](https://blogs.sap.com/2020/05/17/the-rap-generator).
 
 ## Download and Installation
 
-The sample code can simply be downloaded using the abapGIT plugin in ABAP Development Tools in Eclispe when working with a trial system of SAP Cloud Platform, ABAP Environment.
+The sample code can simply be downloaded using the abapGIT plugin in ABAP Development Tools in Eclispe when working with a trial system of SAP Cloud Platform, ABAP environment.
 
 ## Limitations
 
