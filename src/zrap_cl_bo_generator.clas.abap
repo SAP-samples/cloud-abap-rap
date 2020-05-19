@@ -22,6 +22,7 @@ CLASS zrap_cl_bo_generator DEFINITION
                 VALUE(iv_suffix)              TYPE string OPTIONAL
 
       RAISING   cx_parameter_invalid
+                cx_abap_invalid_name
       .
 
     METHODS generate_managed_bo
