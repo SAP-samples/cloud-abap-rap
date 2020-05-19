@@ -239,6 +239,90 @@ CLASS zrap_cl_bo_generator IMPLEMENTATION.
       "raise some exception
     ENDIF.
 
+
+
+**********************************************************************
+
+    IF xco_cp_abap_repository=>object->ddls->for( mo_i_cds_header )->exists( ).
+      RAISE EXCEPTION TYPE cx_abap_invalid_name
+        EXPORTING
+          name = | CDS view { mo_i_cds_header } exists|.
+    ENDIF.
+    IF xco_cp_abap_repository=>object->ddls->for( mo_p_cds_header )->exists( ).
+      RAISE EXCEPTION TYPE cx_abap_invalid_name
+        EXPORTING
+          name = | CDS view { mo_p_cds_header } exists|.
+    ENDIF.
+    IF create_item_objects(  ).
+      IF xco_cp_abap_repository=>object->ddls->for( mo_i_cds_item )->exists( ).
+        RAISE EXCEPTION TYPE cx_abap_invalid_name
+          EXPORTING
+            name = | CDS view { mo_i_cds_item } exists|.
+      ENDIF.
+      IF xco_cp_abap_repository=>object->ddls->for( mo_p_cds_item )->exists( ).
+        RAISE EXCEPTION TYPE cx_abap_invalid_name
+          EXPORTING
+            name = | CDS view { mo_p_cds_item } exists|.
+      ENDIF.
+    ENDIF.
+    "check existence of meta data extension views
+    IF xco_cp_abap_repository=>object->ddlx->for( mo_p_cds_header )->exists( ).
+      RAISE EXCEPTION TYPE cx_abap_invalid_name
+        EXPORTING
+          name = | meta data extension view { mo_p_cds_header } exists|.
+    ENDIF.
+    IF create_item_objects(  ).
+      IF xco_cp_abap_repository=>object->ddlx->for( mo_p_cds_item )->exists( ).
+        RAISE EXCEPTION TYPE cx_abap_invalid_name
+          EXPORTING
+            name = | meta data extension view { mo_p_cds_item } exists|.
+      ENDIF.
+    ENDIF.
+    "check existence of BDEF objects
+    IF xco_cp_abap_repository=>object->bdef->for( mo_i_bdef_header )->exists( ).
+      RAISE EXCEPTION TYPE cx_abap_invalid_name
+        EXPORTING
+          name = | behavior definition { mo_i_bdef_header } exists|.
+    ENDIF.
+    IF xco_cp_abap_repository=>object->bdef->for( mo_p_bdef_header )->exists( ).
+      RAISE EXCEPTION TYPE cx_abap_invalid_name
+        EXPORTING
+          name = | behavior definition { mo_p_bdef_header } exists|.
+    ENDIF.
+    "check existence of BIL objects
+    IF xco_cp_abap_repository=>object->clas->for( mo_i_bil_header )->exists( ).
+      RAISE EXCEPTION TYPE cx_abap_invalid_name
+        EXPORTING
+          name = | behavior implementation class { mo_i_bil_header } exists|.
+    ENDIF.
+    IF create_item_objects(  ).
+      IF xco_cp_abap_repository=>object->clas->for( mo_i_bil_item )->exists( ).
+        RAISE EXCEPTION TYPE cx_abap_invalid_name
+          EXPORTING
+            name = | behavior implementation class { mo_i_bil_item } exists|.
+      ENDIF.
+    ENDIF.
+    "check existence of DDIC views of interface views
+    IF xco_cp_abap_repository=>object->for( iv_type = 'VIEW' iv_name = CONV #( mo_view_header ) )->exists( ).
+      RAISE EXCEPTION TYPE cx_abap_invalid_name
+        EXPORTING
+          name = | DDIC view { mo_view_header } exists|.
+    ENDIF.
+    IF create_item_objects(  ).
+      IF xco_cp_abap_repository=>object->for( iv_type = 'VIEW' iv_name = CONV #( mo_view_item ) )->exists( ).
+        RAISE EXCEPTION TYPE cx_abap_invalid_name
+          EXPORTING
+            name = | DDIC view { mo_view_item  } exists|.
+      ENDIF.
+    ENDIF.
+
+
+**********************************************************************
+
+
+
+
+
     DATA  lo_struct_desc           TYPE REF TO cl_abap_structdescr.
     DATA  lo_type_desc             TYPE REF TO cl_abap_typedescr.
     DATA lt_components TYPE cl_abap_structdescr=>component_table .
