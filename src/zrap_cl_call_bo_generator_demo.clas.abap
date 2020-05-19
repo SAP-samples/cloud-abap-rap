@@ -38,7 +38,7 @@ CLASS zrap_cl_call_bo_generator_demo IMPLEMENTATION.
 
 
         DATA(rap_bo_generator) = NEW zrap_cl_bo_generator(
-          iv_package            =  'ZRAP_INVENTORY_M_###'
+          iv_package            =  'ZRAP_INVENTORY_M_####'
           iv_namespace = 'ZRAP_'
           iv_header_table       = 'ZRAP_INVEN_####'
           iv_header_entity_name = 'Inventory'
