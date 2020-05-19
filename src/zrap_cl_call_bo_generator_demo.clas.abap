@@ -62,6 +62,9 @@ CLASS zrap_cl_call_bo_generator_demo IMPLEMENTATION.
           out->write( ls_findings->message->get_text(  ) ).
         ENDLOOP.
         EXIT.
+      CATCH cx_abap_invalid_name  INTO DATA(lx_abap_invalid_name).
+        out->write( lx_abap_invalid_name->name ).
+        EXIT.  
       CATCH cx_root INTO DATA(lx_root).
         out->write( 'other exception:' ).
         out->write( get_root_exception( lx_root )->get_longtext( ) ).
