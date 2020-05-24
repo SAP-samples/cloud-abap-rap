@@ -333,74 +333,70 @@ CLASS zrap_cl_bo_generator IMPLEMENTATION.
 
     CREATE DATA dref_header TYPE (mo_tabl_header).
 
-    lo_type_desc =  cl_abap_typedescr=>describe_by_data_ref( p_data_ref = dref_header ).
-    TRY.
-        IF lo_type_desc->kind = lo_type_desc->kind_struct.
-          lo_struct_desc ?= lo_type_desc.
-          lt_components = lo_struct_desc->get_components( ).
+    lo_type_desc = cl_abap_typedescr=>describe_by_data_ref( p_data_ref = dref_header ).
+    IF lo_type_desc->kind = lo_type_desc->kind_struct.
+      lo_struct_desc ?= lo_type_desc.
+      lt_components = lo_struct_desc->get_components( ).
 
-          IF sy-subrc <> 0.
-          ELSE.
-            LOOP AT lt_components INTO ls_components.
-              CLEAR ls_header_fields.
-              "check if field has domain fixed values
-              "Caution: This will dump for complicated tables
-              DATA(header_field_type) = CAST cl_abap_elemdescr( lo_struct_desc->get_component_type( ls_components-name ) ).
-              IF header_field_type->is_ddic_type(  ) AND
-                 header_field_type->get_ddic_fixed_values(  ).
-                ls_header_fields-domain_fixed_value = abap_true.
-                ls_header_fields-doma = header_field_type->get_relative_name( ).
-              ENDIF.
-              "check if field is key or not null
-              ls_header_fields-name = ls_components-name.
-              ls_header_fields-cds_view_field = to_mixed( ls_components-name ).
-              IF to_upper( ls_components-name ) = co_key OR
-                 to_upper( ls_components-name ) = co_client.
-                ls_header_fields-key_indicator = 'X'.
-                ls_header_fields-not_null = 'X'.
-              ENDIF.
-              APPEND ls_header_fields TO lt_header_fields.
-            ENDLOOP.
+      IF sy-subrc <> 0.
+      ELSE.
+        LOOP AT lt_components INTO ls_components.
+          CLEAR ls_header_fields.
+          "check if field has domain fixed values
+          "Caution: This will dump for complicated tables
+          DATA(header_field_type) = CAST cl_abap_elemdescr( lo_struct_desc->get_component_type( ls_components-name ) ).
+          IF header_field_type->is_ddic_type(  ) AND
+             header_field_type->get_ddic_fixed_values(  ).
+            ls_header_fields-domain_fixed_value = abap_true.
+            ls_header_fields-doma = header_field_type->get_relative_name( ).
           ENDIF.
-        ENDIF.
-    ENDTRY.
+          "check if field is key or not null
+          ls_header_fields-name = ls_components-name.
+          ls_header_fields-cds_view_field = to_mixed( ls_components-name ).
+          IF to_upper( ls_components-name ) = co_key OR
+             to_upper( ls_components-name ) = co_client.
+            ls_header_fields-key_indicator = 'X'.
+            ls_header_fields-not_null = 'X'.
+          ENDIF.
+          APPEND ls_header_fields TO lt_header_fields.
+        ENDLOOP.
+      ENDIF.
+    ENDIF.
 
     IF create_item_objects( ).
 
       CREATE DATA dref_item TYPE (mo_tabl_item).
 
-      lo_type_desc =  cl_abap_typedescr=>describe_by_data_ref( p_data_ref = dref_item ).
-      TRY.
-          IF lo_type_desc->kind = lo_type_desc->kind_struct.
-            lo_struct_desc ?= lo_type_desc.
-            lt_components = lo_struct_desc->get_components( ).
-            IF sy-subrc <> 0.
-            ELSE.
-              LOOP AT lt_components INTO ls_components.
+      lo_type_desc = cl_abap_typedescr=>describe_by_data_ref( p_data_ref = dref_item ).
+      IF lo_type_desc->kind = lo_type_desc->kind_struct.
+        lo_struct_desc ?= lo_type_desc.
+        lt_components = lo_struct_desc->get_components( ).
+        IF sy-subrc <> 0.
+        ELSE.
+          LOOP AT lt_components INTO ls_components.
 
-                CLEAR ls_item_fields.
+            CLEAR ls_item_fields.
 
-                "check if field has domain fixed values
-                "Caution: This will dump for complicated tables
-                DATA(item_field_type) = CAST cl_abap_elemdescr( lo_struct_desc->get_component_type( ls_components-name ) ).
-                IF item_field_type->is_ddic_type(  ) AND
-                   item_field_type->get_ddic_fixed_values(  ).
-                  ls_item_fields-domain_fixed_value = abap_true.
-                ENDIF.
-
-                ls_item_fields-name = ls_components-name.
-                ls_item_fields-cds_view_field = to_mixed( ls_components-name ).
-
-                IF to_upper( ls_components-name ) = co_key OR
-                   to_upper( ls_components-name ) = co_client.
-                  ls_item_fields-key_indicator = 'X'.
-                  ls_item_fields-not_null = 'X'.
-                ENDIF.
-                APPEND ls_item_fields TO lt_item_fields.
-              ENDLOOP.
+            "check if field has domain fixed values
+            "Caution: This will dump for complicated tables
+            DATA(item_field_type) = CAST cl_abap_elemdescr( lo_struct_desc->get_component_type( ls_components-name ) ).
+            IF item_field_type->is_ddic_type(  ) AND
+               item_field_type->get_ddic_fixed_values(  ).
+              ls_item_fields-domain_fixed_value = abap_true.
             ENDIF.
-          ENDIF.
-      ENDTRY.
+
+            ls_item_fields-name = ls_components-name.
+            ls_item_fields-cds_view_field = to_mixed( ls_components-name ).
+
+            IF to_upper( ls_components-name ) = co_key OR
+               to_upper( ls_components-name ) = co_client.
+              ls_item_fields-key_indicator = 'X'.
+              ls_item_fields-not_null = 'X'.
+            ENDIF.
+            APPEND ls_item_fields TO lt_item_fields.
+          ENDLOOP.
+        ENDIF.
+      ENDIF.
 
     ENDIF.
 
