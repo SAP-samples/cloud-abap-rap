@@ -883,7 +883,7 @@ CLASS zrap_cl_bo_generator IMPLEMENTATION.
       lo_item_behavior->add_standard_operation( xco_cp_behavior_definition=>standard_operation->delete )->set_use( ).
 
       "lo_item_behavior->add_association(  mo_assoc_to_header )->set_use(  ).
-      lo_item_behavior->add_association( mo_assoc_to_header && ';' )->set_use(  ).
+      lo_item_behavior->add_association( mo_assoc_to_header && '' )->set_use(  ).
     ENDIF.
 
   ENDMETHOD.
@@ -985,7 +985,7 @@ CLASS zrap_cl_bo_generator IMPLEMENTATION.
 
       "@todo change code when HFC3 is available
       "lo_item_behavior->add_association( mo_assoc_to_header ).
-      lo_item_behavior->add_association( mo_assoc_to_header && ';' ).
+      lo_item_behavior->add_association( mo_assoc_to_header && '' ).
 
 
       "determination CalculateSemanticKey on modify { create; }
