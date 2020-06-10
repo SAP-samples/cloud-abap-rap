@@ -1,0 +1,110 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<abapGit version="v1.0.0" serializer="LCL_OBJECT_MSAG" serializer_version="v1.0.0">
+ <asx:abap xmlns:asx="http://www.sap.com/abapxml" version="1.0">
+  <asx:values>
+   <T100A>
+    <ARBGB>ZCM_RAP_GENERATOR</ARBGB>
+    <MASTERLANG>E</MASTERLANG>
+    <STEXT>Message class for the RAP Generator</STEXT>
+   </T100A>
+   <T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZCM_RAP_GENERATOR</ARBGB>
+     <MSGNR>001</MSGNR>
+     <TEXT>&amp;1 is neither a child node nor a grand child node of the root entity &amp;2.</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZCM_RAP_GENERATOR</ARBGB>
+     <MSGNR>002</MSGNR>
+     <TEXT>&amp;1 contains non alpha numeric characters.</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZCM_RAP_GENERATOR</ARBGB>
+     <MSGNR>003</MSGNR>
+     <TEXT>&amp;1 contains spaces.</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZCM_RAP_GENERATOR</ARBGB>
+     <MSGNR>004</MSGNR>
+     <TEXT>&amp;1 is too long. (&amp;2 characters max).</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZCM_RAP_GENERATOR</ARBGB>
+     <MSGNR>005</MSGNR>
+     <TEXT>Node &amp;1 is not consistent</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZCM_RAP_GENERATOR</ARBGB>
+     <MSGNR>006</MSGNR>
+     <TEXT>&amp;1 is not a supported root node type.</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZCM_RAP_GENERATOR</ARBGB>
+     <MSGNR>007</MSGNR>
+     <TEXT>No namespace has been set for the root node.</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZCM_RAP_GENERATOR</ARBGB>
+     <MSGNR>008</MSGNR>
+     <TEXT>Node &amp;1 is not finalized.</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZCM_RAP_GENERATOR</ARBGB>
+     <MSGNR>009</MSGNR>
+     <TEXT>Node &amp;1 is not a root node.</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZCM_RAP_GENERATOR</ARBGB>
+     <MSGNR>010</MSGNR>
+     <TEXT>The specified semantic key field &amp;1 is not a field of table &amp;2</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZCM_RAP_GENERATOR</ARBGB>
+     <MSGNR>011</MSGNR>
+     <TEXT>Repository object &amp;1 already exists</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZCM_RAP_GENERATOR</ARBGB>
+     <MSGNR>012</MSGNR>
+     <TEXT>Cannot check object type &amp;1</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZCM_RAP_GENERATOR</ARBGB>
+     <MSGNR>013</MSGNR>
+     <TEXT>Parameter &amp;1 is initial.</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZCM_RAP_GENERATOR</ARBGB>
+     <MSGNR>014</MSGNR>
+     <TEXT>Package &amp;1 does not exist</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZCM_RAP_GENERATOR</ARBGB>
+     <MSGNR>015</MSGNR>
+     <TEXT>Table &amp;1 does not exist.</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZCM_RAP_GENERATOR</ARBGB>
+     <MSGNR>016</MSGNR>
+     <TEXT>&amp;1 &amp;2 &amp;3 &amp;4</TEXT>
+    </T100>
+   </T100>
+  </asx:values>
+ </asx:abap>
+</abapGit>
