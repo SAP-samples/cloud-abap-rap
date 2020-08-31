@@ -5,7 +5,6 @@
    <DEVC>
     <CTEXT>RAP Generator</CTEXT>
     <TPCLASS>X</TPCLASS>
-    <PACKKIND>5</PACKKIND>
    </DEVC>
   </asx:values>
  </asx:abap>

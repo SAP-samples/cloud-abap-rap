@@ -1,0 +1,84 @@
+{
+  "implementationType": "unmanaged_semantic",
+  "namespace": "Z",
+  "suffix": "_####",
+  "prefix": "RAP_",
+  "package": "ZRAP_####",
+  "datasourcetype": "table",
+  "hierarchy": {
+    "entityName": "Travel",
+    "dataSource": "/dmo/travel",
+    "objectId": "travel_id",
+    "createdat": "createdat",
+    "lastchangedat": "lastchangedat",
+    "createdby": "createdby",
+    "lastchangedby": "lastchangedby",
+    "valueHelps": [          
+          {            
+            "alias": "Agency",
+            "name": "/DMO/I_Agency",
+            "localElement": "CurrencyCode",
+            "element": "Currency"
+          },
+          { 
+            "alias": "Customer",           
+            "name": "/DMO/I_Customer",
+            "localElement": "CustomerID",
+            "element": "CustomerID"
+          },
+          { 
+            "alias": "Currency",          
+            "name": "I_Currency",
+            "localElement": "CurrencyCode",
+            "element": "Currency"
+          }
+        ],   
+    "children": [
+      {
+        "entityName": "Booking",
+        "dataSource": "/dmo/booking",
+        "objectId": "booking_id",
+        "valueHelps": [
+          { 
+            "alias": "Connection",           
+            "name": "/DMO/I_Flight",
+            "localElement": "ConnectionID",
+            "element": "ConnectionID",
+            "additionalBinding": [
+              {
+                "localElement": "ConnectionID",
+                "element": "ConnectionID"
+              },
+              {
+                "localElement": "CarrierID",
+                "element": "AirlineID"
+              },
+              {
+                "localElement": "ConnectionID",
+                "element": "ConnectionID"
+              }
+            ]
+          },
+          { 
+            "alias": "Currency",            
+            "name": "I_Currency",
+            "localElement": "CurrencyCode",
+            "element": "Currency"
+          },
+          { 
+            "alias": "Airline",           
+            "name": "/DMO/I_Carrier",
+            "localElement": "CarrierID",
+            "element": "AirlineID"
+          },
+          { 
+            "alias": "Customer",           
+            "name": "/DMO/I_Customer",
+            "localElement": "CustomerID",
+            "element": "CustomerID"
+          }
+        ]      
+      }
+    ]
+  }
+}

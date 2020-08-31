@@ -1,0 +1,95 @@
+{
+  "implementationType": "unmanaged_semantic",
+  "namespace": "Z",
+  "suffix": "_####",
+  "prefix": "RAP_",
+  "package": "ZRAP_####",
+  "datasourcetype": "cds_view",
+  "hierarchy": {
+    "entityName": "Travel",
+    "dataSource": "/DMO/I_Travel_U",
+    "objectId": "TravelID",
+    "persistenttable": "/dmo/travel",    
+    "lastchangedat": "lastchangedat", 
+    "mapping": [
+      {
+        "dbtable_field": "TRAVEL_ID",
+        "cds_view_field": "TravelID"
+      },
+      {
+        "dbtable_field": "AGENCY_ID",
+        "cds_view_field": "AgencyID"
+      },
+      {
+        "dbtable_field": "CUSTOMER_ID",
+        "cds_view_field": "CustomerID"
+      },
+      {
+        "dbtable_field": "BEGIN_DATE",
+        "cds_view_field": "BeginDate"
+      },
+      {
+        "dbtable_field": "BOOKING_FEE",
+        "cds_view_field": "BookingFee"
+      },
+      {
+        "dbtable_field": "TOTAL_PRICE",
+        "cds_view_field": "TotalPrice"
+      },
+      {
+        "dbtable_field": "CURRENCY_CODE",
+        "cds_view_field": "CurrencyCode"
+      },
+      {
+        "dbtable_field": "STATUS",
+        "cds_view_field": "Status"
+      },
+      {
+        "dbtable_field": "LASTCHANGEDAT",
+        "cds_view_field": "LastChangedAt"
+      }
+    ],   
+    "children": [
+      {
+        "entityName": "Booking",
+        "dataSource": "/DMO/I_Booking_U",
+        "objectId": "BookingID",
+        "persistenttable": "/dmo/booking",
+         "mapping": [
+      {
+        "dbtable_field": "TRAVEL_ID",
+        "cds_view_field": "TravelID"
+      },
+      {
+        "dbtable_field": "BOOKING_ID",
+        "cds_view_field": "BookingID"
+      },
+      {
+        "dbtable_field": "BOOKING_DATE",
+        "cds_view_field": "BookingDate"
+      },
+      {
+        "dbtable_field": "CUSTOMER_ID",
+        "cds_view_field": "CustomerID"
+      },
+      {
+        "dbtable_field": "CARRIER_ID",
+        "cds_view_field": "AirlineID"
+      },
+      {
+        "dbtable_field": "CONNECTION_ID",
+        "cds_view_field": "ConnectionID"
+      },
+      {
+        "dbtable_field": "FLIGHT_PRICE",
+        "cds_view_field": "FlightPrice"
+      },
+      {
+        "dbtable_field": "CURRENCY_CODE",
+        "cds_view_field": "CurrencyCode"
+      }
+     ]       
+      }
+    ]
+  }
+}
