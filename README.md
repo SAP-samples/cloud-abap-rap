@@ -1,17 +1,21 @@
+# Description
+
+This repository contains several examples how to develop with the ABAP RESTful Application Programming Model (RAP) in SAP Cloud Platform, ABAP environment.
+
 # Motivation
 
 The basic idea behind the RAP generator is to make it easier for the developer to create the complete stack of objects that are needed to implement a RAP business object. The goal is to generate most of the boiler plate coding so that the developer can start more quickly to implement the business logic.
-<br>
+
 The first data source which is supported are tables. When creating new tables for green field scenarios the use of tables with uuid based keys is recommended, so that a managed scenario can be used where no code needs to be implemented for the CRUD operations and earyl numbering can be used. 
 The only thing that is left for the developer is to implement determinations, validations and actions. 
-<br>
+
 For brownfield scenarios where existing business logic does exist to create, update and delete business data an unmanaged scenario can be generated.
-<br>
+
 As a second data source the RAP generator now also supports CDS views. This way it will be possible to create RAP business objects based on existing CDS views.  
-<br>
+
 To make the use of the tool as easy as possible the input that is needed by the generator can be provided as a JSON file.
 A simple sample of such a JSON file that would generate a managed business object based on the two tables ZRAP_TRAVEL_DEMO and ZRAP_BOOK_DEMO would look like follows.
-<br>
+
 <pre>
 {
   "implementationType": "managed_uuid",
@@ -452,3 +456,7 @@ In order to generate a value help as mentioned above the following entry would h
     ]
 
 </pre>
+
+
+# License
+Copyright (c) 2020 SAP SE or an SAP affiliate company. All rights reserved. This file is licensed under the Apache Software License, version 2.0 except as noted otherwise in the [LICENSE](LICENSE) file.
