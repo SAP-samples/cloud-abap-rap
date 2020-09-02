@@ -1,10 +1,10 @@
 # Description
 
-This repository contains several examples how to develop with the ABAP RESTful Application Programming Model (RAP) in SAP Cloud Platform, ABAP environment.
+This repository contains sample code that helps you to create boiler plate coding for the ABAP RESTful Application Programming Model (RAP) in SAP Cloud Platform, ABAP environment.
 
-# Motivation
+## Motivation
 
-The basic idea behind the RAP generator is to make it easier for the developer to create the complete stack of objects that are needed to implement a RAP business object. The goal is to generate most of the boiler plate coding so that the developer can start more quickly to implement the business logic.
+The basic idea behind the *RAP Generator* is to make it easier for the developer to create the complete stack of objects that are needed to implement a RAP business object. The goal is to generate most of the boiler plate coding so that the developer can start more quickly to implement the business logic.
 
 The first data source which is supported are tables. When creating new tables for green field scenarios the use of tables with uuid based keys is recommended, so that a managed scenario can be used where no code needs to be implemented for the CRUD operations and earyl numbering can be used. 
 The only thing that is left for the developer is to implement determinations, validations and actions. 
@@ -39,7 +39,7 @@ A simple sample of such a JSON file that would generate a managed business objec
 }
 </pre>
 
-# How to use the RAP Generator (short version)
+## How to use the RAP Generator (short version)
 
 This is a short description how the RAP Generator can be used.
 1. Download this repository into a package e.g. ZRAP_Generator. (in a trial system it might be that somebody else has already downloaded the package) 
@@ -57,7 +57,7 @@ A much more detailed description (including screen shots) can be found in my fol
    
 The description of the technical details of this tool I have moved to this readme.md file instead.
 
-# Supported scenarios
+## Supported scenarios
 
 The generator supports various scenarios that are listed in this table
 
@@ -106,16 +106,16 @@ The generator supports various scenarios that are listed in this table
   </tr>
 </table>
 
-# JSON file parameters
+## JSON file parameters
 
 The JSON file contains some mandatory properties that are needed for the generation of the repository objects.
 The node has a schema that contains an array called children, each of which are also node instances.
 This way we can model a root node including its child and grand child nodes in a way that is readable and reusable by the developer.
 Let’s start with the explanation of the (mandatory) properties of the business object itself.  
 
-## Mandatory parameters of the root node
+### Mandatory parameters of the root node
 
-### "implementationType" 
+#### "implementationType" 
 The generator currently supports three implementation types
 -	managed_uuid
 -	managed_semantic_key
@@ -150,19 +150,19 @@ key booking_supplement_id : /dmo/booking_supplement_id not null;
 </pre>
 
 When the implementation type **managed_semantic_key** is chosen, the generator will generate a business object that uses a managed implementation that requires external numbering whereas **unmanaged_semantic_key** will generate a business object that uses an unmanaged implementation.
-### “namespace”
+#### “namespace”
 Here you have to specify the namespace of the repository objects. This would typically be the value “Z” or your own namespace if you have registered one.
 
-### "package"
+#### "package"
 With the parameter “package” you have to provide the name of a package where all repository objects of your RAP business object will be generated in.
 
-### "datasourcetype"
+#### "datasourcetype"
 The generator supports tables and CDS views as a data source.
 Please note that when starting from tables the generator will be able to also generate a mapping whereas a mapping has to be created manually by the developer when starting with CDS views as data sources. You have to provide one of the following values here:
 - table
 - cds_view
 
-### “suffix” and “prefix”
+#### “suffix” and “prefix”
 These are optional parameters that can be used to tweak the names of the repository objects.
 
 The naming convention used by the generator follows the naming conventions propsed by the Virtual Data Model (VDM) used in SAP S/4 HANA.
@@ -170,24 +170,24 @@ For example the name of a CDS interface view would be generated from the above m
 `DATA(lv_name) = |{ namespace }I_{ prefix }{ entityname }{ suffix }|.`
 The name of the entity which is part of the repository object name is set by the property **“entityName”** on node level (see below).
 
-## Properties of node objects
+### Properties of node objects
 For each node object you have to specify the following mandatory properties
 
-### “entityName”
+#### “entityName”
 Here you have to specify the name of your entity (e.g. “Travel” or “Booking”). The name of the entity becomes part of the names of the repository objects that will be generated and it is used as the name of associations (e.g. "_Travel").
 Please note, that the value of “entityName” must be unique within a business object.
 
-### “dataSource” and “dataSourceType”
+#### “dataSource” and “dataSourceType”
 The generator supports the data source types “table” and "cds_view".
 The name of the data source is the name of the underlying table or the name of the underlying cds view.
 
-### “objectId”
+#### “objectId”
 With **objectId** we denote a semantic key field that is part of the data source (table or cds view). 
 In our travel/booking scenario this would be the field **travel_id** for the Travel entity and **booking_id** for the Booking entity if the data source are tables and it would be **travelid** and **bookingid** if the CDS views of flight demo scenario are used.
 For managed scenarios the generator will generate a determination for each objectid.
 You also have to specify an **objectid** for semantic scenarios.
 
-### “uuid”, “parent_uuid”, “root_uuid”
+#### “uuid”, “parent_uuid”, “root_uuid”
 In a managed scenario that uses keys of type **uuid** the tables of a child node must contain a field where the key of the parent entity is stored.
 Grandchild nodes and their children must in addition store the values of the key fields of the parent and the root entity.
 This is needed amongst others for the locking mechanism.
@@ -229,7 +229,7 @@ you have to specify these field names in the definition of the node by providing
 ...
 </pre>
 
-### "lastChangedAt",  "lastChangedBy",  "createdAt" and  "createdBy" 
+#### "lastChangedAt",  "lastChangedBy",  "createdAt" and  "createdBy" 
 In a managed scenario it is required that the root entity provides fields to store administrative data when an entity was created and changed and by whom these actions have been performed.
 Again the generator assumes some default values for these field names, namely:
 - “last_changed_at",
@@ -239,13 +239,13 @@ Again the generator assumes some default values for these field names, namely:
 <br>
 If the tables that you are using do not follow this naming convention it is possible to tell the generator about the actual field names by setting these optional properties.
 
-## Optional parameters that can be used for workshop or for templates
+### Optional parameters that can be used for workshop or for templates
 
 The follwoing parameters have been implemented so that it is possible to create RAP business objects including a mapping (if CDS views are used as a data source) and including assocations and value helps.
 
 When using this parameters the json files will become more complicated. As a result the use of these parameters is not recommended if you want to develop a single RAP object. They will be used in workshops such as TechEd sessions, CodeJams or OpenSAP courses where there is the need to provide participants with complete RAP business objects as a starting point.
 
-### mapping
+#### mapping
 Using this parameter you can provide the mapping between the field names of the CDS view and the field names used by the legacy business logic if CDS views are used as a data source.
 When using tables as data sources this mapping is generated by the generator.
 When CDS views are used as a data source such a mapping has be created manually by the developer if it has not been set.
@@ -318,12 +318,12 @@ When CDS views are used as a data source such a mapping has be created manually 
 }
 </pre>
 
-### “associations” and “valuehelps”
+#### “associations” and “valuehelps”
 On node level it is also possible to set information to generate valuehelps and associations.
 These properties have been introduced mainly for setups in courses where one would like to be able that participants can generate a business object that contain exactly those associations and value help definitions that are required for the course.
 Though it might also be useful for other scenarios as well, you see that the complexity of your JSON file will grow and it might be simpler to code this manually in the CDS views that are generated by the RAP generator.
 
-#### “associations”
+##### “associations”
 
 Associations is an array of objects where each object represents one association. 
 An association needs the several properties
@@ -368,7 +368,7 @@ An association needs the several properties
 
 ```
 
-#### valueHelps
+##### valueHelps
 
 Valuehelps is also an array of objects where each object represents a value help. Each object may contain an addiitional array that contains the information for the additional binding.
 
@@ -457,6 +457,28 @@ In order to generate a value help as mentioned above the following entry would h
 
 </pre>
 
+# Requirements
+
+This sample code does currently only work in SAP Cloud Platform, ABAP Environment where the XCO framework has been enabled as of version 2008.
+For more detailed information please also check out the following blog post:
+https://blogs.sap.com/2020/05/17/the-rap-generator
+
+# Download and Installation
+
+The sample code can simply be downloaded using the abapGIT plugin in ABAP Development Tools in Eclipse when working with SAP Cloud Platform, ABAP Environment.
+For this you have to create a package in the Z-namespace (for example ZRAP_GENERATOR) and link it as an abapGit repository.
+
+# Known Issues
+
+The sample code is provided "as-is".
+
+The current version of the RAP Generator can unfortunately currently be used in the trial systems, since a few new API's of the XCO framework have not been released in the trial systems yet. It is planned to enable them with an upcoming hot fix collection.
+
+# How to obtain support
+If you have problems or questions you can [post them in the SAP Community](https://answers.sap.com/questions/ask.html) using either the primary tag "[SAP Cloud Platform, ABAP environment](https://answers.sap.com/tags/73555000100800001164)" or "[ABAP RESTful Application Programming Model](https://answers.sap.com/tags/7e44126e-7b27-471d-a379-df205a12b1ff)".
+
+# Contributing
+This project is only updated by SAP employees.
 
 # License
 Copyright (c) 2020 SAP SE or an SAP affiliate company. All rights reserved. This file is licensed under the Apache Software License, version 2.0 except as noted otherwise in the [LICENSE](LICENSE) file.
