@@ -460,6 +460,9 @@ In order to generate a value help as mentioned above the following entry would h
 # Requirements
 
 This sample code does currently only work in SAP Cloud Platform, ABAP Environment where the XCO framework has been enabled as of version 2008.
+
+Make sure you have set the following option "Wrap and escape text when pasting into string literal" for your ABAP source code editor in your ADT preferences as described in my blog [How to wrap long strings automatically in ADT](https://blogs.sap.com/2020/07/29/how-to-wrap-long-strings-automatically-in-adt/)
+
 For more detailed information please also check out the following blog post:
 https://blogs.sap.com/2020/05/17/the-rap-generator
 
