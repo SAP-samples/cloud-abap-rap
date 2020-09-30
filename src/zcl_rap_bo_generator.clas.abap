@@ -21,7 +21,7 @@ CLASS zcl_rap_bo_generator DEFINITION
 
     METHODS constructor
       IMPORTING
-                VALUE(iv_package)          TYPE sxco_package
+                "     VALUE(iv_package)          TYPE sxco_package
                 VALUE(io_rap_bo_root_node) TYPE REF TO zcl_rap_node
       RAISING   zcx_rap_generator.
 
@@ -154,14 +154,17 @@ CLASS zcl_rap_bo_generator IMPLEMENTATION.
         ENDIF.
       ENDLOOP.
     ENDIF.
-    IF xco_cp_abap_repository=>object->devc->for( iv_package )->exists( ).
-      mo_package = iv_package .
-    ELSE.
+
+    mo_package = io_rap_bo_root_node->package.
+
+    DATA(lo_package) = mo_root_node_m_uuid->xco_lib->get_package( mo_package ).
+
+    IF NOT lo_package->exists( ).
 
       RAISE EXCEPTION TYPE zcx_rap_generator
         EXPORTING
           textid   = zcx_rap_generator=>package_does_not_exist
-          mv_value = CONV #( iv_package ).
+          mv_value = CONV #( mo_package ).
 
     ENDIF.
 
@@ -170,68 +173,70 @@ CLASS zcl_rap_bo_generator IMPLEMENTATION.
     "reside in the same software component
 
     " Get software component for package
-    DATA(lo_package) = xco_cp_abap_repository=>object->devc->for( iv_package ).
+
+    "DATA(lo_package) = xco_cp_abap_repository=>object->devc->for( iv_package ).
     DATA(lv_package_software_component) = lo_package->read( )-property-software_component->name.
 
 
-    "Compare with software components of data sources
-    "check data source of root node
-    CASE io_rap_bo_root_node->data_source_type.
-      WHEN io_rap_bo_root_node->data_source_types-table.
-        "create object for table
-        DATA(lo_database_table) = xco_cp_abap_dictionary=>database_table( io_rap_bo_root_node->table_name ).
-        " Get package.
-        DATA(lo_dbt_package) = lo_database_table->if_xco_ar_object~get_package( ).
-
-        " Read package.
-        DATA(ls_dbt_package) = lo_dbt_package->read( ).
-        " Software component.
-        DATA(lv_dbt_software_component) = ls_dbt_package-property-software_component->name.
-
-        IF lv_package_software_component <> lv_dbt_software_component.
-          IF NOT lv_dbt_software_component = '/DMO/SAP'  AND  lv_dbt_software_component = 'ZLOCAL'.
-            RAISE EXCEPTION TYPE zcx_rap_generator
-              EXPORTING
-                textid          = zcx_rap_generator=>software_comp_do_not_match
-                mv_table_name   = CONV #( io_rap_bo_root_node->table_name )
-                mv_package_name = CONV #( iv_package ).
-          ENDIF.
-        ENDIF.
-
-      WHEN io_rap_bo_root_node->data_source_types-cds_view.
-
-        "@todo: add a check here
-
-    ENDCASE.
+*    "Compare with software components of data sources
+*    "check data source of root node
+*    CASE io_rap_bo_root_node->data_source_type.
+*      WHEN io_rap_bo_root_node->data_source_types-table.
+*        "create object for table
+*        DATA(lo_database_table) = xco_cp_abap_dictionary=>database_table( io_rap_bo_root_node->table_name ).
+*        " Get package.
+*        DATA(lo_dbt_package) = lo_database_table->if_xco_ar_object~get_package( ).
+*
+*        " Read package.
+*        DATA(ls_dbt_package) = lo_dbt_package->read( ).
+*        " Software component.
+*        DATA(lv_dbt_software_component) = ls_dbt_package-property-software_component->name.
+*
+*        IF lv_package_software_component <> lv_dbt_software_component.
+*          IF NOT lv_dbt_software_component = '/DMO/SAP'  AND  lv_dbt_software_component = 'ZLOCAL'.
+*            RAISE EXCEPTION TYPE zcx_rap_generator
+*              EXPORTING
+*                textid          = zcx_rap_generator=>software_comp_do_not_match
+*                mv_table_name   = CONV #( io_rap_bo_root_node->table_name )
+*                mv_package_name = CONV #( iv_package ).
+*          ENDIF.
+*        ENDIF.
+*
+*      WHEN io_rap_bo_root_node->data_source_types-cds_view.
+*
+*        "@todo: add a check here
+*
+*    ENDCASE.
 
 
     "check tables of child nodes
 
-    IF io_rap_bo_root_node->has_childs(  ).
-      LOOP AT io_rap_bo_root_node->all_childnodes INTO ls_childnode.
-        CASE io_rap_bo_root_node->data_source_type.
-          WHEN  io_rap_bo_root_node->data_source_types-table.
-            lo_database_table = xco_cp_abap_dictionary=>database_table( ls_childnode->table_name ).
-            lo_dbt_package = lo_database_table->if_xco_ar_object~get_package( ).
+*    IF io_rap_bo_root_node->has_childs(  ).
+*      LOOP AT io_rap_bo_root_node->all_childnodes INTO ls_childnode.
+*        CASE io_rap_bo_root_node->data_source_type.
+*          WHEN  io_rap_bo_root_node->data_source_types-table.
+*            lo_database_table = xco_cp_abap_dictionary=>database_table( ls_childnode->table_name ).
+*            lo_dbt_package = lo_database_table->if_xco_ar_object~get_package( ).
+*
+*            ls_dbt_package = lo_dbt_package->read( ).
+*            lv_dbt_software_component = ls_dbt_package-property-software_component->name.
+*            IF lv_package_software_component <> lv_dbt_software_component.
+*              IF NOT lv_dbt_software_component = '/DMO/SAP'  AND  lv_dbt_software_component = 'ZLOCAL'.
+*                RAISE EXCEPTION TYPE zcx_rap_generator
+*                  EXPORTING
+*                    textid          = zcx_rap_generator=>software_comp_do_not_match
+*                    mv_table_name   = CONV #( io_rap_bo_root_node->table_name )
+*                    mv_package_name = CONV #( iv_package ).
+*              ENDIF.
+*            ENDIF.
+*          WHEN io_rap_bo_root_node->data_source_types-cds_view.
+*            "@todo: add a check here
+*        ENDCASE.
+*      ENDLOOP.
+*    ENDIF.
 
-            ls_dbt_package = lo_dbt_package->read( ).
-            lv_dbt_software_component = ls_dbt_package-property-software_component->name.
-            IF lv_package_software_component <> lv_dbt_software_component.
-              IF NOT lv_dbt_software_component = '/DMO/SAP'  AND  lv_dbt_software_component = 'ZLOCAL'.
-                RAISE EXCEPTION TYPE zcx_rap_generator
-                  EXPORTING
-                    textid          = zcx_rap_generator=>software_comp_do_not_match
-                    mv_table_name   = CONV #( io_rap_bo_root_node->table_name )
-                    mv_package_name = CONV #( iv_package ).
-              ENDIF.
-            ENDIF.
-          WHEN io_rap_bo_root_node->data_source_types-cds_view.
-            "@todo: add a check here
-        ENDCASE.
-      ENDLOOP.
-    ENDIF.
-
-    DATA(lo_transport_layer) = xco_cp_abap_repository=>package->for( mo_package )->read( )-property-transport_layer.
+    "DATA(lo_transport_layer) = xco_cp_abap_repository=>package->for( mo_package )->read( )-property-transport_layer.
+    DATA(lo_transport_layer) = lo_package->read(  )-property-transport_layer.
     DATA(lo_transport_target) = lo_transport_layer->get_transport_target( ).
     DATA(lv_transport_target) = lo_transport_target->value.
     DATA(lo_transport_request) = xco_cp_cts=>transports->workbench( lo_transport_target->value  )->create_request( |RAP Business object - entity name: { mo_root_node_m_uuid->entityname } | ).
@@ -736,14 +741,24 @@ CLASS zcl_rap_bo_generator IMPLEMENTATION.
            )->set_alias( ls_header_fields-cds_view_field ).
       ENDIF.
 
-      "add @Semantics annotation once available
+      "add @Semantics annotation for currency code
       IF ls_header_fields-currencycode IS NOT INITIAL.
-        READ TABLE io_rap_bo_node->lt_fields INTO DATA(ls_field) WITH KEY name = ls_header_fields-currencycode.
+        READ TABLE io_rap_bo_node->lt_fields INTO DATA(ls_field) WITH KEY name = to_upper( ls_header_fields-currencycode ).
         IF sy-subrc = 0.
+          "for example @Semantics.amount.currencyCode: 'CurrencyCode'
           lo_field->add_annotation( 'Semantics.amount.currencyCode' )->value->build( )->add_string( CONV #( ls_field-cds_view_field ) ).
         ENDIF.
       ENDIF.
 
+      "add @Semantics annotation for unit of measure
+      IF ls_header_fields-unitofmeasure IS NOT INITIAL.
+        CLEAR ls_field.
+        READ TABLE io_rap_bo_node->lt_fields INTO ls_field WITH KEY name = to_upper( ls_header_fields-unitofmeasure ).
+        IF sy-subrc = 0.
+          "for example @Semantics.quantity.unitOfMeasure: 'QuantityUnit'
+          lo_field->add_annotation( 'Semantics.quantity.unitOfMeasure' )->value->build( )->add_string( CONV #( ls_field-cds_view_field ) ).
+        ENDIF.
+      ENDIF.
 
       CASE ls_header_fields-name.
         WHEN io_rap_bo_node->field_name-created_at.
@@ -1008,8 +1023,12 @@ CLASS zcl_rap_bo_generator IMPLEMENTATION.
           ENDIF.
           lo_valuebuilder->end_record( )->end_array( ).
 
+          "add selection fields for semantic key fields or for the fields that are marked as object id
+
           IF io_rap_bo_node->is_root(  ) = abap_true AND
-             ls_header_fields-has_valuehelp = abap_true .
+             ( io_rap_bo_node->get_implementation_type( ) = io_rap_bo_node->implementation_type-unmanged_semantic OR
+                io_rap_bo_node->get_implementation_type( ) = io_rap_bo_node->implementation_type-managed_semantic ) AND
+                ls_header_fields-key_indicator = abap_true.
 
             lo_field->add_annotation( 'UI.selectionField' )->value->build(
             )->begin_array(
@@ -1019,6 +1038,21 @@ CLASS zcl_rap_bo_generator IMPLEMENTATION.
             )->end_array( ).
 
           ENDIF.
+
+          IF io_rap_bo_node->is_root(  ) = abap_true AND
+             io_rap_bo_node->get_implementation_type( ) = io_rap_bo_node->implementation_type-managed_uuid  AND
+             ls_header_fields-name = io_rap_bo_node->object_id.
+
+            lo_field->add_annotation( 'UI.selectionField' )->value->build(
+            )->begin_array(
+            )->begin_record(
+                )->add_member( 'position' )->add_number( pos
+              )->end_record(
+            )->end_array( ).
+
+          ENDIF.
+
+
 
       ENDCASE.
 
@@ -1040,6 +1074,8 @@ CLASS zcl_rap_bo_generator IMPLEMENTATION.
     lo_view->add_annotation( 'EndUserText.label' )->value->build( )->add_string( 'Projection View for ' && io_rap_bo_node->rap_node_objects-alias ).
 
 
+    lo_view->add_annotation( 'Search.searchable' )->value->build( )->add_boolean( abap_true ).
+
 
     IF io_rap_bo_node->is_root( ).
       lo_view->set_root( ).
@@ -1057,7 +1093,15 @@ CLASS zcl_rap_bo_generator IMPLEMENTATION.
 
       IF ls_header_fields-key_indicator = abap_true  .
         lo_field->set_key(  ).
+        lo_field->add_annotation( 'Search.defaultSearchElement' )->value->build( )->add_boolean( abap_true ).
       ENDIF.
+
+      CASE ls_header_fields-name.
+        WHEN io_rap_bo_node->object_id.
+          IF ls_header_fields-key_indicator = abap_false.
+            lo_field->add_annotation( 'Search.defaultSearchElement' )->value->build( )->add_boolean( abap_true ).
+          ENDIF.
+      ENDCASE.
 
       "add @Semantics annotation once available
       IF ls_header_fields-currencycode IS NOT INITIAL.

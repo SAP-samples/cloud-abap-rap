@@ -224,6 +224,12 @@
      <MSGNR>036</MSGNR>
      <TEXT>No data source set for entity &amp;1</TEXT>
     </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZCM_RAP_GENERATOR</ARBGB>
+     <MSGNR>037</MSGNR>
+     <TEXT>Value of namespace &amp;1 is not valid. Use Y..., Z... or /.../.</TEXT>
+    </T100>
    </T100>
   </asx:values>
  </asx:abap>

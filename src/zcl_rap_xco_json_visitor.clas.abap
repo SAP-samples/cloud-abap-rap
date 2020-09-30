@@ -7,6 +7,11 @@ CLASS zcl_rap_xco_json_visitor DEFINITION
     INTERFACES:
       if_xco_json_tree_visitor.
     DATA root_node  TYPE REF TO zcl_rap_node READ-ONLY.
+
+    METHODS constructor
+      IMPORTING io_root_node TYPE REF TO zcl_rap_node
+      RAISING   zcx_rap_generator.
+
   PROTECTED SECTION.
   PRIVATE SECTION.
 
@@ -55,6 +60,7 @@ ENDCLASS.
 
 
 CLASS zcl_rap_xco_json_visitor IMPLEMENTATION.
+
 
 
   METHOD if_xco_json_tree_visitor~enter_array.
@@ -259,12 +265,12 @@ CLASS zcl_rap_xco_json_visitor IMPLEMENTATION.
 
     root_node->finalize(  ).
 
-    DATA(my_bo_generator) = NEW zcl_rap_bo_generator(
-  iv_package          = root_node->package
-  io_rap_bo_root_node = root_node
-  ).
-
-    DATA(lt_todos) = my_bo_generator->generate_bo(  ).
+*    DATA(my_bo_generator) = NEW zcl_rap_bo_generator(
+*  iv_package          = root_node->package
+*  io_rap_bo_root_node = root_node
+*  ).
+*
+*    DATA(lt_todos) = my_bo_generator->generate_bo(  ).
 
   ENDMETHOD.
 
@@ -272,8 +278,8 @@ CLASS zcl_rap_xco_json_visitor IMPLEMENTATION.
   METHOD if_xco_json_tree_visitor~on_start.
 
     CLEAR object_number.
-    root_node = NEW zcl_rap_node(  ).
-    root_node->set_is_root_node( ).
+    "root_node = NEW zcl_rap_node(  ).
+    "root_node->set_is_root_node( ).
 
   ENDMETHOD.
 
@@ -477,4 +483,9 @@ CLASS zcl_rap_xco_json_visitor IMPLEMENTATION.
     ENDIF.
 
   ENDMETHOD.
+
+  METHOD constructor.
+    root_node = io_root_node.
+  ENDMETHOD.
+
 ENDCLASS.

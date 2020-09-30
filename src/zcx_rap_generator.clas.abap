@@ -295,22 +295,30 @@ CLASS zcx_rap_generator DEFINITION
         attr3 TYPE scx_attrname VALUE '',
         attr4 TYPE scx_attrname VALUE '',
       END OF no_object_id_set,
-       BEGIN OF invalid_data_source_type,
+      BEGIN OF invalid_data_source_type,
         msgid TYPE symsgid VALUE 'ZCM_RAP_GENERATOR',
         msgno TYPE symsgno VALUE '035',
         attr1 TYPE scx_attrname VALUE 'MV_VALUE',
         attr2 TYPE scx_attrname VALUE '',
         attr3 TYPE scx_attrname VALUE '',
         attr4 TYPE scx_attrname VALUE '',
-      END OF INVALID_DATA_SOURCE_TYPE,
-       BEGIN OF no_data_source_set,
+      END OF invalid_data_source_type,
+      BEGIN OF no_data_source_set,
         msgid TYPE symsgid VALUE 'ZCM_RAP_GENERATOR',
         msgno TYPE symsgno VALUE '036',
         attr1 TYPE scx_attrname VALUE 'MV_ENTITY',
         attr2 TYPE scx_attrname VALUE '',
         attr3 TYPE scx_attrname VALUE '',
         attr4 TYPE scx_attrname VALUE '',
-      END OF no_data_source_set
+      END OF no_data_source_set,
+      BEGIN OF invalid_namespace,
+        msgid TYPE symsgid VALUE 'ZCM_RAP_GENERATOR',
+        msgno TYPE symsgno VALUE '037',
+        attr1 TYPE scx_attrname VALUE 'MV_VALUE',
+        attr2 TYPE scx_attrname VALUE '',
+        attr3 TYPE scx_attrname VALUE '',
+        attr4 TYPE scx_attrname VALUE '',
+      END OF invalid_namespace
       .
 
 
@@ -344,7 +352,7 @@ ENDCLASS.
 
 
 
-CLASS ZCX_RAP_GENERATOR IMPLEMENTATION.
+CLASS zcx_rap_generator IMPLEMENTATION.
 
 
   METHOD class_constructor.
