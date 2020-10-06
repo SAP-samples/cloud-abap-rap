@@ -1,6 +1,6 @@
 Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
-Upstream-Name: Cloud ABAP Exchange Rates
-Upstream-Contact: Markus Gebhard <markus.gebhard@sap.com>
+Upstream-Name: RAP Generator
+Upstream-Contact: Andre Fischer <andre.fischer@sap.com>
 Source: https://github.com/SAP-samples/cloud-abap-rap
 Disclaimer: The code in this project may include calls to APIs (“API Calls”) of
  SAP or third-party products or services developed outside of this project
@@ -29,5 +29,9 @@ Copyright: 2020 SAP SE or an SAP affiliate company
 License: Apache-2.0
 
 Files: src/*
+Copyright: 2020 SAP SE or an SAP affiliate company
+License: Apache-2.0
+
+Files: json_templates/*
 Copyright: 2020 SAP SE or an SAP affiliate company
 License: Apache-2.0
