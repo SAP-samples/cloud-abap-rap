@@ -318,10 +318,21 @@ CLASS zcl_rap_bo_generator IMPLEMENTATION.
           CASE ls_mapping_header-dbtable_field.
             WHEN io_rap_bo_node->field_name-uuid.
               lo_header_behavior->add_field( ls_mapping_header-cds_view_field
-                               )->set_numbering_managed( ).
+                               )->set_numbering_managed( )->set_read_only(  ).
+            WHEN io_rap_bo_node->field_name-parent_uuid OR
+                 io_rap_bo_node->field_name-root_uuid.
+              lo_header_behavior->add_field( ls_mapping_header-cds_view_field
+                               )->set_read_only( ).
             WHEN  io_rap_bo_node->object_id .
               lo_header_behavior->add_field( ls_mapping_header-cds_view_field
                                  )->set_read_only( ).
+            WHEN io_rap_bo_node->field_name-created_at OR
+                 io_rap_bo_node->field_name-created_by OR
+                 io_rap_bo_node->field_name-last_changed_at OR
+                 io_rap_bo_node->field_name-last_changed_by OR
+                 io_rap_bo_node->field_name-local_instance_last_changed_at.
+              lo_header_behavior->add_field( ls_mapping_header-cds_view_field
+                              )->set_read_only( ).
           ENDCASE.
         ENDLOOP.
 
@@ -443,9 +454,16 @@ CLASS zcl_rap_bo_generator IMPLEMENTATION.
               CASE ls_mapping_item-dbtable_field.
                 WHEN lo_childnode->field_name-uuid.
                   lo_item_behavior->add_field( ls_mapping_item-cds_view_field
-                                 )->set_numbering_managed( ).
+                                 )->set_numbering_managed( )->set_read_only(  ).
                 WHEN lo_childnode->field_name-parent_uuid OR
                      lo_childnode->field_name-root_uuid .
+                  lo_item_behavior->add_field( ls_mapping_item-cds_view_field )->set_read_only( ).
+
+                WHEN lo_childnode->field_name-created_at OR
+                     lo_childnode->field_name-created_by OR
+                     lo_childnode->field_name-last_changed_at OR
+                     lo_childnode->field_name-last_changed_by OR
+                     lo_childnode->field_name-local_instance_last_changed_at.
                   lo_item_behavior->add_field( ls_mapping_item-cds_view_field )->set_read_only( ).
 
                 WHEN  lo_childnode->object_id.
@@ -1232,18 +1250,34 @@ CLASS zcl_rap_bo_generator IMPLEMENTATION.
 
     "add exposure for root node
     lo_specification_header->add_exposure( mo_root_node_m_uuid->rap_node_objects-cds_view_p )->set_alias( mo_root_node_m_uuid->rap_node_objects-alias ).
+
+    "create a list of all CDS views used in associations of childnodes to the service definition
+    LOOP AT mo_root_node_m_uuid->lt_association INTO DATA(ls_assocation).
+      "remove the first character which is an underscore
+      ls_cds_views_used_by_assoc-name = substring( val = ls_assocation-name off = 1 ).
+      ls_cds_views_used_by_assoc-target =  ls_assocation-target.
+      COLLECT ls_cds_views_used_by_assoc INTO lt_cds_views_used_by_assoc.
+    ENDLOOP.
+    LOOP AT mo_root_node_m_uuid->lt_valuehelp INTO DATA(ls_valuehelp).
+      ls_cds_views_used_by_assoc-name = ls_valuehelp-alias.
+      ls_cds_views_used_by_assoc-target = ls_valuehelp-name.
+      COLLECT ls_cds_views_used_by_assoc INTO lt_cds_views_used_by_assoc.
+    ENDLOOP.
+
+
+
     "add exposure for all child nodes
     LOOP AT mo_root_node_m_uuid->all_childnodes INTO DATA(lo_childnode).
       "add all nodes to the service definition
       lo_specification_header->add_exposure( lo_childnode->rap_node_objects-cds_view_p )->set_alias( lo_childnode->rap_node_objects-alias ).
-      "create a list of all CDS views used in associations to the service definition
-      LOOP AT lo_childnode->lt_association INTO DATA(ls_assocation).
+      "create a list of all CDS views used in associations of childnodes to the service definition
+      LOOP AT lo_childnode->lt_association INTO ls_assocation.
         "remove the first character which is an underscore
         ls_cds_views_used_by_assoc-name = substring( val = ls_assocation-name off = 1 ).
         ls_cds_views_used_by_assoc-target =  ls_assocation-target.
         COLLECT ls_cds_views_used_by_assoc INTO lt_cds_views_used_by_assoc.
       ENDLOOP.
-      LOOP AT lo_childnode->lt_valuehelp INTO DATA(ls_valuehelp).
+      LOOP AT lo_childnode->lt_valuehelp INTO ls_valuehelp.
         ls_cds_views_used_by_assoc-name = ls_valuehelp-alias.
         ls_cds_views_used_by_assoc-target = ls_valuehelp-name.
         COLLECT ls_cds_views_used_by_assoc INTO lt_cds_views_used_by_assoc.

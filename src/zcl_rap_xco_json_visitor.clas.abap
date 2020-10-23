@@ -485,7 +485,7 @@ CLASS zcl_rap_xco_json_visitor IMPLEMENTATION.
   ENDMETHOD.
 
   METHOD constructor.
-    root_node = io_root_node.
+     root_node = io_root_node.
   ENDMETHOD.
 
 ENDCLASS.

@@ -230,6 +230,30 @@
      <MSGNR>037</MSGNR>
      <TEXT>Value of namespace &amp;1 is not valid. Use Y..., Z... or /.../.</TEXT>
     </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZCM_RAP_GENERATOR</ARBGB>
+     <MSGNR>038</MSGNR>
+     <TEXT>&amp;1 is not the key field of &amp;2.</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZCM_RAP_GENERATOR</ARBGB>
+     <MSGNR>039</MSGNR>
+     <TEXT>Type of &amp;1 is not UUID in 16 Bytes (Raw Format)</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZCM_RAP_GENERATOR</ARBGB>
+     <MSGNR>040</MSGNR>
+     <TEXT>Entity &amp;1 has too many key fields &amp;2. Only one of type UUID is allowed.</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZCM_RAP_GENERATOR</ARBGB>
+     <MSGNR>041</MSGNR>
+     <TEXT>Entity &amp;1 has no key field.</TEXT>
+    </T100>
    </T100>
   </asx:values>
  </asx:abap>
