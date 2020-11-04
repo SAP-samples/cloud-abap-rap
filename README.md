@@ -120,8 +120,8 @@ Let’s start with the explanation of the (mandatory) properties of the business
 #### "implementationType" 
 The generator currently supports three implementation types
 -	managed_uuid
--	managed_semantic_key
--	unmanaged_semantic_key
+-	managed_semantic
+-	unmanaged_semantic
 
 ##### managed_uuid
 If the implementation type **managed_uuid** is used, the generator will generate a managed business object that uses internal numbering. It is thus required that the key fields of the nodes and therefore also the key fields of the underlying tables are of type raw(16) (UUID). 
@@ -131,8 +131,8 @@ key client      : abap.clnt not null;
 key uuid        : sysuuid_x16 not null;
 </pre>
 
-##### managed_semantic_key or unmanaged_semantic_key
-If one of the scenarios **managed_semantic_key** or **unmanaged_semantic_key** is used, the generator expects that there is a hierarchy of tables where the header table always contains all key fields of the item table.
+##### managed_semantic or unmanaged_semantic
+If one of the scenarios **managed_semantic** or **unmanaged_semantic** is used, the generator expects that there is a hierarchy of tables where the header table always contains all key fields of the item table.
 
 - Travel
 <pre>
