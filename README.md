@@ -153,7 +153,8 @@ key booking_id            : /dmo/booking_id not null;
 key booking_supplement_id : /dmo/booking_supplement_id not null;
 </pre>
 
-When the implementation type **managed_semantic_key** is chosen, the generator will generate a business object that uses a managed implementation that requires external numbering whereas **unmanaged_semantic_key** will generate a business object that uses an unmanaged implementation.
+When the implementation type **managed_semantic** is chosen, the generator will generate a business object that uses a managed implementation that requires external numbering whereas **unmanaged_semantic** will generate a business object that uses an unmanaged implementation.
+
 #### “namespace”
 Here you have to specify the namespace of the repository objects. This would typically be the value “Z” or your own namespace if you have registered one.
 
