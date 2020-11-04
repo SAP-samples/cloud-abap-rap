@@ -480,7 +480,12 @@ In order to generate a value help as mentioned above the following entry would h
 
 # Requirements
 
-This sample code does currently only work in SAP Cloud Platform, ABAP Environment where the XCO framework has been enabled as of version 2008.
+This sample code does work in 
+
+- SAP Cloud Platform, ABAP Environment where the XCO framework has been enabled as of version 2008.
+- SAP S/4HANA 2020
+
+The RAP Generator can not be used in an SAP S/4HANA 1909 system since the XCO libraries are not available in this on premise release. It would however be possible to generate an unmanged RAP business object in one of the supported platforms mentioned above and transport the generated repository objects via abapGit into your 1909 on premise system.
 
 Make sure you have set the following option "Wrap and escape text when pasting into string literal" for your ABAP source code editor in your ADT preferences as described in my blog [How to wrap long strings automatically in ADT](https://blogs.sap.com/2020/07/29/how-to-wrap-long-strings-automatically-in-adt/)
 
@@ -489,14 +494,18 @@ https://blogs.sap.com/2020/05/17/the-rap-generator
 
 # Download and Installation
 
+## SAP Cloud Platform ABAP Environment
+
 The sample code can simply be downloaded using the abapGIT plugin in ABAP Development Tools in Eclipse when working with SAP Cloud Platform, ABAP Environment.
 For this you have to create a package in the Z-namespace (for example ZRAP_GENERATOR) and link it as an abapGit repository.
+
+## SAP S/4HANA 2020
+
+The sample code can be imported into an on premise system using the abapGit report https://docs.abapgit.org/ .
 
 # Known Issues
 
 The sample code is provided "as-is".
-
-The sample code can unfortunately not yet be used in the trial systems, since a few new API's of the XCO framework have not been released in the trial systems yet. It is planned to enable them with an upcoming hot fix collection.
 
 # How to obtain support
 If you have problems or questions you can [post them in the SAP Community](https://answers.sap.com/questions/ask.html) using either the primary tag "[SAP Cloud Platform, ABAP environment](https://answers.sap.com/tags/73555000100800001164)" or "[ABAP RESTful Application Programming Model](https://answers.sap.com/tags/7e44126e-7b27-471d-a379-df205a12b1ff)".
