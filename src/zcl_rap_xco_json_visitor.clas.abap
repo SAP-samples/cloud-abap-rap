@@ -293,6 +293,8 @@ CLASS zcl_rap_xco_json_visitor IMPLEMENTATION.
           root_node->add_transactional_behavior( iv_value ).
         WHEN 'publishservice'.
           root_node->set_publish_service( iv_value ).
+        WHEN 'draftenabled'.
+          root_node->set_draft_enabled( iv_value ).
         WHEN OTHERS.
 
           DATA(error_message) = |{ last_visited_member } in entity { root_node->entityname }|.
@@ -337,6 +339,10 @@ CLASS zcl_rap_xco_json_visitor IMPLEMENTATION.
           root_node->set_package( CONV sxco_package( iv_value ) ).
         WHEN 'datasourcetype'.
           root_node->set_data_source_type( CONV #( iv_value ) ).
+        WHEN 'bindingtype'.
+          root_node->set_binding_type( CONV #( iv_value ) ).
+        WHEN 'transportrequest'.
+          root_node->set_transport_request( CONV #( iv_value ) ).
         WHEN OTHERS.
 
           error_message = |{ last_visited_member } in entity { root_node->entityname }|.
@@ -467,7 +473,9 @@ CLASS zcl_rap_xco_json_visitor IMPLEMENTATION.
           WHEN 'lastchangedat'.
             current_node->set_field_name_last_changed_at( iv_value ).
           WHEN 'localinstancelastchangedat'.
-
+            current_node->set_field_name_loc_last_chg_at( iv_value ).
+          WHEN 'drafttable'.
+            current_node->set_draft_table( iv_value ).
           WHEN OTHERS.
             error_message = |{ last_visited_member } in entity { current_node->entityname }|.
 
@@ -485,7 +493,7 @@ CLASS zcl_rap_xco_json_visitor IMPLEMENTATION.
   ENDMETHOD.
 
   METHOD constructor.
-     root_node = io_root_node.
+    root_node = io_root_node.
   ENDMETHOD.
 
 ENDCLASS.

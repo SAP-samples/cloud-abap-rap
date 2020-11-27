@@ -254,6 +254,30 @@
      <MSGNR>041</MSGNR>
      <TEXT>Entity &amp;1 has no key field.</TEXT>
     </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZCM_RAP_GENERATOR</ARBGB>
+     <MSGNR>042</MSGNR>
+     <TEXT>Invalid binding type &amp;1. Use &amp;2 instead.</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZCM_RAP_GENERATOR</ARBGB>
+     <MSGNR>043</MSGNR>
+     <TEXT>Invalid transport request &amp;1</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZCM_RAP_GENERATOR</ARBGB>
+     <MSGNR>044</MSGNR>
+     <TEXT>No draft table specified for entity &amp;1 in draft enabled BO &amp;2.</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZCM_RAP_GENERATOR</ARBGB>
+     <MSGNR>045</MSGNR>
+     <TEXT>Table &amp;1 is inactive.</TEXT>
+    </T100>
    </T100>
   </asx:values>
  </asx:abap>

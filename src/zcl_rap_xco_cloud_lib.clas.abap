@@ -68,7 +68,7 @@ CLASS zcl_rap_xco_cloud_lib IMPLEMENTATION.
   ENDMETHOD.
 
   METHOD get_view_entity.
-    xco_cp_cds=>entity( iv_name ).
+    ro_view_entity = xco_cp_cds=>view_entity( iv_name ).
   ENDMETHOD.
 
   METHOD  get_aggregated_annotations.

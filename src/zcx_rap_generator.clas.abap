@@ -342,7 +342,7 @@ CLASS zcx_rap_generator DEFINITION
         attr2 TYPE scx_attrname VALUE 'MV_VALUE',
         attr3 TYPE scx_attrname VALUE '',
         attr4 TYPE scx_attrname VALUE '',
-      END OF MORE_THAN_ONE_KEY_FIELD,
+      END OF more_than_one_key_field,
       BEGIN OF has_no_key_field,
         msgid TYPE symsgid VALUE 'ZCM_RAP_GENERATOR',
         msgno TYPE symsgno VALUE '041',
@@ -350,7 +350,39 @@ CLASS zcx_rap_generator DEFINITION
         attr2 TYPE scx_attrname VALUE '',
         attr3 TYPE scx_attrname VALUE '',
         attr4 TYPE scx_attrname VALUE '',
-      END OF has_no_KEY_FIELD
+      END OF has_no_KEY_FIELD,
+      BEGIN OF invalid_binding_type,
+        msgid TYPE symsgid VALUE 'ZCM_RAP_GENERATOR',
+        msgno TYPE symsgno VALUE '042',
+        attr1 TYPE scx_attrname VALUE 'MV_VALUE',
+        attr2 TYPE scx_attrname VALUE 'MV_VALUE_2',
+        attr3 TYPE scx_attrname VALUE '',
+        attr4 TYPE scx_attrname VALUE '',
+      END OF invalid_binding_type,
+      BEGIN OF invalid_transport_request,
+        msgid TYPE symsgid VALUE 'ZCM_RAP_GENERATOR',
+        msgno TYPE symsgno VALUE '043',
+        attr1 TYPE scx_attrname VALUE 'MV_VALUE',
+        attr2 TYPE scx_attrname VALUE '',
+        attr3 TYPE scx_attrname VALUE '',
+        attr4 TYPE scx_attrname VALUE '',
+      END OF invalid_transport_request,
+      BEGIN OF no_draft_table_specified,
+        msgid TYPE symsgid VALUE 'ZCM_RAP_GENERATOR',
+        msgno TYPE symsgno VALUE '044',
+        attr1 TYPE scx_attrname VALUE 'MV_ENTITY',
+        attr2 TYPE scx_attrname VALUE 'MV_ROOT_ENTITY',
+        attr3 TYPE scx_attrname VALUE '',
+        attr4 TYPE scx_attrname VALUE '',
+      END OF no_draft_table_specified,
+      BEGIN OF table_is_inactive,
+        msgid TYPE symsgid VALUE 'ZCM_RAP_GENERATOR',
+        msgno TYPE symsgno VALUE '045',
+        attr1 TYPE scx_attrname VALUE 'MV_VALUE',
+        attr2 TYPE scx_attrname VALUE '',
+        attr3 TYPE scx_attrname VALUE '',
+        attr4 TYPE scx_attrname VALUE '',
+      END OF table_is_inactive
       .
 
 
@@ -358,6 +390,7 @@ CLASS zcx_rap_generator DEFINITION
     DATA mv_entity  TYPE sxco_ddef_alias_name.
     DATA mv_root_entity  TYPE sxco_ddef_alias_name.
     DATA mv_value TYPE string.
+    DATA mv_value_2 TYPE string.
     DATA mv_max_length TYPE i.
     DATA mv_parameter_name TYPE string.
     DATA mv_semantic_key_field TYPE string.
@@ -372,6 +405,7 @@ CLASS zcx_rap_generator DEFINITION
         !mv_entity             TYPE sxco_ddef_alias_name OPTIONAL
         !mv_root_entity        TYPE sxco_ddef_alias_name OPTIONAL
         !mv_value              TYPE string OPTIONAL
+        !mv_value_2            TYPE string OPTIONAL
         !mv_max_length         TYPE i OPTIONAL
         !mv_parameter_name     TYPE string OPTIONAL
         !mv_semantic_key_field TYPE string OPTIONAL
@@ -398,6 +432,7 @@ CLASS zcx_rap_generator IMPLEMENTATION.
     me->mv_entity = mv_entity.
     me->mv_root_entity = mv_root_entity.
     me->mv_value = mv_value.
+    me->mv_value_2 = mv_value_2.
     me->mv_max_length = mv_max_length.
     me->mv_parameter_name = mv_parameter_name.
     me->mv_semantic_key_field = mv_semantic_key_field.

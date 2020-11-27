@@ -69,7 +69,7 @@ CLASS zcl_rap_xco_on_prem_lib IMPLEMENTATION.
   ENDMETHOD.
 
   METHOD get_view_entity.
-*    xco_cds=>entity( iv_name ).
+*    ro_view_entity = xco_cds=>view_entity( iv_name ).
   ENDMETHOD.
 
   METHOD  get_aggregated_annotations.

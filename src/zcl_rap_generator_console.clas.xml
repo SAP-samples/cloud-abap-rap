@@ -5,7 +5,7 @@
    <VSEOCLASS>
     <CLSNAME>ZCL_RAP_GENERATOR_CONSOLE</CLSNAME>
     <LANGU>E</LANGU>
-    <DESCRIPT>parse json rap string</DESCRIPT>
+    <DESCRIPT>zcl_rap_generator_console</DESCRIPT>
     <STATE>1</STATE>
     <CLSCCINCL>X</CLSCCINCL>
     <FIXPT>X</FIXPT>
