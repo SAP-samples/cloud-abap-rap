@@ -21,58 +21,72 @@ CLASS zcl_rap_xco_cloud_lib DEFINITION INHERITING FROM zcl_rap_xco_lib
   PRIVATE SECTION.
 ENDCLASS.
 
-CLASS zcl_rap_xco_cloud_lib IMPLEMENTATION.
 
-  METHOD  get_structure.
-    ro_structure = xco_cp_abap_repository=>object->tabl->structure->for( iv_name  ).
-  ENDMETHOD.
 
-  METHOD  get_service_definition.
-    ro_service_definition = xco_cp_abap_repository=>object->srvd->for( iv_name  ).
-  ENDMETHOD.
+CLASS ZCL_RAP_XCO_CLOUD_LIB IMPLEMENTATION.
 
-  METHOD  get_service_binding.
-    ro_service_binding = xco_cp_abap_repository=>object->srvb->for( iv_name  ).
-  ENDMETHOD.
-
-  METHOD  get_behavior_definition.
-    ro_behavior_definition = xco_cp_abap_repository=>object->bdef->for( iv_name  ).
-  ENDMETHOD.
-
-  METHOD  get_data_definition.
-    ro_data_definition = xco_cp_abap_repository=>object->ddls->for( iv_name  ).
-  ENDMETHOD.
-
-  METHOD  get_metadata_extension.
-    ro_metadata_extension  = xco_cp_abap_repository=>object->ddlx->for( iv_name  ).
-  ENDMETHOD.
-
-  METHOD  get_class.
-    ro_class = xco_cp_abap_repository=>object->clas->for( iv_name  ).
-  ENDMETHOD.
-
-  METHOD  get_package.
-    ro_package = xco_cp_abap_repository=>object->devc->for( iv_name  ).
-  ENDMETHOD.
-
-  METHOD  get_database_table.
-    ro_table = xco_cp_abap_repository=>object->tabl->database_table->for( iv_name  ).
-  ENDMETHOD.
-
-  METHOD get_entity.
-    ro_entity = xco_cp_cds=>view_entity( iv_name ).
-  ENDMETHOD.
-
-  METHOD get_view.
-    ro_view = xco_cp_cds=>view( iv_name ).
-  ENDMETHOD.
-
-  METHOD get_view_entity.
-    ro_view_entity = xco_cp_cds=>view_entity( iv_name ).
-  ENDMETHOD.
 
   METHOD  get_aggregated_annotations.
     ro_aggregated_annotations = xco_cp_cds=>annotations->aggregated->of( io_field ).
   ENDMETHOD.
 
+
+  METHOD  get_behavior_definition.
+    ro_behavior_definition = xco_cp_abap_repository=>object->bdef->for( iv_name  ).
+  ENDMETHOD.
+
+
+  METHOD  get_class.
+    ro_class = xco_cp_abap_repository=>object->clas->for( iv_name  ).
+  ENDMETHOD.
+
+
+  METHOD  get_database_table.
+    ro_table = xco_cp_abap_repository=>object->tabl->database_table->for( iv_name  ).
+  ENDMETHOD.
+
+
+  METHOD  get_data_definition.
+    ro_data_definition = xco_cp_abap_repository=>object->ddls->for( iv_name  ).
+  ENDMETHOD.
+
+
+  METHOD get_entity.
+    ro_entity = xco_cp_cds=>view_entity( iv_name ).
+  ENDMETHOD.
+
+
+  METHOD  get_metadata_extension.
+    ro_metadata_extension  = xco_cp_abap_repository=>object->ddlx->for( iv_name  ).
+  ENDMETHOD.
+
+
+  METHOD  get_package.
+    ro_package = xco_cp_abap_repository=>object->devc->for( iv_name  ).
+  ENDMETHOD.
+
+
+  METHOD  get_service_binding.
+    ro_service_binding = xco_cp_abap_repository=>object->srvb->for( iv_name  ).
+  ENDMETHOD.
+
+
+  METHOD  get_service_definition.
+    ro_service_definition = xco_cp_abap_repository=>object->srvd->for( iv_name  ).
+  ENDMETHOD.
+
+
+  METHOD  get_structure.
+    ro_structure = xco_cp_abap_repository=>object->tabl->structure->for( iv_name  ).
+  ENDMETHOD.
+
+
+  METHOD get_view.
+    ro_view = xco_cp_cds=>view( iv_name ).
+  ENDMETHOD.
+
+
+  METHOD get_view_entity.
+    ro_view_entity = xco_cp_cds=>view_entity( iv_name ).
+  ENDMETHOD.
 ENDCLASS.

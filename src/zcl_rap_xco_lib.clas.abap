@@ -37,58 +37,70 @@ ENDCLASS.
 
 
 
-CLASS zcl_rap_xco_lib IMPLEMENTATION.
+CLASS ZCL_RAP_XCO_LIB IMPLEMENTATION.
 
-  METHOD get_behavior_definition.
-
-  ENDMETHOD.
-
-  METHOD get_class.
-
-  ENDMETHOD.
-
-  METHOD get_database_table.
-
-  ENDMETHOD.
-
-  METHOD get_data_definition.
-
-  ENDMETHOD.
-
-  METHOD get_metadata_extension.
-
-  ENDMETHOD.
-
-  METHOD get_package.
-
-  ENDMETHOD.
-
-  METHOD get_service_binding.
-
-  ENDMETHOD.
-
-  METHOD get_service_definition.
-
-  ENDMETHOD.
-
-  METHOD get_structure.
-
-  ENDMETHOD.
-
-  METHOD get_entity.
-
-  ENDMETHOD.
-
-  METHOD get_view.
-
-  ENDMETHOD.
-
-  METHOD get_view_entity.
-
-  ENDMETHOD.
 
   METHOD get_aggregated_annotations.
 
   ENDMETHOD.
 
+
+  METHOD get_behavior_definition.
+
+  ENDMETHOD.
+
+
+  METHOD get_class.
+
+  ENDMETHOD.
+
+
+  METHOD get_database_table.
+
+  ENDMETHOD.
+
+
+  METHOD get_data_definition.
+
+  ENDMETHOD.
+
+
+  METHOD get_entity.
+
+  ENDMETHOD.
+
+
+  METHOD get_metadata_extension.
+
+  ENDMETHOD.
+
+
+  METHOD get_package.
+
+  ENDMETHOD.
+
+
+  METHOD get_service_binding.
+
+  ENDMETHOD.
+
+
+  METHOD get_service_definition.
+
+  ENDMETHOD.
+
+
+  METHOD get_structure.
+
+  ENDMETHOD.
+
+
+  METHOD get_view.
+
+  ENDMETHOD.
+
+
+  METHOD get_view_entity.
+
+  ENDMETHOD.
 ENDCLASS.

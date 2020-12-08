@@ -59,6 +59,7 @@ CLASS zcl_rap_bo_generator DEFINITION
     DATA mo_put_operation  TYPE REF TO if_xco_cp_gen_d_o_put .
     DATA mo_srvb_put_operation TYPE REF TO if_xco_cp_gen_d_o_put .
 
+
 ********************************************************************************
 *    "onpremise
 *    DATA mo_environment           TYPE REF TO if_xco_gen_environment.
@@ -123,7 +124,7 @@ ENDCLASS.
 
 
 
-CLASS zcl_rap_bo_generator IMPLEMENTATION.
+CLASS ZCL_RAP_BO_GENERATOR IMPLEMENTATION.
 
 
   METHOD assign_package.
@@ -687,6 +688,57 @@ CLASS zcl_rap_bo_generator IMPLEMENTATION.
   ENDMETHOD.
 
 
+  METHOD create_bil.
+
+
+
+    DATA(lo_specification) = mo_put_operation->for-clas->add_object(  io_rap_bo_node->rap_node_objects-behavior_implementation
+                                  )->set_package( mo_package
+                                  )->create_form_specification( ).
+
+
+    lo_specification->set_short_description( 'Behavior implementation' ).
+
+    "to_upper( ) as workaround for 2011 and 2020, fix will be available with 2102
+    lo_specification->definition->set_abstract(
+      )->set_for_behavior_of( to_upper( io_rap_bo_node->rap_node_objects-cds_view_i ) ).
+
+    DATA(lo_handler) = lo_specification->add_local_class( 'LCL_HANDLER' ).
+    lo_handler->definition->set_superclass( 'CL_ABAP_BEHAVIOR_HANDLER' ).
+
+    "Method Edit is called implicitly (features:instance)
+    IF io_rap_bo_node->is_root(  ) = abap_true AND
+       io_rap_bo_node->get_implementation_type(  )  = zcl_rap_node=>implementation_type-managed_uuid AND
+       io_rap_bo_node->draft_enabled = abap_true.
+
+* generates the following code
+*        METHODS get_features FOR FEATURES
+*          IMPORTING keys REQUEST requested_features FOR Travel RESULT result.
+      " method get_features.
+      DATA(lo_get_features) = lo_handler->definition->section-private->add_method( 'get_features' ).
+      lo_get_features->behavior_implementation->set_result( iv_result = 'result' ).
+*      lo_get_features->behavior_implementation->set_for_instance_features( ).
+
+      DATA(lo_keys_get_features)  = lo_get_features->add_importing_parameter( iv_name = 'keys' ).
+      lo_keys_get_features->behavior_implementation->set_for( iv_for = io_rap_bo_node->entityname ).
+*      lo_keys_get_features->behavior_implementation->set_request( iv_request = 'requested_features' ).
+
+      lo_handler->implementation->add_method( 'get_features' ).
+    ENDIF.
+    "method determination
+    DATA(lv_determination_name) = |Calculate{ io_rap_bo_node->object_id_cds_field_name }| .
+
+    DATA(lo_det) = lo_handler->definition->section-private->add_method( CONV #( lv_determination_name ) ).
+*    lo_det->behavior_implementation->set_for_determine_on_save( ).
+
+    DATA(lo_keys_determination) = lo_det->add_importing_parameter( iv_name = 'keys' ).
+    lo_keys_determination->behavior_implementation->set_for( iv_for = | { io_rap_bo_node->entityname }~{ lv_determination_name } | ).
+
+    lo_handler->implementation->add_method( CONV #( lv_determination_name ) ).
+
+  ENDMETHOD.
+
+
   METHOD create_condition.
 
     DATA lo_expression TYPE REF TO if_xco_ddl_expr_condition.
@@ -726,6 +778,58 @@ CLASS zcl_rap_bo_generator IMPLEMENTATION.
       lo_specification->add_component( ls_header_fields-name
          )->set_type( xco_cp_abap_dictionary=>data_element( 'xsdboolean' ) ).
     ENDLOOP.
+
+  ENDMETHOD.
+
+
+  METHOD create_draft_table.
+
+    DATA(lo_specification) = mo_put_operation->for-tabl-for-database_table->add_object(  io_rap_bo_node->draft_table_name
+                                  )->set_package( mo_package
+                                  )->create_form_specification( ).
+
+    lo_specification->set_short_description( | Draft table for entity { io_rap_bo_node->rap_node_objects-cds_view_i } | ).
+
+    DATA database_table_field  TYPE REF TO if_xco_gen_tabl_dbt_s_fo_field  .
+
+    LOOP AT io_rap_bo_node->lt_fields INTO DATA(table_field_line).
+
+      DATA(cds_field_name_upper) = to_upper( table_field_line-cds_view_field ).
+
+      database_table_field = lo_specification->add_field( CONV #( cds_field_name_upper ) ).
+      IF table_field_line-is_data_element = abap_true.
+        database_table_field->set_type( xco_cp_abap_dictionary=>data_element( table_field_line-data_element ) ).
+      ENDIF.
+      IF table_field_line-is_built_in_type = abAP_TRUE.
+        database_table_field->set_type( xco_cp_abap_dictionary=>built_in_type->for(
+                                        iv_type     =  table_field_line-built_in_type
+                                        iv_length   = table_field_line-built_in_type_length
+                                        iv_decimals = table_field_line-built_in_type_decimals
+                                        ) ).
+      ENDIF.
+      IF table_field_line-key_indicator = abap_true.
+        database_table_field->set_key_indicator( ).
+      ENDIF.
+      IF table_field_line-not_null = abap_true.
+        database_table_field->set_not_null( ).
+      ENDIF.
+      IF table_field_line-currencycode IS NOT INITIAL.
+        DATA(currkey_dbt_field_upper) = to_upper( table_field_line-currencycode ).
+        "get the cds view field name of the currency or quantity filed
+        DATA(cds_view_ref_field_name) = io_rap_bo_node->lt_fields[ name = currkey_dbt_field_upper ]-cds_view_field .
+        database_table_field->currency_quantity->set_reference_table( CONV #( to_upper( io_rap_bo_node->draft_table_name ) ) )->set_reference_field( to_upper( cds_view_ref_field_name ) ).
+      ENDIF.
+      IF table_field_line-unitofmeasure IS NOT INITIAL.
+        DATA(quantity_dbt_field_upper) = to_upper( table_field_line-currencycode ).
+        cds_view_ref_field_name = io_rap_bo_node->lt_fields[ name = quantity_dbt_field_upper ]-cds_view_field .
+        database_table_field->currency_quantity->set_reference_table( CONV #( to_upper( io_rap_bo_node->draft_table_name ) ) )->set_reference_field( to_upper( cds_view_ref_field_name ) ).
+      ENDIF.
+    ENDLOOP.
+
+    " DATA(include_structure) = lo_specification->add_include( )->set_structure( iv_structure = CONV #( to_upper( 'sych_bdl_draft_admin_inc' ) ) )->set_group_name( to_upper( '%admin' ) ).
+
+*    DATA(include_structure) = lo_specification->add_include( )->set_structure( iv_structure = CONV #(  'sych_bdl_draft_admin_inc' )  )->set_group_name(  '%admin'  ).
+
 
   ENDMETHOD.
 
@@ -1518,7 +1622,12 @@ CLASS zcl_rap_bo_generator IMPLEMENTATION.
 
     "start to create all objects beside service binding
     "DATA(lo_result) = lo_objects_put_operation->execute( VALUE #( ( xco_cp_generation=>put_operation_option->skip_activation ) ) ).
-    DATA(lo_result) = mo_put_operation->execute( VALUE #( ( xco_cp_generation=>put_operation_option->skip_activation ) ) ).
+    IF mo_root_node_m_uuid->draft_enabled = abap_true.
+      DATA(lo_result) = mo_put_operation->execute( VALUE #( ( xco_cp_generation=>put_operation_option->skip_activation ) ) ).
+    ELSE.
+      lo_result = mo_put_operation->execute(  ).
+    ENDIF.
+
 
     DATA(lo_findings) = lo_result->findings.
     DATA(lt_findings) = lo_findings->get( ).
@@ -1533,7 +1642,13 @@ CLASS zcl_rap_bo_generator IMPLEMENTATION.
       ).
 
       "service binding needs a separate put operation
-      lo_result = mo_srvb_put_operation->execute( VALUE #( ( xco_cp_generation=>put_operation_option->skip_activation ) ) ).
+
+      IF mo_root_node_m_uuid->draft_enabled = abap_true.
+        lo_result = mo_srvb_put_operation->execute( VALUE #( ( xco_cp_generation=>put_operation_option->skip_activation ) ) ).
+      ELSE.
+        lo_result = mo_srvb_put_operation->execute(  ).
+      ENDIF.
+
 
       lo_findings = lo_result->findings.
       DATA(lt_srvb_findings) = lo_findings->get( ).
@@ -1566,106 +1681,4 @@ CLASS zcl_rap_bo_generator IMPLEMENTATION.
     ENDLOOP.
 
   ENDMETHOD.
-
-  METHOD create_bil.
-
-
-
-    DATA(lo_specification) = mo_put_operation->for-clas->add_object(  io_rap_bo_node->rap_node_objects-behavior_implementation
-                                  )->set_package( mo_package
-                                  )->create_form_specification( ).
-
-
-    lo_specification->set_short_description( 'Behavior implementation' ).
-
-    "to_upper( ) as workaround for 2011 and 2020, fix will be available with 2102
-    lo_specification->definition->set_abstract(
-      )->set_for_behavior_of( to_upper( io_rap_bo_node->rap_node_objects-cds_view_i ) ).
-
-    DATA(lo_handler) = lo_specification->add_local_class( 'LCL_HANDLER' ).
-    lo_handler->definition->set_superclass( 'CL_ABAP_BEHAVIOR_HANDLER' ).
-
-    "Method Edit is called implicitly (features:instance)
-    IF io_rap_bo_node->is_root(  ) = abap_true AND
-       io_rap_bo_node->get_implementation_type(  )  = zcl_rap_node=>implementation_type-managed_uuid AND
-       io_rap_bo_node->draft_enabled = abap_true.
-
-* generates the following code
-*        METHODS get_features FOR FEATURES
-*          IMPORTING keys REQUEST requested_features FOR Travel RESULT result.
-      " method get_features.
-      DATA(lo_get_features) = lo_handler->definition->section-private->add_method( 'get_features' ).
-      lo_get_features->behavior_implementation->set_result( iv_result = 'result' ).
-*      lo_get_features->behavior_implementation->set_for_instance_features( ).
-
-      DATA(lo_keys_get_features)  = lo_get_features->add_importing_parameter( iv_name = 'keys' ).
-      lo_keys_get_features->behavior_implementation->set_for( iv_for = io_rap_bo_node->entityname ).
-*      lo_keys_get_features->behavior_implementation->set_request( iv_request = 'requested_features' ).
-
-      lo_handler->implementation->add_method( 'get_features' ).
-    ENDIF.
-    "method determination
-    DATA(lv_determination_name) = |Calculate{ io_rap_bo_node->object_id_cds_field_name }| .
-
-    DATA(lo_det) = lo_handler->definition->section-private->add_method( CONV #( lv_determination_name ) ).
-*    lo_det->behavior_implementation->set_for_determine_on_save( ).
-
-    DATA(lo_keys_determination) = lo_det->add_importing_parameter( iv_name = 'keys' ).
-    lo_keys_determination->behavior_implementation->set_for( iv_for = | { io_rap_bo_node->entityname }~{ lv_determination_name } | ).
-
-    lo_handler->implementation->add_method( CONV #( lv_determination_name ) ).
-
-  ENDMETHOD.
-
-  METHOD create_draft_table.
-
-    DATA(lo_specification) = mo_put_operation->for-tabl-for-database_table->add_object(  io_rap_bo_node->draft_table_name
-                                  )->set_package( mo_package
-                                  )->create_form_specification( ).
-
-    lo_specification->set_short_description( | Draft table for entity { io_rap_bo_node->rap_node_objects-cds_view_i } | ).
-
-    DATA database_table_field  TYPE REF TO if_xco_gen_tabl_dbt_s_fo_field  .
-
-    LOOP AT io_rap_bo_node->lt_fields INTO DATA(table_field_line).
-
-      DATA(cds_field_name_upper) = to_upper( table_field_line-cds_view_field ).
-
-      database_table_field = lo_specification->add_field( CONV #( cds_field_name_upper ) ).
-      IF table_field_line-is_data_element = abap_true.
-        database_table_field->set_type( xco_cp_abap_dictionary=>data_element( table_field_line-data_element ) ).
-      ENDIF.
-      IF table_field_line-is_built_in_type = abAP_TRUE.
-        database_table_field->set_type( xco_cp_abap_dictionary=>built_in_type->for(
-                                        iv_type     =  table_field_line-built_in_type
-                                        iv_length   = table_field_line-built_in_type_length
-                                        iv_decimals = table_field_line-built_in_type_decimals
-                                        ) ).
-      ENDIF.
-      IF table_field_line-key_indicator = abap_true.
-        database_table_field->set_key_indicator( ).
-      ENDIF.
-      IF table_field_line-not_null = abap_true.
-        database_table_field->set_not_null( ).
-      ENDIF.
-      IF table_field_line-currencycode IS NOT INITIAL.
-        DATA(currkey_dbt_field_upper) = to_upper( table_field_line-currencycode ).
-        "get the cds view field name of the currency or quantity filed
-        DATA(cds_view_ref_field_name) = io_rap_bo_node->lt_fields[ name = currkey_dbt_field_upper ]-cds_view_field .
-        database_table_field->currency_quantity->set_reference_table( CONV #( to_upper( io_rap_bo_node->draft_table_name ) ) )->set_reference_field( to_upper( cds_view_ref_field_name ) ).
-      ENDIF.
-      IF table_field_line-unitofmeasure IS NOT INITIAL.
-        DATA(quantity_dbt_field_upper) = to_upper( table_field_line-currencycode ).
-        cds_view_ref_field_name = io_rap_bo_node->lt_fields[ name = quantity_dbt_field_upper ]-cds_view_field .
-        database_table_field->currency_quantity->set_reference_table( CONV #( to_upper( io_rap_bo_node->draft_table_name ) ) )->set_reference_field( to_upper( cds_view_ref_field_name ) ).
-      ENDIF.
-    ENDLOOP.
-
-    " DATA(include_structure) = lo_specification->add_include( )->set_structure( iv_structure = CONV #( to_upper( 'sych_bdl_draft_admin_inc' ) ) )->set_group_name( to_upper( '%admin' ) ).
-
-*    DATA(include_structure) = lo_specification->add_include( )->set_structure( iv_structure = CONV #(  'sych_bdl_draft_admin_inc' )  )->set_group_name(  '%admin'  ).
-
-
-  ENDMETHOD.
-
 ENDCLASS.

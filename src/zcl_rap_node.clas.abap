@@ -541,7 +541,48 @@ ENDCLASS.
 
 
 
-CLASS zcl_rap_node IMPLEMENTATION.
+CLASS ZCL_RAP_NODE IMPLEMENTATION.
+
+
+  METHOD set_control_structure_name.
+
+    DATA(lv_name) = |{ namespace }S{ prefix }{ entityname }_X{ suffix }|.
+
+    "four letter acronym for structures is normally 'TABL' but this is also used for tables.
+    "unfortunately tables in DDIC only allow names of length 16
+    "so using anther abbreviation
+
+    check_repository_object_name(
+      EXPORTING
+        iv_type = 'STRU'
+        iv_name = lv_name
+    ).
+
+    rap_node_objects-control_structure = lv_name.
+
+    rv_controle_structure_name = lv_name.
+
+  ENDMETHOD.
+
+
+  METHOD set_data_source.
+
+    CASE data_source_type.
+      WHEN data_source_types-table.
+        set_table( CONV sxco_ar_object_name( iv_data_source ) ).
+      WHEN data_source_types-cds_view.
+        set_cds_view( CONV sxco_cds_object_name( iv_data_source ) ).
+      WHEN OTHERS.
+        RAISE EXCEPTION TYPE zcx_rap_generator
+          EXPORTING
+            textid   = zcx_rap_generator=>invalid_data_source_type
+            mv_value = data_source_type.
+    ENDCASE.
+    data_source_name = iv_data_source .
+
+
+  ENDMETHOD.
+
 
   METHOD set_data_source_type.
 
@@ -616,6 +657,38 @@ CLASS zcl_rap_node IMPLEMENTATION.
   ENDMETHOD.
 
 
+  METHOD set_draft_enabled.
+    draft_enabled = iv_value.
+  ENDMETHOD.
+
+
+  METHOD set_draft_table.
+
+
+    DATA(lv_table) = to_upper( iv_draft_table ) .
+
+    check_repository_object_name(
+      EXPORTING
+         iv_type = 'TABL'
+         iv_name = lv_table
+     ).
+
+*    "check if table exists
+*    IF xco_lib->get_database_table(  CONV #( lv_table ) )->exists( ) = abap_false.
+*      APPEND | Table { lv_table } does not exist| TO lt_messages.
+*      bo_node_is_consistent = abap_false.
+*      RAISE EXCEPTION TYPE zcx_rap_generator
+*        EXPORTING
+*          textid   = zcx_rap_generator=>table_does_not_exist
+*          mv_value = CONV #( lv_table ).
+*    ENDIF.
+
+    draft_table_name =  iv_draft_table .
+
+
+  ENDMETHOD.
+
+
   METHOD set_entity_name.
 
     DATA lt_all_childnodes  TYPE STANDARD TABLE OF REF TO zcl_rap_node .
@@ -676,15 +749,6 @@ CLASS zcl_rap_node IMPLEMENTATION.
     field_name-last_changed_at = to_upper( iv_string ).
   ENDMETHOD.
 
-  METHOD set_field_name_loc_last_chg_at.
-    check_parameter(
-      EXPORTING
-        iv_parameter_name = 'field_name-local_last_changed_at'
-        iv_value          = iv_string
-    ).
-    field_name-local_instance_last_changed_at = to_upper( iv_string ).
-  ENDMETHOD.
-
 
   METHOD set_field_name_last_changed_by.
     check_parameter(
@@ -693,6 +757,16 @@ CLASS zcl_rap_node IMPLEMENTATION.
         iv_value          = iv_string
     ).
     field_name-last_changed_by = to_upper( iv_string ).
+  ENDMETHOD.
+
+
+  METHOD set_field_name_loc_last_chg_at.
+    check_parameter(
+      EXPORTING
+        iv_parameter_name = 'field_name-local_last_changed_at'
+        iv_value          = iv_string
+    ).
+    field_name-local_instance_last_changed_at = to_upper( iv_string ).
   ENDMETHOD.
 
 
@@ -939,6 +1013,27 @@ CLASS zcl_rap_node IMPLEMENTATION.
   ENDMETHOD.
 
 
+  METHOD set_persistent_table.
+
+    DATA(lv_table) = to_upper( iv_persistent_table ) .
+
+    "check if table exists
+    IF xco_lib->get_database_table(  CONV #( lv_table ) )->exists( ) = abap_false.
+      APPEND | Table { lv_table } does not exist| TO lt_messages.
+      bo_node_is_consistent = abap_false.
+      RAISE EXCEPTION TYPE zcx_rap_generator
+        EXPORTING
+          textid   = zcx_rap_generator=>table_does_not_exist
+          mv_value = CONV #( lv_table ).
+    ENDIF.
+
+    persistent_table_name =  iv_persistent_table .
+
+    get_fields_persistent_table(  ).
+
+  ENDMETHOD.
+
+
   METHOD set_prefix.
     check_parameter(
       EXPORTING
@@ -946,7 +1041,7 @@ CLASS zcl_rap_node IMPLEMENTATION.
          iv_value          = CONV #( iv_prefix )
       ).
     IF iv_prefix IS NOT INITIAL.
-      prefix = |{ iv_prefix }_| .
+      prefix = |{ iv_prefix }| .
     ELSE.
       prefix = iv_prefix.
     ENDIF.
@@ -956,7 +1051,6 @@ CLASS zcl_rap_node IMPLEMENTATION.
   METHOD set_publish_service.
     publish_service = iv_value.
   ENDMETHOD.
-
 
 
   METHOD set_root.
@@ -1121,7 +1215,7 @@ CLASS zcl_rap_node IMPLEMENTATION.
          iv_value          = CONV #( iv_suffix )
       ).
     IF iv_suffix IS NOT INITIAL.
-      suffix = |_{ iv_suffix }| .
+      suffix = |{ iv_suffix }| .
     ELSE.
       suffix = iv_suffix.
     ENDIF.
@@ -1168,6 +1262,57 @@ CLASS zcl_rap_node IMPLEMENTATION.
 
 
 
+  ENDMETHOD.
+
+
+  METHOD set_transport_request.
+
+    "if transport request is provided take this one
+    IF iv_transport_request IS NOT INITIAL.
+
+      DATA(transport_object) = xco_cp_cts=>transport->for( iv_transport_request ).
+
+      IF transport_object->exists(  ) AND
+         transport_object->get_status(  ) = xco_cp_transport=>filter->status( xco_cp_transport=>status->modifiable ).
+        transport_request = iv_transport_request.
+      ELSE.
+        RAISE EXCEPTION TYPE zcx_rap_generator
+          EXPORTING
+            textid   = zcx_rap_generator=>invalid_transport_request
+            mv_value = CONV #( iv_transport_request ).
+      ENDIF.
+
+      "check if there is a modifiable transport request for this developer and this package
+    ELSEIF me->package IS NOT INITIAL.
+
+      DATA(lo_user) = xco_cp=>sy->user( ).
+      DATA(lo_transport_target) = xco_cp_abap_repository=>package->for( me->package
+        )->read( )-property-transport_layer->get_transport_target( ).
+
+      DATA(lo_status_filter) = xco_cp_transport=>filter->status( xco_cp_transport=>status->modifiable ).
+      DATA(lo_owner_filter) = xco_cp_transport=>filter->owner( xco_cp_abap_sql=>constraint->equal( lo_user->name ) ).
+      DATA(lo_request_type_filter) = xco_cp_transport=>filter->request_type( xco_cp_transport=>type->workbench_request ).
+      DATA(lo_request_target_filter) = xco_cp_transport=>filter->request_target( xco_cp_abap_sql=>constraint->equal( lo_transport_target->value ) ).
+
+      DATA(lt_transports) = xco_cp_cts=>transports->where( VALUE #(
+        ( lo_status_filter )
+        ( lo_owner_filter )
+        ( lo_request_type_filter )
+        ( lo_request_target_filter )
+      ) )->resolve( xco_cp_transport=>resolution->request ).
+
+      IF lt_transports IS NOT INITIAL.
+        transport_request = lt_transports[ 1 ]->value.
+      ENDIF.
+
+    ENDIF.
+
+
+  ENDMETHOD.
+
+
+  METHOD set_xco_lib.
+    xco_lib = io_xco_lib.
   ENDMETHOD.
 
 
@@ -1642,6 +1787,25 @@ CLASS zcl_rap_node IMPLEMENTATION.
   ENDMETHOD.
 
 
+  METHOD add_valuehelp_for_curr_quan.
+    "add valuehelp for currency fields
+    LOOP AT lt_fields INTO DATA(fields).
+      IF fields-currencycode IS NOT INITIAL.
+        "add_valuehelp  will set the flag has_valuehelp to abap_true
+        IF lt_fields[ name = fields-currencycode ]-has_valuehelp = abap_false.
+          add_valuehelp(
+            EXPORTING
+              iv_alias              = 'Currency'
+              iv_name               = 'I_Currency'
+              iv_localelement       = lt_fields[ name = fields-currencycode ]-cds_view_field
+              iv_element            = 'Currency'
+          ).
+        ENDIF.
+      ENDIF.
+    ENDLOOP.
+  ENDMETHOD.
+
+
   METHOD check_parameter.
 
     "check if parameter is initial
@@ -1810,6 +1974,66 @@ CLASS zcl_rap_node IMPLEMENTATION.
   ENDMETHOD.
 
 
+  METHOD check_table_package_assignment.
+
+    "check if tables that shall be used
+    "and the package that has been provided
+    "reside in the same software component
+
+    " Get name of the software component of the package
+    "DATA(package_object) = xco_cp_abap_repository=>object->devc->for( package ).
+    DATA(package_object) = xco_lib->get_package( package ).
+
+    DATA(swc_name_package) = package_object->read( )-property-software_component->name.
+
+    "Compare with software components of tables
+    "check table of root node
+
+    "create object for table
+    "DATA(lo_database_table) = xco_cp_abap_dictionary=>database_table( root_node->table_name ).
+    DATA(lo_database_table) = xco_lib->get_database_table( root_node->table_name ).
+    " Get package.
+    DATA(package_of_db_table) = lo_database_table->if_xco_ar_object~get_package( )->read( ).
+    " Software component.
+    DATA(swc_name_db_table) = package_of_db_table-property-software_component->name.
+
+    IF swc_name_package <> swc_name_db_table.
+      IF NOT swc_name_db_table = '/DMO/SAP'  AND  swc_name_db_table = 'ZLOCAL'.
+        RAISE EXCEPTION TYPE zcx_rap_generator
+          EXPORTING
+            textid          = zcx_rap_generator=>software_comp_do_not_match
+            mv_table_name   = CONV #( root_node->table_name )
+            mv_package_name = CONV #( package ).
+      ENDIF.
+    ENDIF.
+
+    "check tables of child nodes
+
+    IF root_node->has_childs(  ).
+      LOOP AT root_node->all_childnodes INTO DATA(ls_childnode).
+
+        "lo_database_table = xco_cp_abap_dictionary=>database_table( ls_childnode->table_name ).
+        lo_database_table = xco_lib->get_database_table( ls_childnode->table_name ).
+
+        package_of_db_table = lo_database_table->if_xco_ar_object~get_package( )->read( ).
+        swc_name_db_table = package_of_db_table-property-software_component->name.
+        IF swc_name_package <> swc_name_db_table.
+          IF NOT swc_name_db_table = '/DMO/SAP'  AND  swc_name_db_table = 'ZLOCAL'.
+            RAISE EXCEPTION TYPE zcx_rap_generator
+              EXPORTING
+                textid          = zcx_rap_generator=>software_comp_do_not_match
+                mv_table_name   = CONV #( ls_childnode->table_name )
+                mv_package_name = CONV #( package ).
+          ENDIF.
+        ENDIF.
+      ENDLOOP.
+    ENDIF.
+
+
+
+  ENDMETHOD.
+
+
   METHOD constructor.
 
     bo_node_is_consistent = abap_true.
@@ -1858,6 +2082,7 @@ CLASS zcl_rap_node IMPLEMENTATION.
     ENDLOOP.
   ENDMETHOD.
 
+
   METHOD field_name_exists_in_db_table.
 *    rv_field_name_exists = abap_false.
 *    LOOP AT lt_fields INTO DATA(ls_field).
@@ -1871,6 +2096,7 @@ CLASS zcl_rap_node IMPLEMENTATION.
     rv_field_name_exists = boolc( line_exists( lt_fields[ name = lv_field_name_upper ] ) ).
 
   ENDMETHOD.
+
 
   METHOD finalize.
     "namespace must be set for root node
@@ -2069,6 +2295,20 @@ CLASS zcl_rap_node IMPLEMENTATION.
   ENDMETHOD.
 
 
+  METHOD get_fields_persistent_table.
+
+    DATA lt_components TYPE cl_abap_structdescr=>component_table .
+    DATA ls_fields TYPE ts_field.
+    DATA(lo_database_table) = xco_lib->get_database_table( CONV  sxco_dbt_object_name( persistent_table_name ) ).
+    DATA(lt_fields_from_xco) = lo_database_table->fields->all->get( ).
+    LOOP AT lt_fields_from_xco INTO DATA(ls_fields_from_xco).
+      ls_fields-name = ls_fields_from_xco->name.
+      APPEND ls_fields TO lt_fields_persistent_table.
+    ENDLOOP.
+
+  ENDMETHOD.
+
+
   METHOD get_implementation_type.
     rv_implementation_type = implementationtype.
   ENDMETHOD.
@@ -2165,6 +2405,137 @@ CLASS zcl_rap_node IMPLEMENTATION.
   ENDMETHOD.
 
 
+  METHOD read_database_table.
+
+    DATA table_fields  TYPE ts_field  .
+
+    DATA(ls_database_table) = io_database_table->content( )->get( ).
+
+    LOOP AT io_database_table->fields->all->get( ) INTO DATA(lo_field).
+      CLEAR table_fields.
+      DATA(lo_field_content) =  lo_field->content( ).
+      DATA(lo_field_content_type) = lo_field_content->get_type(  ).
+      DATA(ls_field) = lo_field_content->get( ).
+
+      table_fields-name = lo_field->name.
+      table_fields-cds_view_field = to_mixed( table_fields-name ).
+      table_fields-key_indicator = ls_field-key_indicator.
+      table_fields-not_null =  ls_field-not_null.
+      table_fields-is_data_element = lo_field_content_type->is_data_element( ).
+      table_fields-is_built_in_type = lo_field_content_type->is_built_in_type(  ).
+      IF table_fields-is_built_in_type = abap_true.
+        table_fields-built_in_type  = lo_field_content_type->get_built_in_type(  )->type.
+        table_fields-built_in_type_length = lo_field_content_type->get_built_in_type(  )->length.
+      ENDIF.
+      IF table_fields-name = 'CURRENCY_CODE'.
+        DATA(a) = 1.
+      ENDIF.
+      IF ls_field-type->is_data_element( ) EQ abap_true.
+        DATA(lo_data_element) = ls_field-type->get_data_element( ).
+
+        read_data_element(
+          EXPORTING
+            io_data_element = lo_data_element
+            is_fields       = table_fields
+          IMPORTING
+            es_fields       = table_fields
+        ).
+
+      ELSE.
+        IF ls_field-type->is_built_in_type(  ) = abap_true.
+          table_fields-built_in_type  = ls_field-type->get_built_in_type(  )->type.
+          table_fields-built_in_type_length = ls_field-type->get_built_in_type(  )->length.
+        ENDIF.
+      ENDIF.
+
+      DATA(currency_quantity) = ls_field-currency_quantity.
+
+      IF currency_quantity IS NOT INITIAL.
+        CASE table_fields-built_in_type.
+          WHEN 'CURR'.
+            table_fields-currencycode = ls_field-currency_quantity-reference_field.
+          WHEN 'QUAN'.
+            table_fields-unitofmeasure = ls_field-currency_quantity-reference_field.
+        ENDCASE.
+      ENDIF.
+
+      IF to_upper( right_string( iv_length = 2 iv_string = CONV #( table_fields-cds_view_field ) ) ) = 'ID'.
+        table_fields-cds_view_field = substring( val = table_fields-cds_view_field len = strlen( table_fields-cds_view_field ) - 2 ) && 'ID' .
+      ENDIF.
+
+      IF to_upper( right_string( iv_length = 4 iv_string = CONV #( table_fields-cds_view_field ) ) ) = 'UUID'.
+        table_fields-cds_view_field = substring( val = table_fields-cds_view_field len = strlen( table_fields-cds_view_field ) - 4 ) && 'UUID' .
+      ENDIF.
+
+      APPEND table_fields TO et_fields.
+
+    ENDLOOP.
+  ENDMETHOD.
+
+
+  METHOD read_data_element.
+
+    es_fields   = is_fields.
+    es_fields-data_element = io_data_element->name.
+
+    DATA(ls_data_element) = io_data_element->content( )->get( ).
+
+    "domain does not exist if
+    "a) a built in type such as CUKY is used
+    "b) if language version 5 is used and if the underlying domain is not c1-released.
+    "   In this case the check for existence will fail since the domain is not visible for the XCO_CP libraries
+
+    IF ls_data_element-data_type->is_domain( ) EQ abap_true.
+      DATA(lo_domain) = ls_data_element-data_type->get_domain( ).
+
+      IF lo_domain->exists(  ) = abap_true.
+
+        read_domain(
+          EXPORTING
+            io_domain = lo_domain
+            is_fields = es_fields
+          IMPORTING
+            es_fields =  es_fields
+        ).
+
+      ELSE.
+        "@todo:
+        "add code to call the methods
+        "if_xco_dtel_data_type~GET_UNDERLYING_BUILT_IN_TYPE
+        "if_xco_dtel_data_type~HAS_UNDERLYING_BUILT_IN_TYPE
+      ENDIF.
+    ELSE.
+      IF ls_data_element-data_type->is_built_in_type(  ) = abap_true.
+        es_fields-built_in_type  = ls_data_element-data_type->get_built_in_type(  )->type.
+        es_fields-built_in_type_length = ls_data_element-data_type->get_built_in_type(  )->length.
+      ENDIF.
+    ENDIF.
+  ENDMETHOD.
+
+
+  METHOD read_domain.
+
+    es_fields   = is_fields.
+    es_fields-doma = io_domain->name.
+    DATA(lo_read_state) = xco_cp_abap_dictionary=>object_read_state->active_version.
+
+    DATA(ls_domain) = io_domain->content( lo_read_state )->get( ).
+
+    DATA(domain_built_in_type) = ls_domain-format->get_built_in_type(  ).
+    IF domain_built_in_type IS NOT INITIAL.
+      es_fields-built_in_type = domain_built_in_type->type.
+      es_fields-built_in_type_length = domain_built_in_type->length.
+    ENDIF.
+
+    DATA(domain_fixed_values) = io_domain->fixed_values->all->get( lo_read_state ).
+
+    IF domain_fixed_values IS NOT INITIAL.
+      es_fields-domain_fixed_value = abap_true.
+    ENDIF.
+
+  ENDMETHOD.
+
+
   METHOD right_string.
     DATA(length_of_string) = strlen( iv_string ).
     IF length_of_string >= iv_length.
@@ -2249,59 +2620,19 @@ CLASS zcl_rap_node IMPLEMENTATION.
   ENDMETHOD.
 
 
-  METHOD set_cds_view_i_name.
-
-    DATA(lv_name) = |{ namespace }I_{ prefix }{ entityname }{ suffix }|.
-
-    check_repository_object_name(
-      EXPORTING
-        iv_type = 'DDLS'
-        iv_name = lv_name
-    ).
-
-    rap_node_objects-cds_view_i = lv_name.
-
-    rv_cds_i_view_name = lv_name.
-
+  METHOD set_binding_type.
+    IF iv_binding_type = binding_type_name-odata_v2_ui OR iv_binding_type = binding_type_name-odata_v4_ui
+    OR iv_binding_type = binding_type_name-odata_v2_web_api OR iv_binding_type = binding_type_name-odata_v4_web_api.
+      binding_type = iv_binding_type.
+    ELSE.
+      RAISE EXCEPTION TYPE zcx_rap_generator
+        EXPORTING
+          textid     = zcx_rap_generator=>invalid_binding_type
+          mv_value   = data_source_type
+          mv_value_2 = supported_binding_types.
+    ENDIF.
   ENDMETHOD.
 
-
-  METHOD set_cds_view_p_name.
-
-    DATA(lv_name) = |{ namespace }C_{ prefix }{ entityname }{ suffix }|.
-
-    check_repository_object_name(
-         EXPORTING
-           iv_type = 'DDLS'
-           iv_name = lv_name
-       ).
-
-    rap_node_objects-cds_view_p = lv_name.
-
-    rv_cds_p_view_name = lv_name.
-
-  ENDMETHOD.
-
-
-  METHOD set_control_structure_name.
-
-    DATA(lv_name) = |{ namespace }S{ prefix }{ entityname }_X{ suffix }|.
-
-    "four letter acronym for structures is normally 'TABL' but this is also used for tables.
-    "unfortunately tables in DDIC only allow names of length 16
-    "so using anther abbreviation
-
-    check_repository_object_name(
-      EXPORTING
-        iv_type = 'STRU'
-        iv_name = lv_name
-    ).
-
-    rap_node_objects-control_structure = lv_name.
-
-    rv_controle_structure_name = lv_name.
-
-  ENDMETHOD.
 
   METHOD set_cds_view.
 
@@ -2348,355 +2679,37 @@ CLASS zcl_rap_node IMPLEMENTATION.
 
   ENDMETHOD.
 
-  METHOD set_data_source.
 
-    CASE data_source_type.
-      WHEN data_source_types-table.
-        set_table( CONV sxco_ar_object_name( iv_data_source ) ).
-      WHEN data_source_types-cds_view.
-        set_cds_view( CONV sxco_cds_object_name( iv_data_source ) ).
-      WHEN OTHERS.
-        RAISE EXCEPTION TYPE zcx_rap_generator
-          EXPORTING
-            textid   = zcx_rap_generator=>invalid_data_source_type
-            mv_value = data_source_type.
-    ENDCASE.
-    data_source_name = iv_data_source .
+  METHOD set_cds_view_i_name.
 
-
-  ENDMETHOD.
-
-  METHOD set_persistent_table.
-
-    DATA(lv_table) = to_upper( iv_persistent_table ) .
-
-    "check if table exists
-    IF xco_lib->get_database_table(  CONV #( lv_table ) )->exists( ) = abap_false.
-      APPEND | Table { lv_table } does not exist| TO lt_messages.
-      bo_node_is_consistent = abap_false.
-      RAISE EXCEPTION TYPE zcx_rap_generator
-        EXPORTING
-          textid   = zcx_rap_generator=>table_does_not_exist
-          mv_value = CONV #( lv_table ).
-    ENDIF.
-
-    persistent_table_name =  iv_persistent_table .
-
-    get_fields_persistent_table(  ).
-
-  ENDMETHOD.
-
-  METHOD set_draft_table.
-
-
-    DATA(lv_table) = to_upper( iv_draft_table ) .
+    DATA(lv_name) = |{ namespace }I_{ prefix }{ entityname }{ suffix }|.
 
     check_repository_object_name(
       EXPORTING
-         iv_type = 'TABL'
-         iv_name = lv_table
-     ).
+        iv_type = 'DDLS'
+        iv_name = lv_name
+    ).
 
-*    "check if table exists
-*    IF xco_lib->get_database_table(  CONV #( lv_table ) )->exists( ) = abap_false.
-*      APPEND | Table { lv_table } does not exist| TO lt_messages.
-*      bo_node_is_consistent = abap_false.
-*      RAISE EXCEPTION TYPE zcx_rap_generator
-*        EXPORTING
-*          textid   = zcx_rap_generator=>table_does_not_exist
-*          mv_value = CONV #( lv_table ).
-*    ENDIF.
+    rap_node_objects-cds_view_i = lv_name.
 
-    draft_table_name =  iv_draft_table .
-
+    rv_cds_i_view_name = lv_name.
 
   ENDMETHOD.
 
 
-  METHOD get_fields_persistent_table.
+  METHOD set_cds_view_p_name.
 
-    DATA lt_components TYPE cl_abap_structdescr=>component_table .
-    DATA ls_fields TYPE ts_field.
-    DATA(lo_database_table) = xco_lib->get_database_table( CONV  sxco_dbt_object_name( persistent_table_name ) ).
-    DATA(lt_fields_from_xco) = lo_database_table->fields->all->get( ).
-    LOOP AT lt_fields_from_xco INTO DATA(ls_fields_from_xco).
-      ls_fields-name = ls_fields_from_xco->name.
-      APPEND ls_fields TO lt_fields_persistent_table.
-    ENDLOOP.
+    DATA(lv_name) = |{ namespace }C_{ prefix }{ entityname }{ suffix }|.
 
-  ENDMETHOD.
+    check_repository_object_name(
+         EXPORTING
+           iv_type = 'DDLS'
+           iv_name = lv_name
+       ).
 
-  METHOD set_xco_lib.
-    xco_lib = io_xco_lib.
-  ENDMETHOD.
+    rap_node_objects-cds_view_p = lv_name.
 
-  METHOD set_binding_type.
-    IF iv_binding_type = binding_type_name-odata_v2_ui OR iv_binding_type = binding_type_name-odata_v4_ui
-    OR iv_binding_type = binding_type_name-odata_v2_web_api OR iv_binding_type = binding_type_name-odata_v4_web_api.
-      binding_type = iv_binding_type.
-    ELSE.
-      RAISE EXCEPTION TYPE zcx_rap_generator
-        EXPORTING
-          textid     = zcx_rap_generator=>invalid_binding_type
-          mv_value   = data_source_type
-          mv_value_2 = supported_binding_types.
-    ENDIF.
-  ENDMETHOD.
-
-  METHOD set_transport_request.
-
-    "if transport request is provided take this one
-    IF iv_transport_request IS NOT INITIAL.
-
-      DATA(transport_object) = xco_cp_cts=>transport->for( iv_transport_request ).
-
-      IF transport_object->exists(  ) AND
-         transport_object->get_status(  ) = xco_cp_transport=>filter->status( xco_cp_transport=>status->modifiable ).
-        transport_request = iv_transport_request.
-      ELSE.
-        RAISE EXCEPTION TYPE zcx_rap_generator
-          EXPORTING
-            textid   = zcx_rap_generator=>invalid_transport_request
-            mv_value = CONV #( iv_transport_request ).
-      ENDIF.
-
-      "check if there is a modifiable transport request for this developer and this package
-    ELSEIF me->package IS NOT INITIAL.
-
-      DATA(lo_user) = xco_cp=>sy->user( ).
-      DATA(lo_transport_target) = xco_cp_abap_repository=>package->for( me->package
-        )->read( )-property-transport_layer->get_transport_target( ).
-
-      DATA(lo_status_filter) = xco_cp_transport=>filter->status( xco_cp_transport=>status->modifiable ).
-      DATA(lo_owner_filter) = xco_cp_transport=>filter->owner( xco_cp_abap_sql=>constraint->equal( lo_user->name ) ).
-      DATA(lo_request_type_filter) = xco_cp_transport=>filter->request_type( xco_cp_transport=>type->workbench_request ).
-      DATA(lo_request_target_filter) = xco_cp_transport=>filter->request_target( xco_cp_abap_sql=>constraint->equal( lo_transport_target->value ) ).
-
-      DATA(lt_transports) = xco_cp_cts=>transports->where( VALUE #(
-        ( lo_status_filter )
-        ( lo_owner_filter )
-        ( lo_request_type_filter )
-        ( lo_request_target_filter )
-      ) )->resolve( xco_cp_transport=>resolution->request ).
-
-      IF lt_transports IS NOT INITIAL.
-        transport_request = lt_transports[ 1 ]->value.
-      ENDIF.
-
-    ENDIF.
-
+    rv_cds_p_view_name = lv_name.
 
   ENDMETHOD.
-
-  METHOD set_draft_enabled.
-    draft_enabled = iv_value.
-  ENDMETHOD.
-
-  METHOD check_table_package_assignment.
-
-    "check if tables that shall be used
-    "and the package that has been provided
-    "reside in the same software component
-
-    " Get name of the software component of the package
-    "DATA(package_object) = xco_cp_abap_repository=>object->devc->for( package ).
-    DATA(package_object) = xco_lib->get_package( package ).
-
-    DATA(swc_name_package) = package_object->read( )-property-software_component->name.
-
-    "Compare with software components of tables
-    "check table of root node
-
-    "create object for table
-    "DATA(lo_database_table) = xco_cp_abap_dictionary=>database_table( root_node->table_name ).
-    DATA(lo_database_table) = xco_lib->get_database_table( root_node->table_name ).
-    " Get package.
-    DATA(package_of_db_table) = lo_database_table->if_xco_ar_object~get_package( )->read( ).
-    " Software component.
-    DATA(swc_name_db_table) = package_of_db_table-property-software_component->name.
-
-    IF swc_name_package <> swc_name_db_table.
-      IF NOT swc_name_db_table = '/DMO/SAP'  AND  swc_name_db_table = 'ZLOCAL'.
-        RAISE EXCEPTION TYPE zcx_rap_generator
-          EXPORTING
-            textid          = zcx_rap_generator=>software_comp_do_not_match
-            mv_table_name   = CONV #( root_node->table_name )
-            mv_package_name = CONV #( package ).
-      ENDIF.
-    ENDIF.
-
-    "check tables of child nodes
-
-    IF root_node->has_childs(  ).
-      LOOP AT root_node->all_childnodes INTO DATA(ls_childnode).
-
-        "lo_database_table = xco_cp_abap_dictionary=>database_table( ls_childnode->table_name ).
-        lo_database_table = xco_lib->get_database_table( ls_childnode->table_name ).
-
-        package_of_db_table = lo_database_table->if_xco_ar_object~get_package( )->read( ).
-        swc_name_db_table = package_of_db_table-property-software_component->name.
-        IF swc_name_package <> swc_name_db_table.
-          IF NOT swc_name_db_table = '/DMO/SAP'  AND  swc_name_db_table = 'ZLOCAL'.
-            RAISE EXCEPTION TYPE zcx_rap_generator
-              EXPORTING
-                textid          = zcx_rap_generator=>software_comp_do_not_match
-                mv_table_name   = CONV #( ls_childnode->table_name )
-                mv_package_name = CONV #( package ).
-          ENDIF.
-        ENDIF.
-      ENDLOOP.
-    ENDIF.
-
-
-
-  ENDMETHOD.
-
-  METHOD add_valuehelp_for_curr_quan.
-    "add valuehelp for currency fields
-    LOOP AT lt_fields INTO DATA(fields).
-      IF fields-currencycode IS NOT INITIAL.
-        "add_valuehelp  will set the flag has_valuehelp to abap_true
-        IF lt_fields[ name = fields-currencycode ]-has_valuehelp = abap_false.
-          add_valuehelp(
-            EXPORTING
-              iv_alias              = 'Currency'
-              iv_name               = 'I_Currency'
-              iv_localelement       = lt_fields[ name = fields-currencycode ]-cds_view_field
-              iv_element            = 'Currency'
-          ).
-        ENDIF.
-      ENDIF.
-    ENDLOOP.
-  ENDMETHOD.
-
-
-  METHOD read_database_table.
-
-    DATA table_fields  TYPE ts_field  .
-
-    DATA(ls_database_table) = io_database_table->content( )->get( ).
-
-    LOOP AT io_database_table->fields->all->get( ) INTO DATA(lo_field).
-      CLEAR table_fields.
-      DATA(lo_field_content) =  lo_field->content( ).
-      DATA(lo_field_content_type) = lo_field_content->get_type(  ).
-      DATA(ls_field) = lo_field_content->get( ).
-
-      table_fields-name = lo_field->name.
-      table_fields-cds_view_field = to_mixed( table_fields-name ).
-      table_fields-key_indicator = ls_field-key_indicator.
-      table_fields-not_null =  ls_field-not_null.
-      table_fields-is_data_element = lo_field_content_type->is_data_element( ).
-      table_fields-is_built_in_type = lo_field_content_type->is_built_in_type(  ).
-      IF table_fields-is_built_in_type = abap_true.
-        table_fields-built_in_type  = lo_field_content_type->get_built_in_type(  )->type.
-        table_fields-built_in_type_length = lo_field_content_type->get_built_in_type(  )->length.
-      ENDIF.
-      IF table_fields-name = 'CURRENCY_CODE'.
-        DATA(a) = 1.
-      ENDIF.
-      IF ls_field-type->is_data_element( ) EQ abap_true.
-        DATA(lo_data_element) = ls_field-type->get_data_element( ).
-
-        read_data_element(
-          EXPORTING
-            io_data_element = lo_data_element
-            is_fields       = table_fields
-          IMPORTING
-            es_fields       = table_fields
-        ).
-
-      ELSE.
-        IF ls_field-type->is_built_in_type(  ) = abap_true.
-          table_fields-built_in_type  = ls_field-type->get_built_in_type(  )->type.
-          table_fields-built_in_type_length = ls_field-type->get_built_in_type(  )->length.
-        ENDIF.
-      ENDIF.
-
-      DATA(currency_quantity) = ls_field-currency_quantity.
-
-      IF currency_quantity IS NOT INITIAL.
-        CASE table_fields-built_in_type.
-          WHEN 'CURR'.
-            table_fields-currencycode = ls_field-currency_quantity-reference_field.
-          WHEN 'QUAN'.
-            table_fields-unitofmeasure = ls_field-currency_quantity-reference_field.
-        ENDCASE.
-      ENDIF.
-
-      IF to_upper( right_string( iv_length = 2 iv_string = CONV #( table_fields-cds_view_field ) ) ) = 'ID'.
-        table_fields-cds_view_field = substring( val = table_fields-cds_view_field len = strlen( table_fields-cds_view_field ) - 2 ) && 'ID' .
-      ENDIF.
-
-      IF to_upper( right_string( iv_length = 4 iv_string = CONV #( table_fields-cds_view_field ) ) ) = 'UUID'.
-        table_fields-cds_view_field = substring( val = table_fields-cds_view_field len = strlen( table_fields-cds_view_field ) - 4 ) && 'UUID' .
-      ENDIF.
-
-      APPEND table_fields TO et_fields.
-
-    ENDLOOP.
-  ENDMETHOD.
-
-  METHOD read_data_element.
-
-    es_fields   = is_fields.
-    es_fields-data_element = io_data_element->name.
-
-    DATA(ls_data_element) = io_data_element->content( )->get( ).
-
-    "domain does not exist if
-    "a) a built in type such as CUKY is used
-    "b) if language version 5 is used and if the underlying domain is not c1-released.
-    "   In this case the check for existence will fail since the domain is not visible for the XCO_CP libraries
-
-    IF ls_data_element-data_type->is_domain( ) EQ abap_true.
-      DATA(lo_domain) = ls_data_element-data_type->get_domain( ).
-
-      IF lo_domain->exists(  ) = abap_true.
-
-        read_domain(
-          EXPORTING
-            io_domain = lo_domain
-            is_fields = es_fields
-          IMPORTING
-            es_fields =  es_fields
-        ).
-
-      ELSE.
-        "@todo:
-        "add code to call the methods
-        "if_xco_dtel_data_type~GET_UNDERLYING_BUILT_IN_TYPE
-        "if_xco_dtel_data_type~HAS_UNDERLYING_BUILT_IN_TYPE
-      ENDIF.
-    ELSE.
-      IF ls_data_element-data_type->is_built_in_type(  ) = abap_true.
-        es_fields-built_in_type  = ls_data_element-data_type->get_built_in_type(  )->type.
-        es_fields-built_in_type_length = ls_data_element-data_type->get_built_in_type(  )->length.
-      ENDIF.
-    ENDIF.
-  ENDMETHOD.
-
-  METHOD read_domain.
-
-    es_fields   = is_fields.
-    es_fields-doma = io_domain->name.
-    DATA(lo_read_state) = xco_cp_abap_dictionary=>object_read_state->active_version.
-
-    DATA(ls_domain) = io_domain->content( lo_read_state )->get( ).
-
-    DATA(domain_built_in_type) = ls_domain-format->get_built_in_type(  ).
-    IF domain_built_in_type IS NOT INITIAL.
-      es_fields-built_in_type = domain_built_in_type->type.
-      es_fields-built_in_type_length = domain_built_in_type->length.
-    ENDIF.
-
-    DATA(domain_fixed_values) = io_domain->fixed_values->all->get( lo_read_state ).
-
-    IF domain_fixed_values IS NOT INITIAL.
-      es_fields-domain_fixed_value = abap_true.
-    ENDIF.
-
-  ENDMETHOD.
-
-
 ENDCLASS.

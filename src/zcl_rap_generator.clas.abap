@@ -16,83 +16,7 @@ ENDCLASS.
 
 
 
-CLASS zcl_rap_generator IMPLEMENTATION.
-
-  METHOD if_http_service_extension~handle_request.
-
-    DATA text_line TYPE string.
-    DATA text_table TYPE TABLE OF string.
-
-    CASE request->get_method(  ).
-
-      WHEN CONV string( if_web_http_client=>get ).
-
-        response->set_text( get_html(   ) ).
-
-      WHEN CONV string( if_web_http_client=>post ).
-        TRY.
-* the request comes in with metadata around the actual file data,
-* extract the filename and fileext from this metadata as well as the raw file data.
-            SPLIT request->get_text(  )  AT cl_abap_char_utilities=>cr_lf INTO TABLE DATA(content).
-            READ TABLE content REFERENCE INTO DATA(content_item) INDEX 2.
-            IF sy-subrc = 0.
-
-              SPLIT content_item->* AT ';' INTO TABLE DATA(content_dis).
-              READ TABLE content_dis REFERENCE INTO DATA(content_dis_item) INDEX 3.
-              IF sy-subrc = 0.
-                SPLIT content_dis_item->* AT '=' INTO DATA(fn) filename.
-                REPLACE ALL OCCURRENCES OF `"` IN filename WITH space.
-                CONDENSE filename NO-GAPS.
-                SPLIT filename AT '.' INTO filename fileext.
-              ENDIF.
-
-            ENDIF.
-
-
-            DELETE content FROM 1 TO 4.  " Get rid of the first 4 lines
-
-            CLEAR json_string.
-            CLEAR text_table.
-
-            LOOP AT content REFERENCE INTO content_item.  " put it all back together again humpdy dumpdy....
-              text_line = content_item->*.
-              FIND 'WebKitFormBoundary' IN text_line. " get rid of the last lines
-              IF sy-subrc = 0.
-                EXIT .
-              ENDIF.
-              APPEND text_line TO text_table. "add text to a table that it is easier to check when debugging than a long string.
-              json_string = json_string && text_line.
-            ENDLOOP.
-
-            DATA(xco_api) = NEW zcl_rap_xco_cloud_lib( ).
-            "DATA(xco_api) = NEW zcl_rap_xco_on_prem_lib(  ).
-
-            DATA(root_node) = NEW zcl_rap_node(  ).
-            root_node->set_is_root_node( ).
-            root_node->set_xco_lib( xco_api ).
-
-            DATA(rap_bo_visitor) = NEW zcl_rap_xco_json_visitor( root_node ).
-            DATA(json_data) = xco_cp_json=>data->from_string( json_string ).
-            json_data->traverse( rap_bo_visitor ).
-
-            DATA(rap_bo_generator) = NEW zcl_rap_bo_generator( root_node ).
-            DATA(lt_todos) = rap_bo_generator->generate_bo(  ).
-
-            response->set_status( i_code = if_web_http_status=>ok
-                                  i_reason = | RAP BO { root_node->rap_root_node_objects-behavior_definition_i  } generated successfully | ).
-            response->set_text( | RAP BO { root_node->rap_root_node_objects-behavior_definition_i  } generated successfully | ).
-
-          CATCH cx_root INTO DATA(lx_root).
-            response->set_status( i_code = if_web_http_status=>bad_request
-                                  i_reason = cl_message_helper=>get_latest_t100_exception( lx_root )->if_message~get_text( ) ).
-            response->set_text( cl_message_helper=>get_latest_t100_exception( lx_root )->if_message~get_text( )  ).
-            RETURN.
-        ENDTRY.
-
-    ENDCASE.
-
-  ENDMETHOD.
-
+CLASS ZCL_RAP_GENERATOR IMPLEMENTATION.
 
 
   METHOD get_html.
@@ -173,4 +97,78 @@ CLASS zcl_rap_generator IMPLEMENTATION.
   ENDMETHOD.
 
 
+  METHOD if_http_service_extension~handle_request.
+
+    DATA text_line TYPE string.
+    DATA text_table TYPE TABLE OF string.
+
+    CASE request->get_method(  ).
+
+      WHEN CONV string( if_web_http_client=>get ).
+
+        response->set_text( get_html(   ) ).
+
+      WHEN CONV string( if_web_http_client=>post ).
+        TRY.
+* the request comes in with metadata around the actual file data,
+* extract the filename and fileext from this metadata as well as the raw file data.
+            SPLIT request->get_text(  )  AT cl_abap_char_utilities=>cr_lf INTO TABLE DATA(content).
+            READ TABLE content REFERENCE INTO DATA(content_item) INDEX 2.
+            IF sy-subrc = 0.
+
+              SPLIT content_item->* AT ';' INTO TABLE DATA(content_dis).
+              READ TABLE content_dis REFERENCE INTO DATA(content_dis_item) INDEX 3.
+              IF sy-subrc = 0.
+                SPLIT content_dis_item->* AT '=' INTO DATA(fn) filename.
+                REPLACE ALL OCCURRENCES OF `"` IN filename WITH space.
+                CONDENSE filename NO-GAPS.
+                SPLIT filename AT '.' INTO filename fileext.
+              ENDIF.
+
+            ENDIF.
+
+
+            DELETE content FROM 1 TO 4.  " Get rid of the first 4 lines
+
+            CLEAR json_string.
+            CLEAR text_table.
+
+            LOOP AT content REFERENCE INTO content_item.  " put it all back together again humpdy dumpdy....
+              text_line = content_item->*.
+              FIND 'WebKitFormBoundary' IN text_line. " get rid of the last lines
+              IF sy-subrc = 0.
+                EXIT .
+              ENDIF.
+              APPEND text_line TO text_table. "add text to a table that it is easier to check when debugging than a long string.
+              json_string = json_string && text_line.
+            ENDLOOP.
+
+            DATA(xco_api) = NEW zcl_rap_xco_cloud_lib( ).
+            "DATA(xco_api) = NEW zcl_rap_xco_on_prem_lib(  ).
+
+            DATA(root_node) = NEW zcl_rap_node(  ).
+            root_node->set_is_root_node( ).
+            root_node->set_xco_lib( xco_api ).
+
+            DATA(rap_bo_visitor) = NEW zcl_rap_xco_json_visitor( root_node ).
+            DATA(json_data) = xco_cp_json=>data->from_string( json_string ).
+            json_data->traverse( rap_bo_visitor ).
+
+            DATA(rap_bo_generator) = NEW zcl_rap_bo_generator( root_node ).
+            DATA(lt_todos) = rap_bo_generator->generate_bo(  ).
+
+            response->set_status( i_code = if_web_http_status=>ok
+                                  i_reason = | RAP BO { root_node->rap_root_node_objects-behavior_definition_i  } generated successfully | ).
+            response->set_text( | RAP BO { root_node->rap_root_node_objects-behavior_definition_i  } generated successfully | ).
+
+          CATCH cx_root INTO DATA(lx_root).
+            response->set_status( i_code = if_web_http_status=>bad_request
+                                  i_reason = cl_message_helper=>get_latest_t100_exception( lx_root )->if_message~get_text( ) ).
+            response->set_text( cl_message_helper=>get_latest_t100_exception( lx_root )->if_message~get_text( )  ).
+            RETURN.
+        ENDTRY.
+
+    ENDCASE.
+
+  ENDMETHOD.
 ENDCLASS.

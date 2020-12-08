@@ -59,8 +59,12 @@ ENDCLASS.
 
 
 
-CLASS zcl_rap_xco_json_visitor IMPLEMENTATION.
+CLASS ZCL_RAP_XCO_JSON_VISITOR IMPLEMENTATION.
 
+
+  METHOD constructor.
+    root_node = io_root_node.
+  ENDMETHOD.
 
 
   METHOD if_xco_json_tree_visitor~enter_array.
@@ -491,9 +495,4 @@ CLASS zcl_rap_xco_json_visitor IMPLEMENTATION.
     ENDIF.
 
   ENDMETHOD.
-
-  METHOD constructor.
-    root_node = io_root_node.
-  ENDMETHOD.
-
 ENDCLASS.

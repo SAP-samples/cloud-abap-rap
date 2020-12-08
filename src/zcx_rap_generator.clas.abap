@@ -418,7 +418,7 @@ ENDCLASS.
 
 
 
-CLASS zcx_rap_generator IMPLEMENTATION.
+CLASS ZCX_RAP_GENERATOR IMPLEMENTATION.
 
 
   METHOD class_constructor.
