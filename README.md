@@ -181,7 +181,7 @@ To specify another binding type you have to specify it in the JSON configuration
   ...
 </pre>
 
-#### "draftenabled"
+### "draftenabled"
 
 The generator now supports the generation of a draft enabled RAP business objects.
 It can be set as follows:
@@ -193,6 +193,23 @@ It can be set as follows:
  When setting this value to **true** you also have to specify the name of draft tables for all nodes using the parameter **"drafttable""** for each node member.
  
  <pre>
+{
+  "implementationType": "managed_uuid",
+  "namespace": "Z",
+  "suffix": "_####",
+  "prefix": "",
+  "package": "Z_TEST_####",
+  "datasourcetype": "table",
+  <b>"draftenabled": true,</b>
+  "bindingtype": "odata_v4_ui",
+  "hierarchy": {
+    "entityName": "SalesOrder",
+    "dataSource": "ZFET_SO_{ unique_number }",
+    <b>"drafttable": "ZFET_D_SO_{ unique_number }",</b>
+    "objectId": "sales_order",
+    "uuid": "sales_order_uuid",
+
+ 
  "hierarchy": {
     "entityName": "SalesOrder",
     "dataSource": "Z_SO_####",
