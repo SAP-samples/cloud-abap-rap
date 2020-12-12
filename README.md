@@ -155,6 +155,55 @@ key booking_supplement_id : /dmo/booking_supplement_id not null;
 
 When the implementation type **managed_semantic** is chosen, the generator will generate a business object that uses a managed implementation that requires external numbering whereas **unmanaged_semantic** will generate a business object that uses an unmanaged implementation.
 
+### "bindingtype"
+
+The generator now supports the generation of services of all four binding types that are available as of 2011.
+
+- odata_v4_ui  
+- odata_v2_ui  
+- odata_v4_web_api   
+- odata_v2_web_api   
+
+If no binding type is specified in the JSON file the binding type **OData V4 UI** is used.
+
+To specify another binding type you have to specify it in the JSON configuration file as follows
+
+<pre>
+{
+  "implementationType": "managed_uuid",
+  "namespace": "Z",
+  "suffix": "_####",
+  "prefix": "",
+  "package": "Z_TEST_####",
+  "datasourcetype": "table",
+  "draftenabled": true,
+  <b>"bindingtype": "odata_v4_ui",</b>
+  ...
+</pre>
+
+#### "draftenabled"
+
+The generator now supports the generation of a draft enabled RAP business objects.
+It can be set as follows:
+<pre>
+ "draftenabled": true
+</pre>
+ The default value is **false**.
+ 
+ When setting this value to **true** you also have to specify the name of draft tables for all nodes using the parameter **"drafttable""** for each node member.
+ 
+ <pre>
+ "hierarchy": {
+    "entityName": "SalesOrder",
+    "dataSource": "Z_SO_####",
+    <b>"drafttable": "Z_D_SO_####",</b>
+    "objectId": "sales_order",
+    "uuid": "sales_order_uuid",
+
+ </pre>
+ 
+ 
+
 #### “namespace”
 Here you have to specify the namespace of the repository objects. This would typically be the value “Z” or your own namespace if you have registered one.
 
