@@ -204,14 +204,6 @@ It can be set as follows:
   "bindingtype": "odata_v4_ui",
   "hierarchy": {
     "entityName": "SalesOrder",
-    "dataSource": "ZFET_SO_{ unique_number }",
-    <b>"drafttable": "ZFET_D_SO_{ unique_number }",</b>
-    "objectId": "sales_order",
-    "uuid": "sales_order_uuid",
-
- 
- "hierarchy": {
-    "entityName": "SalesOrder",
     "dataSource": "Z_SO_####",
     <b>"drafttable": "Z_D_SO_####",</b>
     "objectId": "sales_order",
@@ -219,7 +211,11 @@ It can be set as follows:
 
  </pre>
  
- 
+> **Please note**
+> Since it is not possible yet to generate the draft tables using the XCO framework (because the draft tables must contain a specific structure) all repository objects of a draft enabled service are generated **inactive**.
+> After the generation of a draft enabled service took place you first have to opend the behavior definition. Here you have to use the quick fix **Ctrö+1** in order to start the generation of the draft table.  
+> It is planned to have the draft table generated as of 2102.  
+> For on premise systems I plan that the generator will use native API's as a workaorund to add the draft table include structure to your draft tables. 
 
 #### “namespace”
 Here you have to specify the namespace of the repository objects. This would typically be the value “Z” or your own namespace if you have registered one.
