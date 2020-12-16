@@ -296,13 +296,14 @@ you have to specify these field names in the definition of the node by providing
 ...
 </pre>
 
-#### "lastChangedAt",  "lastChangedBy",  "createdAt" and  "createdBy" 
+#### "lastChangedAt",  "lastChangedBy",  "createdAt", "createdBy" and "localInstanceLastChangedAt"
 In a managed scenario it is required that the root entity provides fields to store administrative data when an entity was created and changed and by whom these actions have been performed.
 Again the generator assumes some default values for these field names, namely:
 - “last_changed_at",
 - "last_changed_by",
 - "created_at" and
-- "created_by"
+- "created_by" and
+- "local_instance_last_changed_at"
 <br>
 If the tables that you are using do not follow this naming convention it is possible to tell the generator about the actual field names by setting these optional properties.
 
