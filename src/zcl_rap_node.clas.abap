@@ -1403,7 +1403,7 @@ CLASS ZCL_RAP_NODE IMPLEMENTATION.
 
         numberOfRecords = lines( result_parent_uuid ).
 
-        IF numberOfRecords = 1 AND  result_parent_uuid[ 1 ]-doma = 'SYSUUID_X16'.
+        IF numberOfRecords = 1 AND  result_parent_uuid[ 1 ]-data_element = 'SYSUUID_X16'.
           " that's ok
         ELSEIF numberOfRecords = 1 AND
            ( result_parent_uuid[ 1 ]-built_in_type_length <> uuid_length OR result_parent_uuid[ 1 ]-built_in_type <> uuid_type ).
@@ -1428,7 +1428,7 @@ CLASS ZCL_RAP_NODE IMPLEMENTATION.
 
         numberOfRecords = lines( result_root_uuid ).
 
-        IF numberOfRecords = 1 AND  result_root_uuid[ 1 ]-doma = 'SYSUUID_X16'.
+        IF numberOfRecords = 1 AND  result_root_uuid[ 1 ]-data_element = 'SYSUUID_X16'.
           " that's ok
         ELSEIF numberOfRecords = 1 AND
            ( result_root_uuid[ 1 ]-built_in_type_length <> uuid_length OR result_root_uuid[ 1 ]-built_in_type <> uuid_type ).
