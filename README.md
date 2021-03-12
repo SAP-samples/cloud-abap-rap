@@ -1,9 +1,20 @@
-[![REUSE status](https://api.reuse.software/badge/github.com/SAP-samples/cloud-abap-rap)](https://api.reuse.software/info/github.com/SAP-samples/cloud-abap-rap)
-
 # Description
 
 This repository contains sample code that helps you to create boiler plate coding for the ABAP RESTful Application Programming Model (RAP) in SAP Cloud Platform, ABAP environment.
 
+## What's new with 2102
+
+- all objects of a draft enabled V4 service are can now be generated and be activated
+- draft enabled V4 services can be automatically registered for the Manage Business Configuration App
+- calling the RAP Generator as an API was made more simple. It simply boils down to three lines of code
+  <pre>
+     DATA(json_string) = '<your json string>'.
+     DATA(rap_generator) = NEW /dmo/cl_rap_generator( json_string ).
+     DATA(todos) = rap_generator->generate_bo(  ).
+  </pre>
+- You can now specify a transport request that shall be used
+
+  
 ## Motivation
 
 The basic idea behind the *RAP Generator* is to make it easier for the developer to create the complete stack of objects that are needed to implement a RAP business object. The goal is to generate most of the boiler plate coding so that the developer can start more quickly to implement the business logic.
@@ -16,42 +27,84 @@ For brownfield scenarios where existing business logic does exist to create, upd
 As a second data source the RAP generator now also supports CDS views. This way it will be possible to create RAP business objects based on existing CDS views.  
 
 To make the use of the tool as easy as possible the input that is needed by the generator can be provided as a JSON file.
-A simple sample of such a JSON file that would generate a managed business object based on the two tables ZRAP_TRAVEL_DEMO and ZRAP_BOOK_DEMO would look like follows.
+A simple sample of such a JSON file that would generate a managed business object based on the two tables /dmo/a_travel_d and /dmo/a_booking_d would look like follows.
 
 <pre>
 {
   "implementationType": "managed_uuid",
   "namespace": "Z",
   "suffix": "_####",
-  "prefix": "RAP",
+  "prefix": "RAP_",
   "package": "ZRAP_####",
   "datasourcetype": "table",
+  "bindingtype": "odata_v4_ui",
+  "draftenabled": true,  
   "hierarchy": {
-    "entityName": "Travel",
-    "dataSource": "zrap_travel_demo",
-    "objectId": "travel_id",    
+    "entityName": "SalesOrder",
+    "dataSource": "/dmo/a_travel_d",
+    "drafttable": "zdtravel_d_####",
+    "objectId": "travel_id",
+    "uuid": "travel_uuid",
+    "lastChangedAt": "last_changed_at",
+    "lastChangedBy": "local_last_changed_by",
+    "createdAt": "local_created_at",
+    "createdBy": "local_created_by",
+    "localInstanceLastChangedAt": "local_last_changed_at",
     "children": [
       {
         "entityName": "Booking",
-        "dataSource": "zrap_book_demo",
-        "objectId": "booking_id"               
+        "dataSource": "/dmo/a_booking_d",
+        "drafttable": "zdbook_d_####",
+        "objectId": "booking_id",
+        "uuid": "booking_uuid",
+        "parentUuid": "parent_uuid",
+        "localInstanceLastChangedAt": "local_last_changed_at"
       }
     ]
   }
 }
 </pre>
 
-## How to use the RAP Generator (short version)
+## How to use the RAP Generator (in the trial systems)
+
+The package /DMO/RAP_Generator has been imported to all trial systems for your convenience.
 
 This is a short description how the RAP Generator can be used.
-1. Download this repository into a package e.g. ZRAP_Generator. (in a trial system it might be that somebody else has already downloaded the package) 
-2. Duplicate the class zcl_rap_generator.
-3. Make sure you have set the following option "Wrap and escape text when pasting into string literal" for your ABAP source code editor in your ADT preferences as described in my blog [How to wrap long strings automatically in ADT](https://blogs.sap.com/2020/07/29/how-to-wrap-long-strings-automatically-in-adt/)
-4. Copy one of the json strings for the different scenarios, that you can find in the folder [json_templates](../../tree/master/json_templates)
+1. Make sure you have set the following option "Wrap and escape text when pasting into string literal" for your ABAP source code editor in your ADT preferences as described in my blog [How to wrap long strings automatically in ADT](https://blogs.sap.com/2020/07/29/how-to-wrap-long-strings-automatically-in-adt/)
+2. Create an class **zcl_rap_generator_console_####** in your package using the following code as a template:
+<pre>
+CLASS zcl_rap_generator_console_#### DEFINITION
+  PUBLIC
+  INHERITING FROM cl_xco_cp_adt_simple_classrun
+  FINAL
+  CREATE PUBLIC .
+  PUBLIC SECTION.
+  PROTECTED SECTION.
+    METHODS main REDEFINITION.
+  PRIVATE SECTION.
+ENDCLASS.
+
+CLASS ZCL_RAP_GENERATOR_CONSOLE_#### IMPLEMENTATION.
+  METHOD main.
+    DATA(json_string) = ''.
+    DATA(rap_generator) = NEW /dmo/cl_rap_generator( json_string ).
+    DATA(todos) = rap_generator->generate_bo(  ).
+    DATA(rap_bo_name) = rap_generator->root_node->rap_root_node_objects-service_binding.
+    out->write( |RAP BO { rap_bo_name }  generated successfully| ).
+    out->write( |Todo's:| ).
+    LOOP AT todos INTO DATA(todo).
+      out->write( todo ).
+    ENDLOOP.
+  ENDMETHOD.
+ENDCLASS.
+</pre>
+4. Copy the json string shown above or one of the json strings for the different scenarios, that you can find in the folder [json_templates](../../tree/master/json_templates)
    between the two single quotes
    <pre>DATA(json_string) = <b>''</b>.</pre>
 5. Replace the hastags <b>####</b> that are used as a placeholder by appropriate strings so that they fit to the name of your package and the suffix that you want to use.  
 6. Run the class using F9
+
+
 
 The class inherits from the class **cl_xco_cp_adt_simple_classrun** which is provided by the XCO framework. This class will catch all exceptions that are thrown by the RAP Generator and it will show the call stack as you are used to it by ADT.
 
@@ -120,10 +173,9 @@ Let’s start with the explanation of the (mandatory) properties of the business
 #### "implementationType" 
 The generator currently supports three implementation types
 -	managed_uuid
--	managed_semantic
--	unmanaged_semantic
+-	managed_semantic_key
+-	unmanaged_semantic_key
 
-##### managed_uuid
 If the implementation type **managed_uuid** is used, the generator will generate a managed business object that uses internal numbering. It is thus required that the key fields of the nodes and therefore also the key fields of the underlying tables are of type raw(16) (UUID). 
 
 <pre>
@@ -131,8 +183,7 @@ key client      : abap.clnt not null;
 key uuid        : sysuuid_x16 not null;
 </pre>
 
-##### managed_semantic or unmanaged_semantic
-If one of the scenarios **managed_semantic** or **unmanaged_semantic** is used, the generator expects that there is a hierarchy of tables where the header table always contains all key fields of the item table.
+If one of the scenarios **managed_semantic_key** or **unmanaged_semantic_key** is used, the generator expects that there is a hierarchy of tables where the header table always contains all key fields of the item table.
 
 - Travel
 <pre>
@@ -153,70 +204,7 @@ key booking_id            : /dmo/booking_id not null;
 key booking_supplement_id : /dmo/booking_supplement_id not null;
 </pre>
 
-When the implementation type **managed_semantic** is chosen, the generator will generate a business object that uses a managed implementation that requires external numbering whereas **unmanaged_semantic** will generate a business object that uses an unmanaged implementation.
-
-### "bindingtype"
-
-The generator now supports the generation of services of all four binding types that are available as of 2011.
-
-- odata_v4_ui  
-- odata_v2_ui  
-- odata_v4_web_api   
-- odata_v2_web_api   
-
-If no binding type is specified in the JSON file the binding type **OData V4 UI** is used.
-
-To specify another binding type you have to specify it in the JSON configuration file as follows
-
-<pre>
-{
-  "implementationType": "managed_uuid",
-  "namespace": "Z",
-  "suffix": "_####",
-  "prefix": "",
-  "package": "Z_TEST_####",
-  "datasourcetype": "table",
-  "draftenabled": true,
-  <b>"bindingtype": "odata_v4_ui",</b>
-  ...
-</pre>
-
-### "draftenabled"
-
-The generator now supports the generation of a draft enabled RAP business objects.
-It can be set as follows:
-<pre>
- "draftenabled": true
-</pre>
- The default value is **false**.
- 
- When setting this value to **true** you also have to specify the name of draft tables for all nodes using the parameter **"drafttable""** for each node member.
- 
- <pre>
-{
-  "implementationType": "managed_uuid",
-  "namespace": "Z",
-  "suffix": "_####",
-  "prefix": "",
-  "package": "Z_TEST_####",
-  "datasourcetype": "table",
-  <b>"draftenabled": true,</b>
-  "bindingtype": "odata_v4_ui",
-  "hierarchy": {
-    "entityName": "SalesOrder",
-    "dataSource": "Z_SO_####",
-    <b>"drafttable": "Z_D_SO_####",</b>
-    "objectId": "sales_order",
-    "uuid": "sales_order_uuid",
-
- </pre>
- 
-> **Please note**
-> Since it is not possible yet to generate the draft tables using the XCO framework (because the draft tables must contain a specific structure) all repository objects of a draft enabled service are generated **inactive**.
-> After the generation of a draft enabled service took place you first have to opend the behavior definition. Here you have to use the quick fix **Ctrö+1** in order to start the generation of the draft table.  
-> It is planned to have the draft table generated as of 2102.  
-> For on premise systems I plan that the generator will use native API's as a workaorund to add the draft table include structure to your draft tables. 
-
+When the implementation type **managed_semantic_key** is chosen, the generator will generate a business object that uses a managed implementation that requires external numbering whereas **unmanaged_semantic_key** will generate a business object that uses an unmanaged implementation.
 #### “namespace”
 Here you have to specify the namespace of the repository objects. This would typically be the value “Z” or your own namespace if you have registered one.
 
@@ -229,6 +217,20 @@ Please note that when starting from tables the generator will be able to also ge
 - table
 - cds_view
 
+### Optional parameters of the root node
+
+#### ""draftenabled"
+
+Using the boolean parameter **draftenabled** you can specify that the generated RAP object supports draft. 
+
+Please note that for a draft enabled scenario you have to specifiy the names of the draft tables for each node of the compostion tree.
+
+#### "transportrequest"
+
+You can now provide the name of a transport request that shall be used for all objects that are being generated. If no transport request is specified the RAP Generator will first search for any modifiable transport that fits to the transport layer of the package which belongs to the developer.
+
+If not such transport is found a new transport request is being created.
+
 #### “suffix” and “prefix”
 These are optional parameters that can be used to tweak the names of the repository objects.
 
@@ -237,8 +239,8 @@ For example the name of a CDS interface view would be generated from the above m
 `DATA(lv_name) = |{ namespace }I_{ prefix }{ entityname }{ suffix }|.`
 The name of the entity which is part of the repository object name is set by the property **“entityName”** on node level (see below).
 
-### Properties of node objects
-For each node object you have to specify the following mandatory properties
+### Mandatory properties of node objects
+For each node object must specify the following mandatory properties
 
 #### “entityName”
 Here you have to specify the name of your entity (e.g. “Travel” or “Booking”). The name of the entity becomes part of the names of the repository objects that will be generated and it is used as the name of associations (e.g. "_Travel").
@@ -296,39 +298,45 @@ you have to specify these field names in the definition of the node by providing
 ...
 </pre>
 
-#### "lastChangedAt",  "lastChangedBy",  "createdAt", "createdBy" and "localInstanceLastChangedAt"
+#### "lastChangedAt",  "lastChangedBy",  "createdAt" and  "createdBy" 
 In a managed scenario it is required that the root entity provides fields to store administrative data when an entity was created and changed and by whom these actions have been performed.
 Again the generator assumes some default values for these field names, namely:
 - “last_changed_at",
 - "last_changed_by",
 - "created_at" and
-- "created_by" and
-- "local_instance_last_changed_at"
+- "created_by"
 <br>
 If the tables that you are using do not follow this naming convention it is possible to tell the generator about the actual field names by setting these optional properties.
 
-### Optional parameters that can be used for workshop or for templates
+A good example is the table which is used in the Flight reference draft scenario where we need the following mapping
+
+<pre>
+    "lastChangedAt": "last_changed_at",
+    "lastChangedBy": "local_last_changed_by",
+    "createdAt": "local_created_at",
+    "createdBy": "local_created_by",
+    "localInstanceLastChangedAt": "local_last_changed_at",
+</pre>
+
+### Optional parameters for node
+
+#### drafttable
+
+When you specify that a RAP business object shall support draft using the parameter **"draftenabled" : true** you have to specifiy the name of the draft table that is being generated for each node using the following syntax
+
+<pre>
+"drafttable": "zd_book_0000",
+</pre>
+
+## Optional parameters for the node objects 
 
 The follwoing parameters have been implemented so that it is possible to create RAP business objects including a mapping (if CDS views are used as a data source) and including assocations and value helps.
 
-When using these parameters the json files will become more complicated. As a result the use of these parameters is not recommended if you want to develop a single RAP object.
+This is usefull if identical objects shall be created for trainings.
 
-They will be used in workshops such as TechEd sessions, CodeJams or OpenSAP courses where there is the need to provide participants with complete RAP business objects as a starting point.
-
-#### transactionalbehavior and publishservice
-
-The following parameters have been implemented so that workshop participants should be able to start just with working *read-only* project and can then continue with publishing the service and/or with adding the *transactional* behavior.
-
-##### transactionalbehavior
-
-If <pre> "transactionalbehavior" : false </pre> is set no behavior definition is created.
-
-##### publishservice
-
-If <pre> "publishservice" : false </pre> is set no service definition and no service binding is created.
+When using this parameters the json files will become more complicated. As a result the use of these parameters is not recommended if you want to develop a single RAP object. They will be used in workshops such as TechEd sessions, CodeJams or OpenSAP courses where there is the need to provide participants with complete RAP business objects as a starting point.
 
 #### mapping
-
 Using this parameter you can provide the mapping between the field names of the CDS view and the field names used by the legacy business logic if CDS views are used as a data source.
 When using tables as data sources this mapping is generated by the generator.
 When CDS views are used as a data source such a mapping has be created manually by the developer if it has not been set.
@@ -402,7 +410,6 @@ When CDS views are used as a data source such a mapping has be created manually 
 </pre>
 
 #### “associations” and “valuehelps”
-
 On node level it is also possible to set information to generate valuehelps and associations.
 These properties have been introduced mainly for setups in courses where one would like to be able that participants can generate a business object that contain exactly those associations and value help definitions that are required for the course.
 Though it might also be useful for other scenarios as well, you see that the complexity of your JSON file will grow and it might be simpler to code this manually in the CDS views that are generated by the RAP generator.
@@ -541,14 +548,74 @@ In order to generate a value help as mentioned above the following entry would h
 
 </pre>
 
+#### objectswithadditionalfields
+
+When using the RAP Generator in workshops it turned out that CDS views should also contain fields that are not part of the underlying data source such as fields that are retrieved via an association.
+
+<pre>
+_Customer.LastName as CustomerName,
+</pre>
+
+If additional fields are added this has to be done at various locations namely
+
+- cds_interface_view
+- cds_projection_view
+- draft_table
+
+One has to specifiy the field name, the alias and optionally the key word *localized*.
+
+So the JSON file must contain an array **objectswithadditionalfields**. 
+For each object type an additional array called "additionalfields" has to be filled that contains the additional fields for each object.
+
+Please note that the field names for additional fields in the draft table must match the field name (or the alias name) of the field in the interface view.
+
+<pre>
+
+ "objectswithadditionalfields": [
+      {
+        "object": "cds_projection_view",
+        "additionalfields": [
+          {
+            "fieldname": "_HolidayTxt.HolidayDescription",
+            "alias": "HolidayDescription",
+            "localized": true
+          },
+          {
+            "fieldname": "_DeprecationText.ConfignDeprecationCodeName",
+            "alias": "DeprecationDescription",
+            "localized": true
+          },
+          {
+            "fieldname": "Criticality",
+            "alias": "Criticality"
+          }
+        ]
+      },
+      {
+        "object": "cds_interface_view",
+        "additionalfields": [
+          {
+            "fieldname": "case overall_status when ' ' then 2  when 'N' then 2  when 'I' then 0   when 'P' then 0   when 'D' then 3   when 'X' then 1   else 0    end",
+            "alias": "Criticality"
+          }
+        ]
+      },
+      {
+        "object": "draft_table",
+        "additionalfields": [
+          {
+            "fieldname": "Criticality",
+            "builtintype": "int1"
+          }
+        ]
+      }
+    ],
+
+</pre>
+
 # Requirements
 
-This sample code does work in 
-
-- SAP Cloud Platform, ABAP Environment where the XCO framework has been enabled as of version 2008.
-- SAP S/4HANA 2020
-
-The RAP Generator can not be used in an SAP S/4HANA 1909 system since the XCO libraries are not available in this on premise release. It would however be possible to generate an unmanged RAP business object in one of the supported platforms mentioned above and transport the generated repository objects via abapGit into your 1909 on premise system.
+This sample code does currently only work in SAP Cloud Platform, ABAP Environment where the XCO framework has been enabled as of version 2008.
 
 Make sure you have set the following option "Wrap and escape text when pasting into string literal" for your ABAP source code editor in your ADT preferences as described in my blog [How to wrap long strings automatically in ADT](https://blogs.sap.com/2020/07/29/how-to-wrap-long-strings-automatically-in-adt/)
 
@@ -557,18 +624,14 @@ https://blogs.sap.com/2020/05/17/the-rap-generator
 
 # Download and Installation
 
-## SAP Cloud Platform ABAP Environment
-
 The sample code can simply be downloaded using the abapGIT plugin in ABAP Development Tools in Eclipse when working with SAP Cloud Platform, ABAP Environment.
 For this you have to create a package in the Z-namespace (for example ZRAP_GENERATOR) and link it as an abapGit repository.
-
-## SAP S/4HANA 2020
-
-The sample code can be imported into an on premise system using the abapGit report https://docs.abapgit.org/ .
 
 # Known Issues
 
 The sample code is provided "as-is".
+
+The current version of the RAP Generator can unfortunately currently be used in the trial systems, since a few new API's of the XCO framework have not been released in the trial systems yet. It is planned to enable them with an upcoming hot fix collection.
 
 # How to obtain support
 If you have problems or questions you can [post them in the SAP Community](https://answers.sap.com/questions/ask.html) using either the primary tag "[SAP Cloud Platform, ABAP environment](https://answers.sap.com/tags/73555000100800001164)" or "[ABAP RESTful Application Programming Model](https://answers.sap.com/tags/7e44126e-7b27-471d-a379-df205a12b1ff)".
@@ -577,4 +640,4 @@ If you have problems or questions you can [post them in the SAP Community](https
 This project is only updated by SAP employees.
 
 # License
-Copyright (c) 2020 SAP SE or an SAP affiliate company. All rights reserved. This project is licensed under the Apache Software License, version 2.0 except as noted otherwise in the [LICENSE](LICENSES/Apache-2.0.txt) file.
+Copyright (c) 2020 SAP SE or an SAP affiliate company. All rights reserved. This file is licensed under the Apache Software License, version 2.0 except as noted otherwise in the [LICENSE](LICENSE) file.
