@@ -4,7 +4,7 @@ This repository contains sample code that helps you to create boiler plate codin
 
 ## What's new with 2102
 
-- all objects of a draft enabled V4 service are can now be generated and be activated
+- all objects of a draft enabled V4 service are can now be generated and be activated. The RAP Generator generates the draft tables for you.
 - draft enabled V4 services can be automatically registered for the Manage Business Configuration App
 - calling the RAP Generator as an API was made more simple. It simply boils down to three lines of code
   <pre>
@@ -19,7 +19,7 @@ This repository contains sample code that helps you to create boiler plate codin
 
 The basic idea behind the *RAP Generator* is to make it easier for the developer to create the complete stack of objects that are needed to implement a RAP business object. The goal is to generate most of the boiler plate coding so that the developer can start more quickly to implement the business logic.
 
-The first data source which is supported are tables. When creating new tables for green field scenarios the use of tables with uuid based keys is recommended, so that a managed scenario can be used where no code needs to be implemented for the CRUD operations and earyl numbering can be used. 
+The first data source which is supported are tables. When creating new tables for green field scenarios the use of tables with uuid based keys is recommended, so that a managed scenario where no code needs to be implemented for the CRUD operations and early numbering can be used. 
 The only thing that is left for the developer is to implement determinations, validations and actions. 
 
 For brownfield scenarios where existing business logic does exist to create, update and delete business data an unmanaged scenario can be generated.
@@ -86,7 +86,7 @@ ENDCLASS.
 
 CLASS ZCL_RAP_GENERATOR_CONSOLE_#### IMPLEMENTATION.
   METHOD main.
-    DATA(json_string) = ''.
+    DATA(json_string) = '{ "AddYourJsonFileHere" : true }'.
     DATA(rap_generator) = NEW /dmo/cl_rap_generator( json_string ).
     DATA(todos) = rap_generator->generate_bo(  ).
     DATA(rap_bo_name) = rap_generator->root_node->rap_root_node_objects-service_binding.
@@ -205,13 +205,17 @@ key booking_supplement_id : /dmo/booking_supplement_id not null;
 </pre>
 
 When the implementation type **managed_semantic_key** is chosen, the generator will generate a business object that uses a managed implementation that requires external numbering whereas **unmanaged_semantic_key** will generate a business object that uses an unmanaged implementation.
+
 #### “namespace”
+
 Here you have to specify the namespace of the repository objects. This would typically be the value “Z” or your own namespace if you have registered one.
 
 #### "package"
+
 With the parameter “package” you have to provide the name of a package where all repository objects of your RAP business object will be generated in.
 
-#### "datasourcetype"
+#### "datasourceType"
+
 The generator supports tables and CDS views as a data source.
 Please note that when starting from tables the generator will be able to also generate a mapping whereas a mapping has to be created manually by the developer when starting with CDS views as data sources. You have to provide one of the following values here:
 - table
@@ -254,6 +258,7 @@ The name of the data source is the name of the underlying table or the name of t
 With **objectId** we denote a semantic key field that is part of the data source (table or cds view). 
 In our travel/booking scenario this would be the field **travel_id** for the Travel entity and **booking_id** for the Booking entity if the data source are tables and it would be **travelid** and **bookingid** if the CDS views of flight demo scenario are used.
 For managed scenarios the generator will generate a determination for each objectid.
+
 You also have to specify an **objectid** for semantic scenarios.
 
 #### “uuid”, “parent_uuid”, “root_uuid”
@@ -298,13 +303,15 @@ you have to specify these field names in the definition of the node by providing
 ...
 </pre>
 
-#### "lastChangedAt",  "lastChangedBy",  "createdAt" and  "createdBy" 
+#### "lastChangedAt",  "lastChangedBy",  "createdAt", "createdBy", "localInstanceLastChangedAt" and "localInstanceLastChangedBy"
 In a managed scenario it is required that the root entity provides fields to store administrative data when an entity was created and changed and by whom these actions have been performed.
 Again the generator assumes some default values for these field names, namely:
 - “last_changed_at",
-- "last_changed_by",
-- "created_at" and
-- "created_by"
+- "last_changed_by,
+- "created_at",
+- "created_by" and
+- "local_last_changed_at"
+- "local_last_changed_by"
 <br>
 If the tables that you are using do not follow this naming convention it is possible to tell the generator about the actual field names by setting these optional properties.
 
@@ -318,6 +325,12 @@ A good example is the table which is used in the Flight reference draft scenario
     "localInstanceLastChangedAt": "local_last_changed_at",
 </pre>
 
+Please note:
+Technically mandatory are only the fields 
+last_changed_at (used as the total etag)
+local_last_changed_at (used as the etag for the respective node)
+However it is a good practise to add all the fields at root node level and at least the timestamps at sub node level.
+
 ### Optional parameters for node
 
 #### drafttable
@@ -328,11 +341,11 @@ When you specify that a RAP business object shall support draft using the parame
 "drafttable": "zd_book_0000",
 </pre>
 
-## Optional parameters for the node objects 
+## Optional parameters for workshop scenarios 
 
 The follwoing parameters have been implemented so that it is possible to create RAP business objects including a mapping (if CDS views are used as a data source) and including assocations and value helps.
 
-This is usefull if identical objects shall be created for trainings.
+This is usefull if identical objects shall be created for trainings or workshops.
 
 When using this parameters the json files will become more complicated. As a result the use of these parameters is not recommended if you want to develop a single RAP object. They will be used in workshops such as TechEd sessions, CodeJams or OpenSAP courses where there is the need to provide participants with complete RAP business objects as a starting point.
 
@@ -564,8 +577,9 @@ If additional fields are added this has to be done at various locations namely
 
 One has to specifiy the field name, the alias and optionally the key word *localized*.
 
-So the JSON file must contain an array **objectswithadditionalfields**. 
-For each object type an additional array called "additionalfields" has to be filled that contains the additional fields for each object.
+So the JSON file must contain an array **objectswithadditionalfields**.
+
+For each object type an additional array called **additionalfields** has to be filled that contains the additional fields for each object.
 
 Please note that the field names for additional fields in the draft table must match the field name (or the alias name) of the field in the interface view.
 
