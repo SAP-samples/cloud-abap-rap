@@ -223,13 +223,17 @@ Please note that when starting from tables the generator will be able to also ge
 
 ### Optional parameters of the root node
 
-#### ""draftenabled"
+#### "draftenabled"
+
+<pre> "draftenabled" : true </pre>
 
 Using the boolean parameter **draftenabled** you can specify that the generated RAP object supports draft. 
 
 Please note that for a draft enabled scenario you have to specifiy the names of the draft tables for each node of the compostion tree.
 
 #### "transportrequest"
+
+<pre> "transportrequest" : "SIDK900075" </pre>
 
 You can now provide the name of a transport request that shall be used for all objects that are being generated. If no transport request is specified the RAP Generator will first search for any modifiable transport that fits to the transport layer of the package which belongs to the developer.
 
@@ -242,6 +246,24 @@ The naming convention used by the generator follows the naming conventions props
 For example the name of a CDS interface view would be generated from the above mentioned properties as follows:
 `DATA(lv_name) = |{ namespace }I_{ prefix }{ entityname }{ suffix }|.`
 The name of the entity which is part of the repository object name is set by the property **“entityName”** on node level (see below).
+
+#### addToManageBusinessConfiguration
+
+<pre>"addToManageBusinessConfiguration" : true</pre>
+
+When setting the boolean parameter addToManageBusinessConfiguration to true the RAP Generator will try to register your OData V4 draft enabled service binding so that it can be used useing the Fiori App *Maintain Business Configurations*.
+
+if not being told otherwiese the RAP Generator will try to use some default values for the *Name*, the *Identifier* and the *Description* to register your service binding in the Manage Business Configuration App. The *Name* and the *Description* can be changed afterwards using an API while the *Identifier* as a key field cannot be changed afterwards.
+
+IF you want to overule the settings chosen by the RAP Generator you can set the following values:
+
+<pre>
+       "manageBusinessConfigurationName" : "My MBC name",
+       manageBusinessConfigurationIdentifier : "ZMY_MBC_IDENTIFIER",
+       manageBusinessConfigurationDescription : "My MBC Description",
+</pre>       
+       
+
 
 ### Mandatory properties of node objects
 For each node object must specify the following mandatory properties
@@ -341,23 +363,7 @@ When you specify that a RAP business object shall support draft using the parame
 "drafttable": "zd_book_0000",
 </pre>
 
-#### addToManageBusinessConfiguration
-
-<pre>"addToManageBusinessConfiguration" : true</pre>
-
-When setting the boolean parameter addToManageBusinessConfiguration to true the RAP Generator will try to register your OData V4 draft enabled service binding so that it can be used useing the Fiori App *Maintain Business Configurations*.
-
-if not being told otherwiese the RAP Generator will try to use some default values for the *Name*, the *Identifier* and the *Description* to register your service binding in the Manage Business Configuration App. The *Name* and the *Description* can be changed afterwards using an API while the *Identifier* as a key field cannot be changed afterwards.
-
-IF you want to overule the settings chosen by the RAP Generator you can set the following values:
-
-<pre>
-       "manageBusinessConfigurationName" : "My MBC name",
-       manageBusinessConfigurationIdentifier : "ZMY_MBC_IDENTIFIER",
-       manageBusinessConfigurationDescription : "My MBC Description",
-</pre>       
-       
-##### 
+ 
 
 ## Optional parameters for workshop scenarios 
 
@@ -647,7 +653,9 @@ Please note that the field names for additional fields in the draft table must m
 
 # Requirements
 
-This sample code does currently only work in SAP Cloud Platform, ABAP Environment where the XCO framework has been enabled as of version 2008.
+This sample code does currently only work 
+  a) in SAP Cloud Platform, ABAP Environment where the XCO framework has been enabled and
+  b) in SAP S/4HANA on premise systems as of version 2020 FPS1 (because OData V4 is only supported as of FPS1)
 
 Make sure you have set the following option "Wrap and escape text when pasting into string literal" for your ABAP source code editor in your ADT preferences as described in my blog [How to wrap long strings automatically in ADT](https://blogs.sap.com/2020/07/29/how-to-wrap-long-strings-automatically-in-adt/)
 
