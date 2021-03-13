@@ -341,6 +341,24 @@ When you specify that a RAP business object shall support draft using the parame
 "drafttable": "zd_book_0000",
 </pre>
 
+#### addToManageBusinessConfiguration
+
+<pre>"addToManageBusinessConfiguration" : true</pre>
+
+When setting the boolean parameter addToManageBusinessConfiguration to true the RAP Generator will try to register your OData V4 draft enabled service binding so that it can be used useing the Fiori App *Maintain Business Configurations*.
+
+if not being told otherwiese the RAP Generator will try to use some default values for the *Name*, the *Identifier* and the *Description* to register your service binding in the Manage Business Configuration App. The *Name* and the *Description* can be changed afterwards using an API while the *Identifier* as a key field cannot be changed afterwards.
+
+IF you want to overule the settings chosen by the RAP Generator you can set the following values:
+
+<pre>
+       "manageBusinessConfigurationName" : "My MBC name",
+       manageBusinessConfigurationIdentifier : "ZMY_MBC_IDENTIFIER",
+       manageBusinessConfigurationDescription : "My MBC Description",
+</pre>       
+       
+##### 
+
 ## Optional parameters for workshop scenarios 
 
 The follwoing parameters have been implemented so that it is possible to create RAP business objects including a mapping (if CDS views are used as a data source) and including assocations and value helps.
