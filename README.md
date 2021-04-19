@@ -13,6 +13,8 @@ This repository contains sample code that helps you to create boiler plate codin
      DATA(todos) = rap_generator->generate_bo(  ).
   </pre>
 - You can now specify a transport request that shall be used
+- You can register your OData V4, draft enabled service for the use with the Maintain Business Configuration App
+- You can add support for the write transport API
 
   
 ## Motivation
