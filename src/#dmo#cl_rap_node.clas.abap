@@ -60,6 +60,7 @@ CLASS /dmo/cl_rap_node DEFINITION
       uuid_type               TYPE cl_xco_ad_built_in_type=>tv_type   VALUE 'RAW',
       uuid_length             TYPE cl_xco_ad_built_in_type=>tv_length  VALUE 16.
 
+
     .
 
 
@@ -1127,12 +1128,17 @@ CLASS /dmo/cl_rap_node IMPLEMENTATION.
 
   METHOD set_package.
 
-    check_parameter(
-            EXPORTING
-              iv_parameter_name = 'package'
-              iv_value          = CONV #( iv_package )
-          ).
+*    check_parameter(
+*            EXPORTING
+*              iv_parameter_name = 'package'
+*              iv_value          = CONV #( iv_package )
+*          ).
 
+*    check_repository_object_name(
+*       EXPORTING
+*         iv_type = 'DEVC'
+*         iv_name = CONV #( iv_package )
+*     ).
 
     IF xco_lib->get_package( iv_package )->exists(  ) AND iv_package IS NOT INITIAL.
       package = iv_package.
@@ -1425,8 +1431,10 @@ CLASS /dmo/cl_rap_node IMPLEMENTATION.
   METHOD set_transport_request.
 
     "set_transport request is also called at end of set_package( )
-    "this way a suitable transport request based on package provided and user is selected
-    "if nevertheless a transport request is set externally this will overrule the automatic selection
+    "this method will try to reuse any suitable modifialble transport that already exists for that package and that
+    "is owned by the developer
+    "If nevertheless a transport request is set externally this will overrule the automatic selection
+    "If no transport can be found a new transport will be generated
 
     IF me->package IS NOT INITIAL.
       IF xco_lib->get_package( me->package  )->read( )-property-record_object_changes = abap_false AND iv_transport_request IS NOT INITIAL.
@@ -1491,8 +1499,15 @@ CLASS /dmo/cl_rap_node IMPLEMENTATION.
           ( lo_request_target_filter )
         ) )->resolve( xco_cp_transport=>resolution->request ).
 
+        "similar logic as in ADT. Select the first suitable transport request
+        "and only if no modifiable transport request for the transport target can be found
+        "create a new transport request for the transport target
+
         IF lt_transports IS NOT INITIAL.
           transport_request = lt_transports[ 1 ]->value.
+        ELSE.
+          DATA(new_transport_object) = xco_cp_cts=>transports->workbench( lo_transport_target->value  )->create_request( |RAP Business object - entity name: { me->root_node->entityname } | ).
+          transport_request = new_transport_object->value.
         ENDIF.
 
       ENDIF.
@@ -1926,6 +1941,38 @@ CLASS /dmo/cl_rap_node IMPLEMENTATION.
 
     ENDIF.
 
+    IF me->root_node->publish_service = abap_true
+       AND me->root_node->skip_activation = abap_true.
+      RAISE EXCEPTION TYPE /dmo/cx_rap_generator
+        EXPORTING
+          textid = /dmo/cx_rap_generator=>publish_needs_active_srvd
+       .
+
+          .
+    ENDIF.
+
+    "validate settings for customizing table and mbc app
+
+    if is_customizing_table = abap_true and is_grand_child_or_deeper(  ).
+    "&1 Grandchild nodes are not supported for &2 = &3.
+    RAISE EXCEPTION TYPE /dmo/cx_rap_generator
+        EXPORTING
+          textid = /dmo/cx_rap_generator=>grand_child_not_supported
+          mv_entity = entityname
+          mv_value = 'iscustomizingtable'
+          mv_value_2 = 'abap_true'.
+
+    endif.
+
+    if manage_business_configuration = abap_true and  is_grand_child_or_deeper(  ).
+        RAISE EXCEPTION TYPE /dmo/cx_rap_generator
+        EXPORTING
+          textid = /dmo/cx_rap_generator=>grand_child_not_supported
+          mv_entity = entityname
+          mv_value = 'addtomanagebusinessconfiguration'
+          mv_value_2 = 'abap_true'.
+    endif.
+
   ENDMETHOD.
 
 
@@ -1939,8 +1986,7 @@ CLASS /dmo/cl_rap_node IMPLEMENTATION.
       WHEN OTHERS.
         RAISE EXCEPTION TYPE /dmo/cx_rap_generator
           EXPORTING
-            textid   = /dmo/cx_rap_generator=>invalid_data_source_type
-            mv_value = data_source_type.
+            textid = /dmo/cx_rap_generator=>invalid_data_source_type.
     ENDCASE.
     data_source_name = iv_data_source .
 
@@ -2183,6 +2229,8 @@ CLASS /dmo/cl_rap_node IMPLEMENTATION.
 
 
   METHOD check_parameter.
+
+
 
     "check if parameter is initial
 *    IF iv_value IS INITIAL.

@@ -16,6 +16,7 @@ CLASS /dmo/cl_rap_generator DEFINITION
         association_field TYPE sxco_cds_field_name,
       END OF ts_condition_components,
 
+
       tt_condition_components TYPE STANDARD TABLE OF ts_condition_components WITH EMPTY KEY.
 
     TYPES: BEGIN OF t_table_fields,
@@ -283,6 +284,8 @@ CLASS /dmo/cl_rap_generator IMPLEMENTATION.
     "set is draft enabled
     lo_specification->set_draft_enabled( io_rap_bo_node->draft_enabled ).
 
+
+
     "define behavior for root entity
     DATA(lo_header_behavior) = lo_specification->add_behavior( io_rap_bo_node->rap_node_objects-cds_view_i ).
 
@@ -480,6 +483,12 @@ CLASS /dmo/cl_rap_generator IMPLEMENTATION.
           lo_item_behavior->characteristics->set_alias( CONV #( lo_childnode->rap_node_objects-alias )
                    )->set_implementation_class( lo_childnode->rap_node_objects-behavior_implementation
                    )->lock->set_dependent_by( '_' && lo_childnode->parent_node->rap_node_objects-alias  ).
+
+
+          IF lo_childnode->root_node->is_customizing_table = abap_true.
+            lo_item_behavior->characteristics->set_with_additional_save( ).
+          ENDIF.
+
 
           CASE lo_childnode->get_implementation_type(  ).
             WHEN /dmo/cl_rap_node=>implementation_type-managed_uuid.
@@ -686,10 +695,16 @@ CLASS /dmo/cl_rap_generator IMPLEMENTATION.
   METHOD create_bil.
 
 
+    DATA  source_method_save_modified  TYPE if_xco_gen_clas_s_fo_i_method=>tt_source  .
+    DATA  source_method_validation  TYPE if_xco_gen_clas_s_fo_i_method=>tt_source  .
+    DATA  source_code_line LIKE LINE OF source_method_save_modified.
+
+
+
 
     DATA(lo_specification) = mo_put_operation->for-clas->add_object(  io_rap_bo_node->rap_node_objects-behavior_implementation
-                                  )->set_package( mo_package
-                                  )->create_form_specification( ).
+                                    )->set_package( mo_package
+                                    )->create_form_specification( ).
 
 
     lo_specification->set_short_description( 'Behavior implementation' ).
@@ -736,66 +751,187 @@ CLASS /dmo/cl_rap_generator IMPLEMENTATION.
 
     IF io_rap_bo_node->is_customizing_table = abap_true.
 
+
+      SELECT * FROM @io_rap_bo_node->lt_fields AS fields WHERE name  = @io_rap_bo_node->field_name-uuid INTO TABLE @DATA(result_uuid).
+
+      SELECT * FROM @io_rap_bo_node->lt_fields AS fields WHERE key_indicator  = @abap_true
+                                                           and name <> @io_rap_bo_node->field_name-client INTO TABLE @DATA(key_fields).
+
+
+
       DATA(lv_validation_name) = |val_transport| .
 
-
-*      val_transport FOR VALIDATE ON SAVE
-*        IMPORTING keys FOR Holiday~val_transport.
       DATA(lo_val) = lo_handler->definition->section-private->add_method( CONV #( lv_validation_name ) ).
       lo_val->behavior_implementation->set_for_validate_on_save( ).
       DATA(lo_keys_validation) = lo_val->add_importing_parameter( iv_name = 'keys' ).
       lo_keys_validation->behavior_implementation->set_for( iv_for = | { io_rap_bo_node->entityname }~{ lv_validation_name } | ).
 
+      CLEAR source_method_validation.
+
+      APPEND |CHECK lines( keys ) > 0.| TO source_method_validation.
+      APPEND |DATA table_keys TYPE TABLE OF { to_upper( io_rap_bo_node->table_name ) } .  |  TO source_method_validation.
+      APPEND |table_keys = VALUE #( FOR key IN keys (  |  TO source_method_validation.
+
+      LOOP AT key_fields INTO DATA(key_field).
+        APPEND |         { key_field-name } = key-{ key_field-cds_view_field  }        |  TO source_method_validation.
+      ENDLOOP.
+
+      APPEND |) ).  |  TO source_method_validation.
+      APPEND |TRY.|  TO source_method_validation.
+      APPEND |    cl_a4c_bc_factory=>get_handler( )->add_to_transport_request(|  TO source_method_validation.
+      APPEND |          EXPORTING|  TO source_method_validation.
+      APPEND |            iv_check_mode         = abap_true  |  TO source_method_validation.
+      APPEND |            it_object_tables      = VALUE #( ( objname = '{ to_upper( io_rap_bo_node->table_name ) }'  |  TO source_method_validation.
+      APPEND |                                               tabkeys = REF #( table_keys )  ) )|  TO source_method_validation.
+      APPEND |            iv_mandant_field_name = '{ io_rap_bo_node->field_name-client }'  |  TO source_method_validation.
+      APPEND |          IMPORTING|  TO source_method_validation.
+      APPEND |            rt_messages           = DATA(messages)|  TO source_method_validation.
+      APPEND |            rv_success            = DATA(success) ).|  TO source_method_validation.
+      APPEND |  CATCH cx_a4c_bc_exception INTO DATA(exc).|  TO source_method_validation.
+      APPEND |    success = abap_false.|  TO source_method_validation.
+      APPEND |ENDTRY.|  TO source_method_validation.
+      APPEND |IF success NE 'S'.|  TO source_method_validation.
+      APPEND |  failed-{ io_rap_bo_node->entityname } = CORRESPONDING #( keys ).  |  TO source_method_validation.
+      APPEND |  DATA report LIKE LINE OF reported-{ io_rap_bo_node->entityname }.  |  TO source_method_validation.
+      APPEND |  report = CORRESPONDING #( keys[ 1 ] ).|  TO source_method_validation.
+      APPEND |  IF exc IS BOUND.|  TO source_method_validation.
+      APPEND |    report-%msg = new_message_with_text( text = exc->get_text( ) ).|  TO source_method_validation.
+      APPEND |    INSERT report INTO TABLE reported-{ io_rap_bo_node->entityname }.  |  TO source_method_validation.
+      APPEND |  ENDIF.|  TO source_method_validation.
+      APPEND |  LOOP AT messages ASSIGNING FIELD-SYMBOL(<msg>).|  TO source_method_validation.
+      APPEND |    report-%msg = new_message(|  TO source_method_validation.
+      APPEND |                    id       = <msg>-msgid|  TO source_method_validation.
+      APPEND |                    number   = <msg>-msgno|  TO source_method_validation.
+      APPEND |                    severity = CONV #( <msg>-msgty )|  TO source_method_validation.
+      APPEND |                    v1       = <msg>-msgv1|  TO source_method_validation.
+      APPEND |                    v2       = <msg>-msgv2|  TO source_method_validation.
+      APPEND |                    v3       = <msg>-msgv3|  TO source_method_validation.
+      APPEND |                    v4       = <msg>-msgv4 ).|  TO source_method_validation.
+      APPEND |    INSERT report INTO TABLE reported-{ io_rap_bo_node->entityname }.  |  TO source_method_validation.
+      APPEND |  ENDLOOP.|  TO source_method_validation.
+      APPEND |ENDIF.|  TO source_method_validation.
 
 
-*    "Enter the following code
-*    DATA create TYPE TABLE FOR CREATE zfcal_i_holiday.
-*    zcl_bc_factory=>get_transport_api( use_table_scomp_transport = abap_false )->validate(
-*        table_entity_relation = VALUE #( table = 'ZFCAL_HOLIDAY' entity = 'HOLIDAYROOT' )
-*        keys                  = REF #( keys )
-*        reported              = REF #( reported )
-*        failed                = REF #( failed )
-*        create                = REF #( create )
-*    ).
-
-      lo_handler->implementation->add_method( CONV #( lv_validation_name ) )->set_source(
-          VALUE #(
-        ( |DATA create TYPE TABLE FOR CREATE zfcal_i_holiday.| )
-        ( |zcl_bc_factory=>get_transport_api( use_table_scomp_transport = abap_false )->validate( | )
-        ( |table_entity_relation = VALUE #( table = '{ to_upper( io_rap_bo_node->table_name ) }' entity = '{ to_upper( io_rap_bo_node->table_name ) }' )| )
-        ( |  keys                  = REF #( keys ) | )
-        ( |  reported              = REF #( reported )| )
-        ( |  failed                = REF #( failed )| )
-        ( |  create                = REF #( create ) | )
-        ( |  ). | )
-        )
-        ).
-
-
-
+      lo_handler->implementation->add_method( CONV #( lv_validation_name ) )->set_source( source_method_validation ).
     ENDIF.
 
-    IF io_rap_bo_node->is_customizing_table = abap_true AND
-       io_rap_bo_node->is_root( ).
+    IF io_rap_bo_node->is_customizing_table = abap_true.
 
       DATA(lo_saver) = lo_specification->add_local_class( 'LCL_SAVER' ).
       lo_saver->definition->set_superclass( 'CL_ABAP_BEHAVIOR_SAVER' ).
       lo_saver->definition->section-protected->add_method( method_save_modified )->set_redefinition( ).
 
-      lo_saver->implementation->add_method(  method_save_modified  )->set_source(
-           VALUE #(
-         ( |zcl_bc_factory=>get_transport_api( use_table_scomp_transport = abap_false )->transport(| )
 
-         ( |table_entity_relations = VALUE #( ( table = '{ to_upper( io_rap_bo_node->table_name ) }' entity = '{ to_upper( io_rap_bo_node->table_name ) }' ) | )
-         ( |                                  ( table = '{ to_upper( io_rap_bo_node->table_name ) }' entity = '{ to_upper( io_rap_bo_node->table_name ) }' ) | )
-         ( |                                 )     | )
-         ( |  create                = REF #( create ) | )
-         ( |  update                = REF #( update )| )
-         ( |  delete                = REF #( delete )| )
+      IF io_rap_bo_node->is_root(  ) = abap_true.
 
-         ( |  ). | )
-         )
-         ).
+        CLEAR source_method_save_modified.
+        APPEND | DATA table_keys TYPE TABLE OF { to_upper( io_rap_bo_node->table_name ) }.  | TO source_method_save_modified.
+        APPEND | DATA object_tables TYPE if_a4c_bc_handler=>tt_object_tables.| TO source_method_save_modified.
+        APPEND | table_keys = VALUE #( FOR key IN create-{ io_rap_bo_node->entityname } ( | TO source_method_save_modified.
+
+        LOOP AT key_fields INTO key_field.
+          APPEND |         { key_field-name } = key-{ key_field-cds_view_field }        |  TO source_method_save_modified.
+        ENDLOOP.
+
+        APPEND | ) ).  | TO source_method_save_modified.
+        APPEND | LOOP AT update-holiday ASSIGNING FIELD-SYMBOL(<update>).  | TO source_method_save_modified.
+        APPEND |   INSERT VALUE #( | TO source_method_save_modified.
+
+        LOOP AT key_fields INTO key_field.
+          APPEND |         { key_field-name } = <update>-{ key_field-cds_view_field  }        |  TO source_method_save_modified.
+        ENDLOOP.
+
+        APPEND | ) INTO TABLE table_keys.  | TO source_method_save_modified.
+        APPEND | ENDLOOP.| TO source_method_save_modified.
+        APPEND | LOOP AT delete-{ io_rap_bo_node->entityname } ASSIGNING FIELD-SYMBOL(<delete>).  | TO source_method_save_modified.
+        APPEND |   INSERT VALUE #( | TO source_method_save_modified.
+
+        LOOP AT key_fields INTO key_field.
+          APPEND |         { key_Field-name } = <delete>-{ key_field-cds_view_field  }        |  TO source_method_save_modified.
+        ENDLOOP.
+
+        APPEND | ) INTO TABLE table_keys.  | TO source_method_save_modified.
+        APPEND | ENDLOOP.| TO source_method_save_modified.
+        APPEND | IF table_keys IS NOT INITIAL.| TO source_method_save_modified.
+        APPEND |   INSERT VALUE #( objname = '{ to_upper( io_rap_bo_node->table_name ) }'  | TO source_method_save_modified.
+        APPEND |                   tabkeys = REF #( table_keys ) ) INTO TABLE object_Tables.| TO source_method_save_modified.
+        APPEND | ENDIF.| TO source_method_save_modified.
+
+        APPEND | CHECK object_tables IS NOT INITIAL.| TO source_method_save_modified.
+        APPEND | TRY.| TO source_method_save_modified.
+        APPEND |     cl_a4c_bc_factory=>get_handler( )->add_to_transport_request(| TO source_method_save_modified.
+        APPEND |           EXPORTING| TO source_method_save_modified.
+        APPEND |             iv_check_mode         = abap_false  | TO source_method_save_modified.
+        APPEND |             it_object_tables      = object_tables| TO source_method_save_modified.
+        APPEND |             iv_mandant_field_name = '{ io_rap_bo_node->field_name-client }'  | TO source_method_save_modified.
+        APPEND |           IMPORTING| TO source_method_save_modified.
+        APPEND |             rv_success            = DATA(success) ).| TO source_method_save_modified.
+        APPEND |   CATCH cx_a4c_bc_exception.| TO source_method_save_modified.
+        APPEND |     success = abap_false.| TO source_method_save_modified.
+        APPEND | ENDTRY.| TO source_method_save_modified.
+        APPEND | ASSERT success = 'S'. "point of no return - previous validation must catch all exceptions| TO source_method_save_modified.
+
+        lo_saver->implementation->add_method(  method_save_modified  )->set_source( source_method_save_modified ).
+
+
+      ELSEIF io_rap_bo_node->is_child(  ) = abap_true.
+
+        CLEAR source_method_save_modified.
+
+        APPEND | DATA table_keys TYPE TABLE OF { to_upper( io_rap_bo_node->root_node->table_name ) }.  | TO source_method_save_modified.
+        APPEND | DATA table_keys_txt TYPE TABLE OF { to_upper( io_rap_bo_node->table_name ) }.  | TO source_method_save_modified.
+        APPEND | DATA object_tables TYPE if_a4c_bc_handler=>tt_object_tables.| TO source_method_save_modified.
+        APPEND | table_keys_txt = VALUE #( FOR key_txt IN create-{ io_rap_bo_node->entityname } ( | TO source_method_save_modified.
+
+
+        LOOP AT key_fields INTO key_field.
+          APPEND |         { key_field-name } = key_txt-{ key_field-cds_view_field }        |  TO source_method_save_modified.
+        ENDLOOP.
+
+        APPEND | ) ).  | TO source_method_save_modified.
+        APPEND | LOOP AT update-{ io_rap_bo_node->entityname } ASSIGNING FIELD-SYMBOL(<update_txt>).  | TO source_method_save_modified.
+        APPEND |   INSERT VALUE #( | TO source_method_save_modified.
+
+        LOOP AT key_fields INTO key_field.
+          APPEND |         { key_field-name } = <update_txt>-{ key_field-cds_view_field }        |  TO source_method_save_modified.
+        ENDLOOP.
+
+        APPEND | ) INTO TABLE table_keys_txt.| TO source_method_save_modified.
+        APPEND | ENDLOOP.| TO source_method_save_modified.
+        APPEND | LOOP AT delete-{ io_rap_bo_node->entityname } ASSIGNING FIELD-SYMBOL(<delete_txt>).  | TO source_method_save_modified.
+        APPEND |   INSERT VALUE #( | TO source_method_save_modified.
+
+        LOOP AT key_fields INTO key_field.
+          APPEND |         { key_field-name } = <delete_txt>-{ key_field-cds_view_field }        |  TO source_method_save_modified.
+        ENDLOOP.
+
+        APPEND | ) INTO TABLE table_keys_txt.| TO source_method_save_modified.
+        APPEND | ENDLOOP.| TO source_method_save_modified.
+        APPEND |  IF table_keys_txt IS NOT INITIAL.| TO source_method_save_modified.
+        APPEND |   INSERT VALUE #( objname = '{ io_rap_bo_node->table_name }'  | TO source_method_save_modified.
+        APPEND |                   tabkeys = REF #( table_keys_txt ) ) INTO TABLE object_Tables.| TO source_method_save_modified.
+        APPEND | ENDIF.| TO source_method_save_modified.
+
+        APPEND | CHECK object_tables IS NOT INITIAL.| TO source_method_save_modified.
+        APPEND | TRY.| TO source_method_save_modified.
+        APPEND |     cl_a4c_bc_factory=>get_handler( )->add_to_transport_request(| TO source_method_save_modified.
+        APPEND |           EXPORTING| TO source_method_save_modified.
+        APPEND |             iv_check_mode         = abap_false  | TO source_method_save_modified.
+        APPEND |             it_object_tables      = object_tables| TO source_method_save_modified.
+        APPEND |             iv_mandant_field_name = '{ io_rap_bo_node->field_name-client }'  | TO source_method_save_modified.
+        APPEND |           IMPORTING| TO source_method_save_modified.
+        APPEND |             rv_success            = DATA(success) ).| TO source_method_save_modified.
+        APPEND |   CATCH cx_a4c_bc_exception.| TO source_method_save_modified.
+        APPEND |     success = abap_false.| TO source_method_save_modified.
+        APPEND | ENDTRY.| TO source_method_save_modified.
+        APPEND | ASSERT success = 'S'. "point of no return - previous validation must catch all exceptions| TO source_method_save_modified.
+
+
+        lo_saver->implementation->add_method(  method_save_modified  )->set_source( source_method_save_modified ).
+
+
+
+      ENDIF.
 
     ENDIF.
 
@@ -1887,7 +2023,7 @@ CLASS /dmo/cl_rap_generator IMPLEMENTATION.
 
     "if skip_activation is true the service definition will not be activated.
     "it is hence not possible to generate a service binding on top
-    IF root_node->publish_service = abap_true OR root_node->skip_activation = abap_false.
+    IF root_node->publish_service = abap_true AND root_node->skip_activation = abap_false.
 
       create_service_binding(
         EXPORTING

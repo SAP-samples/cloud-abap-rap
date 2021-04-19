@@ -320,6 +320,18 @@
      <MSGNR>052</MSGNR>
      <TEXT>Underscore not permitted at 2nd or 3rd position in table &amp;1</TEXT>
     </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>/DMO/CM_RAP_GEN_MSG</ARBGB>
+     <MSGNR>053</MSGNR>
+     <TEXT>publish_service = abap_true and skip_activation = abap_true not possible</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>/DMO/CM_RAP_GEN_MSG</ARBGB>
+     <MSGNR>054</MSGNR>
+     <TEXT>&amp;1 Grandchild nodes are not supported for &amp;2 = &amp;3.</TEXT>
+    </T100>
    </T100>
   </asx:values>
  </asx:abap>

@@ -439,7 +439,24 @@ CLASS /dmo/cx_rap_generator DEFINITION
         attr2 TYPE scx_attrname VALUE '',
         attr3 TYPE scx_attrname VALUE '',
         attr4 TYPE scx_attrname VALUE '',
-      END OF underscore_not_at_pos_2_3
+      END OF underscore_not_at_pos_2_3,
+      BEGIN OF publish_needs_active_srvd,
+        msgid TYPE symsgid VALUE '/DMO/CM_RAP_GEN_MSG',
+        msgno TYPE symsgno VALUE '053',
+        attr1 TYPE scx_attrname VALUE '',
+        attr2 TYPE scx_attrname VALUE '',
+        attr3 TYPE scx_attrname VALUE '',
+        attr4 TYPE scx_attrname VALUE '',
+      END OF publish_needs_active_srvd,
+      BEGIN OF grand_child_not_supported,
+        msgid TYPE symsgid VALUE '/DMO/CM_RAP_GEN_MSG',
+        msgno TYPE symsgno VALUE '054',
+        attr1 TYPE scx_attrname VALUE 'MV_ENTITY',
+        attr2 TYPE scx_attrname VALUE 'MV_VALUE',
+        attr3 TYPE scx_attrname VALUE 'MV_VALUE_2',
+        attr4 TYPE scx_attrname VALUE '',
+      END OF grand_child_not_supported
+
 
       .
 
