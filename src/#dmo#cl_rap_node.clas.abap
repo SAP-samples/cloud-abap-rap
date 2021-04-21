@@ -32,6 +32,7 @@ CLASS /dmo/cl_rap_node DEFINITION
         one_to_one  TYPE string VALUE 'one_to_one',
       END OF cardinality,
 
+
       BEGIN OF additionalBinding_usage,
         filter            TYPE string VALUE 'FILTER',
         filter_and_result TYPE string VALUE 'FILTER_AND_RESULT',
@@ -59,7 +60,6 @@ CLASS /dmo/cl_rap_node DEFINITION
 
       uuid_type               TYPE cl_xco_ad_built_in_type=>tv_type   VALUE 'RAW',
       uuid_length             TYPE cl_xco_ad_built_in_type=>tv_length  VALUE 16.
-
 
     .
 
@@ -1431,22 +1431,28 @@ CLASS /dmo/cl_rap_node IMPLEMENTATION.
   METHOD set_transport_request.
 
     "set_transport request is also called at end of set_package( )
-    "this method will try to reuse any suitable modifialble transport that already exists for that package and that
+    "this method will try to reuse any suitable modifiable transport that already exists for that package and that
     "is owned by the developer
     "If nevertheless a transport request is set externally this will overrule the automatic selection
     "If no transport can be found a new transport will be generated
 
     IF me->package IS NOT INITIAL.
-      IF xco_lib->get_package( me->package  )->read( )-property-record_object_changes = abap_false AND iv_transport_request IS NOT INITIAL.
+
+      DATA(record_object_changes) = xco_lib->get_package( me->package  )->read( )-property-record_object_changes.
+
+      IF record_object_changes = abap_false AND iv_transport_request IS NOT INITIAL.
         DATA(error_details) = |{ me->package } does not record changes.|.
         RAISE EXCEPTION TYPE /dmo/cx_rap_generator
           EXPORTING
             textid     = /dmo/cx_rap_generator=>invalid_transport_request
             mv_value   = CONV #( iv_transport_request )
             mv_value_2 = error_details.
-      ELSE.
+      ELSEIF record_object_changes = abap_false AND iv_transport_request IS INITIAL..
         EXIT.
       ENDIF.
+    ELSE.
+      "no package set, no transport can be set
+      EXIT.
     ENDIF.
 
 
@@ -1930,7 +1936,9 @@ CLASS /dmo/cl_rap_node IMPLEMENTATION.
           EXPORTING
             textid   = /dmo/cx_rap_generator=>not_draft_enabled
             mv_value = CONV #( me->root_node->entityname ).
-      ELSEIF me->binding_type <> binding_type_name-odata_v4_ui.
+      ENDIF.
+
+      IF me->binding_type <> binding_type_name-odata_v4_ui.
         RAISE EXCEPTION TYPE /dmo/cx_rap_generator
           EXPORTING
             textid   = /dmo/cx_rap_generator=>no_ui_v4_service_binding
@@ -1945,33 +1953,32 @@ CLASS /dmo/cl_rap_node IMPLEMENTATION.
        AND me->root_node->skip_activation = abap_true.
       RAISE EXCEPTION TYPE /dmo/cx_rap_generator
         EXPORTING
-          textid = /dmo/cx_rap_generator=>publish_needs_active_srvd
-       .
+          textid = /dmo/cx_rap_generator=>publish_needs_active_srvd.
 
-          .
+      .
     ENDIF.
 
     "validate settings for customizing table and mbc app
 
-    if is_customizing_table = abap_true and is_grand_child_or_deeper(  ).
-    "&1 Grandchild nodes are not supported for &2 = &3.
-    RAISE EXCEPTION TYPE /dmo/cx_rap_generator
+    IF is_customizing_table = abap_true AND is_grand_child_or_deeper(  ).
+      "&1 Grandchild nodes are not supported for &2 = &3.
+      RAISE EXCEPTION TYPE /dmo/cx_rap_generator
         EXPORTING
-          textid = /dmo/cx_rap_generator=>grand_child_not_supported
-          mv_entity = entityname
-          mv_value = 'iscustomizingtable'
+          textid     = /dmo/cx_rap_generator=>grand_child_not_supported
+          mv_entity  = entityname
+          mv_value   = 'iscustomizingtable'
           mv_value_2 = 'abap_true'.
 
-    endif.
+    ENDIF.
 
-    if manage_business_configuration = abap_true and  is_grand_child_or_deeper(  ).
-        RAISE EXCEPTION TYPE /dmo/cx_rap_generator
+    IF manage_business_configuration = abap_true AND  is_grand_child_or_deeper(  ).
+      RAISE EXCEPTION TYPE /dmo/cx_rap_generator
         EXPORTING
-          textid = /dmo/cx_rap_generator=>grand_child_not_supported
-          mv_entity = entityname
-          mv_value = 'addtomanagebusinessconfiguration'
+          textid     = /dmo/cx_rap_generator=>grand_child_not_supported
+          mv_entity  = entityname
+          mv_value   = 'addtomanagebusinessconfiguration'
           mv_value_2 = 'abap_true'.
-    endif.
+    ENDIF.
 
   ENDMETHOD.
 
@@ -2071,11 +2078,11 @@ CLASS /dmo/cl_rap_node IMPLEMENTATION.
     ENDLOOP.
 
     "Make sure that the association is also using UpperCamelCase
-    IF useuppercamelcase = abap_true.
-      ls_assocation-name = xco_cp=>string( iv_name )->split( '_' )->compose( xco_cp_string=>composition->pascal_case )->value.
-    ELSE.
+*    IF useuppercamelcase = abap_true.
+*      ls_assocation-name = xco_cp=>string( iv_name )->split( '_' )->compose( xco_cp_string=>composition->pascal_case )->value.
+*    ELSE.
       ls_assocation-name = iv_name.
-    ENDIF.
+*    ENDIF.
     ls_assocation-target = iv_target.
     ls_assocation-condition_components = it_condition_fields.
 

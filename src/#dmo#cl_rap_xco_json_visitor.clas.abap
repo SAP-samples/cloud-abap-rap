@@ -39,6 +39,7 @@ CLASS /dmo/cl_rap_xco_json_visitor DEFINITION
 
     DATA:
 
+
       parent_node                TYPE REF TO /dmo/cl_rap_node,
       last_visited_member        TYPE string,
       current_node               TYPE REF TO /dmo/cl_rap_node,
@@ -353,7 +354,7 @@ CLASS /dmo/cl_rap_xco_json_visitor IMPLEMENTATION.
           root_node->set_publish_service( iv_value ).
         WHEN 'draftenabled'.
           root_node->set_draft_enabled( iv_value ).
-        WHEN 'addtomanagebusinessconfiguration' .
+        WHEN 'addbusinessconfigurationregistration' .
           root_node->add_to_manage_business_config( iv_value ).
         WHEN 'skipactivation'.
           root_node->set_skip_activation( iv_value ).
@@ -428,11 +429,11 @@ CLASS /dmo/cl_rap_xco_json_visitor IMPLEMENTATION.
           root_node->set_binding_type( CONV #( iv_value ) ).
         WHEN 'transportrequest'.
           root_node->set_transport_request( CONV #( iv_value ) ).
-        WHEN 'managebusinessconfigurationname'.
+        WHEN 'businessconfigurationname'.
           root_node->set_mbc_name( iv_value  ).
-        WHEN 'managebusinessconfigurationidentifier'  .
+        WHEN 'businessconfigurationidentifier'  .
           root_node->set_mbc_identifier( iv_value ).
-        WHEN 'managebusinessconfigurationdescription'.
+        WHEN 'businessconfigurationdescription'.
           root_node->set_mbc_description( iv_value ).
         WHEN OTHERS.
 

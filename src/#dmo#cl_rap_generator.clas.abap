@@ -714,8 +714,24 @@ CLASS /dmo/cl_rap_generator IMPLEMENTATION.
     lo_specification->definition->set_abstract(
       )->set_for_behavior_of( to_upper( io_rap_bo_node->root_node->rap_node_objects-cds_view_i ) ).
 
-    DATA(lo_handler) = lo_specification->add_local_class( 'LCL_HANDLER' ).
-    lo_handler->definition->set_superclass( 'CL_ABAP_BEHAVIOR_HANDLER' ).
+*    DATA(lo_handler) = lo_specification->add_local_class( 'LCL_HANDLER' ).
+*    lo_handler->definition->set_superclass( 'CL_ABAP_BEHAVIOR_HANDLER' ).
+
+    "a local class will only be created if there are methods
+    "that are generated as well
+    "otherwise we get the error
+    "The BEHAVIOR class "LCL_HANDLER" does not contain the BEHAVIOR method "MODIFY | READ".
+
+    IF ( io_rap_bo_node->is_root(  ) = abap_true AND
+        io_rap_bo_node->draft_enabled = abap_true ) OR
+        io_rap_bo_node->get_implementation_type(  )  = /dmo/cl_rap_node=>implementation_type-managed_uuid OR
+         io_rap_bo_node->is_customizing_table = abap_true.
+
+      DATA(lo_handler) = lo_specification->add_local_class( 'LCL_HANDLER' ).
+      lo_handler->definition->set_superclass( 'CL_ABAP_BEHAVIOR_HANDLER' ).
+
+    ENDIF.
+
 
     "Method Edit is called implicitly (features:instance)
     IF io_rap_bo_node->is_root(  ) = abap_true AND
@@ -755,7 +771,7 @@ CLASS /dmo/cl_rap_generator IMPLEMENTATION.
       SELECT * FROM @io_rap_bo_node->lt_fields AS fields WHERE name  = @io_rap_bo_node->field_name-uuid INTO TABLE @DATA(result_uuid).
 
       SELECT * FROM @io_rap_bo_node->lt_fields AS fields WHERE key_indicator  = @abap_true
-                                                           and name <> @io_rap_bo_node->field_name-client INTO TABLE @DATA(key_fields).
+                                                           AND name <> @io_rap_bo_node->field_name-client INTO TABLE @DATA(key_fields).
 
 
 
@@ -2065,7 +2081,7 @@ CLASS /dmo/cl_rap_generator IMPLEMENTATION.
 
     IF root_node->manage_business_configuration = abap_true AND root_node->skip_activation = abap_false.
 
-      APPEND 'Messages from manage business configuration registration' TO rt_todos.
+      APPEND 'Messages from business configuration registration' TO rt_todos.
 
       DATA(lo_business_configuration) = mbc_cp_api=>business_configuration(
         iv_identifier =  root_node->manage_business_config_names-identifier
@@ -2078,8 +2094,6 @@ CLASS /dmo/cl_rap_generator IMPLEMENTATION.
             iv_description     = root_node->manage_business_config_names-description
             iv_service_binding = CONV #( to_upper( root_node->rap_root_node_objects-service_binding ) )
             iv_service_name    = CONV #( to_upper( root_node->rap_root_node_objects-service_binding ) )
-"            iv_service_binding = CONV #(  mo_root_node_m_uuid->rap_root_node_objects-service_binding )
-"            iv_service_name    = CONV #(  mo_root_node_m_uuid->rap_root_node_objects-service_binding )
             iv_service_version = 0001
             iv_root_entity_set = root_node->entityname
             iv_transport       = CONV #( root_node->transport_request )
