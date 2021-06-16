@@ -2,6 +2,12 @@
 
 This repository contains sample code that helps you to create boiler plate coding for the ABAP RESTful Application Programming Model (RAP) in SAP Cloud Platform, ABAP environment.
 
+## New: Branch On-premise-2020
+
+There is now a version of the RAP Generator available that works on SAP S/4HANA 2020 on premise systems.
+
+Find out more about the on premise specifics in my blog post [How to use the RAP Generator in SAP S/4HANA on premise?](https://blogs.sap.com/2021/06/16/how-to-use-the-rap-generator-in-sap-s-4hana-on-premise)
+
 ## What's new with 2102
 
 - all objects of a draft enabled V4 service are can now be generated and be activated. The RAP Generator generates the draft tables for you.
