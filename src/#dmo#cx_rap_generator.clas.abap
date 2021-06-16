@@ -493,7 +493,7 @@ ENDCLASS.
 
 
 
-CLASS /dmo/cx_rap_generator IMPLEMENTATION.
+CLASS /DMO/CX_RAP_GENERATOR IMPLEMENTATION.
 
 
   METHOD class_constructor.

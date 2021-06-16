@@ -9,6 +9,8 @@ CLASS /dmo/cl_rap_generator DEFINITION
             ty_string_table_type TYPE STANDARD TABLE OF string WITH DEFAULT KEY .
 
 
+
+
     TYPES:
       BEGIN OF ts_condition_components,
         projection_field  TYPE sxco_cds_field_name,
@@ -35,6 +37,7 @@ CLASS /dmo/cl_rap_generator DEFINITION
     METHODS constructor
       IMPORTING
                 json_string TYPE clike
+                xco_lib  TYPE REF TO /dmo/cl_rap_xco_lib OPTIONAL
       RAISING   /dmo/cx_rap_generator.
 
 
@@ -143,8 +146,12 @@ CLASS /dmo/cl_rap_generator IMPLEMENTATION.
 
   METHOD constructor.
 
-    xco_api = NEW /dmo/cl_rap_xco_cloud_lib( ).
-*      xco_api = NEW /dmo/cl_rap_xco_on_prem_lib(  ).
+    IF xco_lib IS NOT INITIAL.
+      xco_api = xco_lib.
+    ELSE.
+      xco_api = NEW /dmo/cl_rap_xco_cloud_lib( ).
+    ENDIF.
+
 
     root_node = NEW /dmo/cl_rap_node(  ).
 
@@ -385,13 +392,16 @@ CLASS /dmo/cl_rap_generator IMPLEMENTATION.
 
         "no specific settings needed for managed_semantic until draft would be supported
 
-        LOOP AT lt_mapping_header INTO ls_mapping_header.
-          CASE ls_mapping_header-dbtable_field.
-            WHEN  io_rap_bo_node->object_id .
-              lo_header_behavior->add_field( ls_mapping_header-cds_view_field
-                                 )->set_read_only( ).
-          ENDCASE.
-        ENDLOOP.
+        "xco libraries do not yet support
+        "field ( readonly : update ) HolidayID;
+
+*        LOOP AT lt_mapping_header INTO ls_mapping_header.
+*          CASE ls_mapping_header-dbtable_field.
+*            WHEN  io_rap_bo_node->object_id .
+*              lo_header_behavior->add_field( ls_mapping_header-cds_view_field
+*                                 )->set_read_only( ).
+*          ENDCASE.
+*        ENDLOOP.
 
 
 
@@ -457,6 +467,21 @@ CLASS /dmo/cl_rap_generator IMPLEMENTATION.
           ENDIF.
         ENDLOOP.
 
+        "set key fields of parent entity in child entity as read only
+        "because they are set via create by association
+
+        CASE lo_childnode->get_implementation_type(  ).
+          WHEN /dmo/cl_rap_node=>implementation_type-managed_semantic.
+            LOOP AT lo_childnode->lt_fields INTO DATA(ls_key_field_child) WHERE key_indicator = abap_true
+                                                                            AND name <> io_rap_bo_node->field_name-client.
+              LOOP AT io_rap_bo_node->lt_fields INTO DATA(ls_key_field) WHERE key_indicator = abap_true
+                                                                          AND name = ls_key_field_child-name.
+                lo_item_behavior->add_field( ls_key_field-cds_view_field
+                                             )->set_read_only( ).
+              ENDLOOP.
+            ENDLOOP.
+        ENDCASE.
+
 *    " Characteristics.
         IF lo_childnode->is_grand_child_or_deeper(  ).
 
@@ -472,6 +497,8 @@ CLASS /dmo/cl_rap_generator IMPLEMENTATION.
             WHEN /dmo/cl_rap_node=>implementation_type-unmanged_semantic.
               "nothing to do
           ENDCASE.
+
+
 
           "add association to parent node
           assoc = lo_item_behavior->add_association( '_' && lo_childnode->parent_node->rap_node_objects-alias  ).
@@ -1024,10 +1051,15 @@ CLASS /dmo/cl_rap_generator IMPLEMENTATION.
       ENDIF.
       IF table_field_line-key_indicator = abap_true.
         database_table_field->set_key_indicator( ).
+        "not_null must not be set for non-key fields of a draft table
+        "this is because otherwise one would not be able to store data in the draft table
+        "which is inconsistent and still being worked on
+        "for non-key fields this is set like in the ADT quick fix that generates a draft table
+        IF table_field_line-not_null = abap_true.
+          database_table_field->set_not_null( ).
+        ENDIF.
       ENDIF.
-      IF table_field_line-not_null = abap_true.
-        database_table_field->set_not_null( ).
-      ENDIF.
+
       IF table_field_line-currencycode IS NOT INITIAL.
         DATA(currkey_dbt_field_upper) = to_upper( table_field_line-currencycode ).
         "get the cds view field name of the currency or quantity filed

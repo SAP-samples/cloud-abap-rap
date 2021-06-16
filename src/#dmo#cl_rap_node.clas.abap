@@ -262,7 +262,8 @@ CLASS /dmo/cl_rap_node DEFINITION
     " DATA rap_generator_xco_lib TYPE REF TO zif_rap_generator_xco_lib.
 
     METHODS constructor
-      RAISING /dmo/cx_rap_generator.
+      IMPORTING io_xco_lib TYPE REF TO /dmo/cl_rap_xco_lib OPTIONAL
+      RAISING   /dmo/cx_rap_generator.
 
     METHODS set_xco_lib
       IMPORTING io_xco_lib TYPE REF TO /dmo/cl_rap_xco_lib
@@ -2081,7 +2082,7 @@ CLASS /dmo/cl_rap_node IMPLEMENTATION.
 *    IF useuppercamelcase = abap_true.
 *      ls_assocation-name = xco_cp=>string( iv_name )->split( '_' )->compose( xco_cp_string=>composition->pascal_case )->value.
 *    ELSE.
-      ls_assocation-name = iv_name.
+    ls_assocation-name = iv_name.
 *    ENDIF.
     ls_assocation-target = iv_target.
     ls_assocation-condition_components = it_condition_fields.
@@ -2199,7 +2200,9 @@ CLASS /dmo/cl_rap_node IMPLEMENTATION.
 
         LOOP AT lt_fields ASSIGNING FIELD-SYMBOL(<field_curr>) WHERE name = field-currencycode.
           <field_curr>-is_currencycode = abap_true.
-          <field_curr>-is_hidden = abap_true.
+          "@todo check to enable this based on the binding type being used
+          "currently two currencycode fiels could be displayed in the UI
+*          <field_curr>-is_hidden = abap_true.
         ENDLOOP.
 
         "add_valuehelp  will set the flag has_valuehelp to abap_true
@@ -2217,7 +2220,9 @@ CLASS /dmo/cl_rap_node IMPLEMENTATION.
 
         LOOP AT lt_fields ASSIGNING FIELD-SYMBOL(<field_quan>) WHERE name = field-unitofmeasure.
           <field_quan>-is_unitofmeasure = abap_true.
-          <field_quan>-is_hidden = abap_true.
+          "@todo check to enable this based on the binding type being used
+          "currently two quantiy fiels could be displayed in the UI
+*          <field_quan>-is_hidden = abap_true.
         ENDLOOP.
 
         "add_valuehelp  will set the flag has_valuehelp to abap_true
@@ -2515,8 +2520,11 @@ CLASS /dmo/cl_rap_node IMPLEMENTATION.
     transactional_behavior = abap_true.
     binding_type = binding_type_name-odata_v4_ui.
 
-    xco_lib = NEW /dmo/cl_rap_xco_cloud_lib( ).
-    "xco_lib = NEW /dmo/cl_rap_xco_on_prem_lib(  ).
+    IF io_xco_lib IS NOT INITIAL.
+      xco_lib = io_xco_lib.
+    ELSE.
+      xco_lib = NEW /dmo/cl_rap_xco_cloud_lib( ).
+    ENDIF.
 
     TEST-SEAM runs_as_cut.
       is_test_run = abap_false.
@@ -2533,16 +2541,9 @@ CLASS /dmo/cl_rap_node IMPLEMENTATION.
     ENDIF.
   ENDMETHOD.
 
-  METHOD underscore_at_pos_2_3.
-    DATA underscore TYPE string VALUE '_'.
-    rv_no_underscore_at_pos_2_3 = abap_true.
-    DATA(string_pos_2_and_3) = substring( val = iv_string  len = 2 off = 1 ).
-    FIND ALL OCCURRENCES OF underscore IN
-         string_pos_2_and_3
-         RESULTS DATA(underscores_at_2_3).
-    IF underscores_at_2_3 IS INITIAL.
-      rv_no_underscore_at_pos_2_3 = abap_false.
-    ENDIF.
+
+  METHOD set_add_meta_data_extensions.
+    add_meta_data_extensions = iv_value.
   ENDMETHOD.
 
 
@@ -3313,16 +3314,26 @@ CLASS /dmo/cl_rap_node IMPLEMENTATION.
 
   ENDMETHOD.
 
-  METHOD set_add_meta_data_extensions.
-    add_meta_data_extensions = iv_value.
-  ENDMETHOD.
-
-  METHOD set_skip_activation.
-    skip_activation = iv_value.
-  ENDMETHOD.
 
   METHOD set_is_customizing_table.
     is_customizing_table = iv_value.
   ENDMETHOD.
 
+
+  METHOD set_skip_activation.
+    skip_activation = iv_value.
+  ENDMETHOD.
+
+
+  METHOD underscore_at_pos_2_3.
+    DATA underscore TYPE string VALUE '_'.
+    rv_no_underscore_at_pos_2_3 = abap_true.
+    DATA(string_pos_2_and_3) = substring( val = iv_string  len = 2 off = 1 ).
+    FIND ALL OCCURRENCES OF underscore IN
+         string_pos_2_and_3
+         RESULTS DATA(underscores_at_2_3).
+    IF underscores_at_2_3 IS INITIAL.
+      rv_no_underscore_at_pos_2_3 = abap_false.
+    ENDIF.
+  ENDMETHOD.
 ENDCLASS.

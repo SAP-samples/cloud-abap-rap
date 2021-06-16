@@ -71,7 +71,7 @@ ENDCLASS.
 
 
 
-CLASS /dmo/cl_rap_xco_json_visitor IMPLEMENTATION.
+CLASS /DMO/CL_RAP_XCO_JSON_VISITOR IMPLEMENTATION.
 
 
   METHOD constructor.

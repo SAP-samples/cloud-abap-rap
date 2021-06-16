@@ -25,7 +25,7 @@ ENDCLASS.
 
 
 
-CLASS /dmo/cl_rap_xco_cloud_lib IMPLEMENTATION.
+CLASS /DMO/CL_RAP_XCO_CLOUD_LIB IMPLEMENTATION.
 
 
   METHOD  get_aggregated_annotations.
@@ -91,8 +91,4 @@ CLASS /dmo/cl_rap_xco_cloud_lib IMPLEMENTATION.
   METHOD get_view_entity.
     ro_view_entity = xco_cp_cds=>view_entity( iv_name ).
   ENDMETHOD.
-
-
-
-
 ENDCLASS.
