@@ -33,11 +33,11 @@ CLASS /dmo/cl_rap_node DEFINITION
       END OF cardinality,
 
 
-      BEGIN OF additionalBinding_usage,
+      BEGIN OF additionalbinding_usage,
         filter            TYPE string VALUE 'FILTER',
         filter_and_result TYPE string VALUE 'FILTER_AND_RESULT',
         result            TYPE string VALUE 'RESULT',
-      END OF additionalBinding_usage,
+      END OF additionalbinding_usage,
 
       BEGIN OF binding_type_name,
         odata_v4_ui      TYPE string VALUE 'odata_v4_ui',
@@ -47,13 +47,13 @@ CLASS /dmo/cl_rap_node DEFINITION
       END OF binding_type_name,
 
       BEGIN OF  protocol_version_suffix,
-        OData_V2 TYPE string VALUE '_O2',
-        OData_V4 TYPE string VALUE '_O4',
+        odata_v2 TYPE string VALUE '_O2',
+        odata_v4 TYPE string VALUE '_O4',
       END OF protocol_version_suffix,
 
       BEGIN OF binding_type_prefix,
         ui      TYPE string VALUE 'UI_',
-        Web_API TYPE string VALUE 'API_',
+        web_api TYPE string VALUE 'API_',
       END OF binding_type_prefix,
 
       supported_binding_types TYPE string VALUE 'odata_v4_ui, odata_v2_ui, odata_v4_web_api, odata_v2_web_api',
@@ -120,13 +120,13 @@ CLASS /dmo/cl_rap_node DEFINITION
         cds_view_field         TYPE sxco_cds_field_name,
         has_association        TYPE abap_bool,
         has_valuehelp          TYPE abap_bool,
-        currencyCode           TYPE sxco_cds_field_name,
-        unitOfMeasure          TYPE sxco_cds_field_name,
+        currencycode           TYPE sxco_cds_field_name,
+        unitofmeasure          TYPE sxco_cds_field_name,
         is_data_element        TYPE abap_bool,
         is_built_in_type       TYPE abap_bool,
         is_hidden              TYPE abap_bool,
-        is_currencyCode        TYPE abap_bool,
-        is_unitOfMeasure       TYPE abap_bool,
+        is_currencycode        TYPE abap_bool,
+        is_unitofmeasure       TYPE abap_bool,
         "built_in_type_object TYPE REF TO cl_xco_ad_built_in_type,
         built_in_type          TYPE cl_xco_ad_built_in_type=>tv_type,
         built_in_type_length   TYPE cl_xco_ad_built_in_type=>tv_length,
@@ -196,20 +196,20 @@ CLASS /dmo/cl_rap_node DEFINITION
 
       tt_assocation TYPE STANDARD TABLE OF ts_assocation,
 
-      BEGIN OF ts_additionalBinding,
-        localElement TYPE sxco_cds_field_name,
+      BEGIN OF ts_additionalbinding,
+        localelement TYPE sxco_cds_field_name,
         element      TYPE sxco_cds_field_name,
         usage        TYPE string,
-      END OF ts_additionalBinding,
+      END OF ts_additionalbinding,
 
-      tt_addtionalBinding TYPE STANDARD TABLE OF ts_additionalbinding WITH DEFAULT KEY,
+      tt_addtionalbinding TYPE STANDARD TABLE OF ts_additionalbinding WITH DEFAULT KEY,
 
       BEGIN OF ts_valuehelp,
         name              TYPE sxco_cds_object_name,
         alias             TYPE sxco_ddef_alias_name,
-        localElement      TYPE sxco_cds_field_name,
+        localelement      TYPE sxco_cds_field_name,
         element           TYPE sxco_cds_field_name,
-        additionalBinding TYPE tt_addtionalbinding,
+        additionalbinding TYPE tt_addtionalbinding,
       END OF ts_valuehelp,
 
       tt_valuehelp TYPE STANDARD TABLE OF ts_valuehelp WITH DEFAULT KEY.
@@ -254,7 +254,7 @@ CLASS /dmo/cl_rap_node DEFINITION
     DATA binding_type TYPE string READ-ONLY.
     DATA transport_request TYPE string READ-ONLY.
     DATA draft_enabled TYPE abap_bool READ-ONLY .
-    DATA useUpperCamelCase TYPE abap_bool READ-ONLY .
+    DATA useuppercamelcase TYPE abap_bool READ-ONLY .
     DATA skip_activation TYPE abap_bool READ-ONLY.
     DATA add_meta_data_extensions TYPE abap_bool READ-ONLY.
     DATA is_customizing_table TYPE abap_bool READ-ONLY.
@@ -568,9 +568,9 @@ CLASS /dmo/cl_rap_node DEFINITION
         iv_alias              TYPE sxco_ddef_alias_name
         "name of CDS view used as value help
         iv_name               TYPE sxco_cds_object_name
-        iv_localElement       TYPE sxco_cds_field_name
+        iv_localelement       TYPE sxco_cds_field_name
         iv_element            TYPE sxco_cds_field_name
-        it_additional_Binding TYPE tt_addtionalbinding OPTIONAL
+        it_additional_binding TYPE tt_addtionalbinding OPTIONAL
       RAISING
         /dmo/cx_rap_generator.
 
@@ -1484,42 +1484,12 @@ CLASS /dmo/cl_rap_node IMPLEMENTATION.
             mv_value_2 = error_details.
       ENDIF.
 
-      "check if there is a modifiable transport request for this developer and this package
-    ELSEIF me->package IS NOT INITIAL.
+    ELSE.
 
-      IF xco_lib->get_package( me->package  )->read( )-property-record_object_changes = abap_true.
-
-        DATA(lo_user) = xco_cp=>sy->user( ).
-
-        DATA(lo_transport_target) = xco_lib->get_package( me->package
-          )->read( )-property-transport_layer->get_transport_target( ).
-
-        DATA(lo_status_filter) = xco_cp_transport=>filter->status( xco_cp_transport=>status->modifiable ).
-        DATA(lo_owner_filter) = xco_cp_transport=>filter->owner( xco_cp_abap_sql=>constraint->equal( lo_user->name ) ).
-        DATA(lo_request_type_filter) = xco_cp_transport=>filter->request_type( xco_cp_transport=>type->workbench_request ).
-        DATA(lo_request_target_filter) = xco_cp_transport=>filter->request_target( xco_cp_abap_sql=>constraint->equal( lo_transport_target->value ) ).
-
-        DATA(lt_transports) = xco_cp_cts=>transports->where( VALUE #(
-          ( lo_status_filter )
-          ( lo_owner_filter )
-          ( lo_request_type_filter )
-          ( lo_request_target_filter )
-        ) )->resolve( xco_cp_transport=>resolution->request ).
-
-        "similar logic as in ADT. Select the first suitable transport request
-        "and only if no modifiable transport request for the transport target can be found
-        "create a new transport request for the transport target
-
-        IF lt_transports IS NOT INITIAL.
-          transport_request = lt_transports[ 1 ]->value.
-        ELSE.
-          DATA(new_transport_object) = xco_cp_cts=>transports->workbench( lo_transport_target->value  )->create_request( |RAP Business object - entity name: { me->root_node->entityname } | ).
-          transport_request = new_transport_object->value.
-        ENDIF.
-
-      ENDIF.
+      " if no transport is set it will be set by /dmo/cl_rap_generator
 
     ENDIF.
+
 
 
   ENDMETHOD.
@@ -1547,15 +1517,15 @@ CLASS /dmo/cl_rap_node IMPLEMENTATION.
             mv_value = CONV #( field_name-uuid ).
       ENDIF.
 
-      DATA(numberOfRecords) = lines( result_uuid ).
+      DATA(numberofrecords) = lines( result_uuid ).
       "the underlying built in type must be of type RAW and length 16
       "@todo: the check for the data element can be removed once we can check for
       "the built in type of a non released domain
 
-      IF numberOfRecords = 1 AND ( result_uuid[ 1 ]-data_element = 'SYSUUID_X16' OR
+      IF numberofrecords = 1 AND ( result_uuid[ 1 ]-data_element = 'SYSUUID_X16' OR
                                    result_uuid[ 1 ]-data_element = 'XSDUUID_RAW' ).
         " that's ok
-      ELSEIF numberOfRecords = 1 AND
+      ELSEIF numberofrecords = 1 AND
          (  result_uuid[ 1 ]-built_in_type_length <> uuid_length OR result_uuid[ 1 ]-built_in_type <> uuid_type ).
         RAISE EXCEPTION TYPE /dmo/cx_rap_generator
           EXPORTING
@@ -1574,10 +1544,10 @@ CLASS /dmo/cl_rap_node IMPLEMENTATION.
             mv_entity = entityname.
       ENDIF.
 
-      numberOfRecords = lines( result_uuid ).
+      numberofrecords = lines( result_uuid ).
 
 
-      IF numberOfRecords = 1 AND  result_uuid[ 1 ]-name <> field_name-uuid.
+      IF numberofrecords = 1 AND  result_uuid[ 1 ]-name <> field_name-uuid.
         RAISE EXCEPTION TYPE /dmo/cx_rap_generator
           EXPORTING
             textid    = /dmo/cx_rap_generator=>uuid_is_not_key_field
@@ -1585,7 +1555,7 @@ CLASS /dmo/cl_rap_node IMPLEMENTATION.
             mv_value  = field_name-uuid.
       ENDIF.
 
-      IF numberOfRecords > 1.
+      IF numberofrecords > 1.
 
         LOOP AT result_uuid INTO DATA(result_uuid_line).
           IF key_fields IS INITIAL.
@@ -1615,12 +1585,12 @@ CLASS /dmo/cl_rap_node IMPLEMENTATION.
               mv_value = CONV #( field_name-parent_uuid ).
         ENDIF.
 
-        numberOfRecords = lines( result_parent_uuid ).
+        numberofrecords = lines( result_parent_uuid ).
 
-        IF numberOfRecords = 1 AND  ( result_parent_uuid[ 1 ]-data_element = 'SYSUUID_X16' OR
+        IF numberofrecords = 1 AND  ( result_parent_uuid[ 1 ]-data_element = 'SYSUUID_X16' OR
                                       result_parent_uuid[ 1 ]-data_element = 'XSDUUID_RAW' ).
           " that's ok
-        ELSEIF numberOfRecords = 1 AND
+        ELSEIF numberofrecords = 1 AND
            ( result_parent_uuid[ 1 ]-built_in_type_length <> uuid_length OR result_parent_uuid[ 1 ]-built_in_type <> uuid_type ).
           RAISE EXCEPTION TYPE /dmo/cx_rap_generator
             EXPORTING
@@ -1641,13 +1611,13 @@ CLASS /dmo/cl_rap_node IMPLEMENTATION.
               mv_value = CONV #( field_name-root_uuid ).
         ENDIF.
 
-        numberOfRecords = lines( result_root_uuid ).
+        numberofrecords = lines( result_root_uuid ).
 
-        IF numberOfRecords = 1 AND  ( result_root_uuid[ 1 ]-data_element = 'SYSUUID_X16' OR
+        IF numberofrecords = 1 AND  ( result_root_uuid[ 1 ]-data_element = 'SYSUUID_X16' OR
                                       result_root_uuid[ 1 ]-data_element = 'XSDUUID_RAW' ).
 
           " that's ok
-        ELSEIF numberOfRecords = 1 AND
+        ELSEIF numberofrecords = 1 AND
            ( result_root_uuid[ 1 ]-built_in_type_length <> uuid_length OR result_root_uuid[ 1 ]-built_in_type <> uuid_type ).
           RAISE EXCEPTION TYPE /dmo/cx_rap_generator
             EXPORTING
@@ -1733,7 +1703,7 @@ CLASS /dmo/cl_rap_node IMPLEMENTATION.
             mv_value_2 = CONV #( me->table_name ).
       ENDIF.
 
-      IF result_last_changed_AT IS INITIAL.
+      IF result_last_changed_at IS INITIAL.
         RAISE EXCEPTION TYPE /dmo/cx_rap_generator
           EXPORTING
             textid     = /dmo/cx_rap_generator=>admin_field_missing
@@ -1754,7 +1724,7 @@ CLASS /dmo/cl_rap_node IMPLEMENTATION.
 
       lv_target = to_upper( ls_valuehelp-name ).
 
-      SELECT * FROM I_APIsForSAPCloudPlatform WHERE ReleasedObjectType = 'CDS_STOB' AND ReleasedObjectName = @lv_target INTO TABLE @DATA(lt_result)..
+      SELECT * FROM i_apisforsapcloudplatform WHERE releasedobjecttype = 'CDS_STOB' AND releasedobjectname = @lv_target INTO TABLE @DATA(lt_result)..
 
       "check if CDS view used as target exists
       IF NOT ( lt_result IS NOT INITIAL OR xco_lib->get_data_definition( CONV #(  lv_target ) )->exists( ) ).
@@ -1788,7 +1758,7 @@ CLASS /dmo/cl_rap_node IMPLEMENTATION.
 
       lv_target = to_upper( ls_assocation-target ).
 
-      SELECT * FROM I_APIsForSAPCloudPlatform WHERE ReleasedObjectType = 'CDS_STOB' AND ReleasedObjectName = @lv_target INTO TABLE @lt_result.
+      SELECT * FROM i_apisforsapcloudplatform WHERE releasedobjecttype = 'CDS_STOB' AND releasedobjectname = @lv_target INTO TABLE @lt_result.
 
       "check if CDS view used as target exists
       IF NOT ( lt_result IS NOT INITIAL OR xco_lib->get_data_definition( CONV #(  lv_target ) )->exists( ) ).
@@ -1876,18 +1846,18 @@ CLASS /dmo/cl_rap_node IMPLEMENTATION.
 
       LOOP AT semantic_key ASSIGNING <ls_semantic_key>.
 
-        SELECT SINGLE * FROM @lt_fields AS SemanticKeyAlias WHERE name  = @<ls_semantic_key>-name INTO @DATA(resultSemanticKeyAlias).
+        SELECT SINGLE * FROM @lt_fields AS semantickeyalias WHERE name  = @<ls_semantic_key>-name INTO @DATA(resultsemantickeyalias).
 
-        IF resultSemanticKeyAlias IS INITIAL.
+        IF resultsemantickeyalias IS INITIAL.
           RAISE EXCEPTION TYPE /dmo/cx_rap_generator
             EXPORTING
               textid                = /dmo/cx_rap_generator=>sematic_key_is_not_in_table
               mv_semantic_key_field = CONV #( <ls_semantic_key>-name )
               mv_table_name         = CONV #( table_name ).
         ELSE.
-          <ls_semantic_key>-cds_view_field = resultSemanticKeyAlias-cds_view_field.
+          <ls_semantic_key>-cds_view_field = resultsemantickeyalias-cds_view_field.
         ENDIF.
-        CLEAR resultSemanticKeyAlias.
+        CLEAR resultsemantickeyalias.
       ENDLOOP.
 
     ENDIF.
@@ -2200,8 +2170,7 @@ CLASS /dmo/cl_rap_node IMPLEMENTATION.
 
         LOOP AT lt_fields ASSIGNING FIELD-SYMBOL(<field_curr>) WHERE name = field-currencycode.
           <field_curr>-is_currencycode = abap_true.
-          "@todo check to enable this based on the binding type being used
-          "currently two currencycode fiels could be displayed in the UI
+          "hide currency field since it is part of a field group already for V4 preview
 *          <field_curr>-is_hidden = abap_true.
         ENDLOOP.
 
@@ -2220,8 +2189,7 @@ CLASS /dmo/cl_rap_node IMPLEMENTATION.
 
         LOOP AT lt_fields ASSIGNING FIELD-SYMBOL(<field_quan>) WHERE name = field-unitofmeasure.
           <field_quan>-is_unitofmeasure = abap_true.
-          "@todo check to enable this based on the binding type being used
-          "currently two quantiy fiels could be displayed in the UI
+          "hide quantity field since it is part of a field group already for V4 preview
 *          <field_quan>-is_hidden = abap_true.
         ENDLOOP.
 
@@ -2344,8 +2312,8 @@ CLASS /dmo/cl_rap_node IMPLEMENTATION.
 *        IF  xco_lib->get_structure( CONV #( lv_name ) )->exists( ).
 *          lv_object_already_exists = abap_true.
 *        ENDIF.
-        SELECT * FROM I_CustABAPObjDirectoryEntry WHERE
-        ABAPObject = @lv_name AND ABAPObjectCategory = 'R3TR' AND ABAPObjectType = 'SMBC' INTO TABLE @DATA(lt_smbc).
+        SELECT * FROM i_custabapobjdirectoryentry WHERE
+        abapobject = @lv_name AND abapobjectcategory = 'R3TR' AND abapobjecttype = 'SMBC' INTO TABLE @DATA(lt_smbc).
 
         IF lines( lt_smbc ) = 1.
           lv_object_already_exists = abap_true.
@@ -2499,7 +2467,7 @@ CLASS /dmo/cl_rap_node IMPLEMENTATION.
     bo_node_is_consistent = abap_true.
     is_finalized = abap_false.
     draft_enabled = abap_false.
-    useUpperCamelCase = abap_true.
+    useuppercamelcase = abap_true.
     add_meta_data_extensions = abap_true.
     skip_activation = abap_false.
 
@@ -2737,7 +2705,7 @@ CLASS /dmo/cl_rap_node IMPLEMENTATION.
                EXPORTING
                  io_database_table = lo_database_table
                IMPORTING
-                 et_fields         = lt_Fields
+                 et_fields         = lt_fields
              ).
 
 
@@ -2749,13 +2717,13 @@ CLASS /dmo/cl_rap_node IMPLEMENTATION.
 
         TYPES:
           BEGIN OF ts_semantics_amount,
-            currencyCode TYPE string,
+            currencycode TYPE string,
           END OF ts_semantics_amount.
         DATA semantic_amount TYPE ts_semantics_amount.
 
         TYPES:
           BEGIN OF ts_semantics_quantity,
-            unitOfMeasure TYPE string,
+            unitofmeasure TYPE string,
           END OF ts_semantics_quantity.
         DATA semantic_quantity TYPE ts_semantics_quantity.
 
@@ -2954,7 +2922,7 @@ CLASS /dmo/cl_rap_node IMPLEMENTATION.
       DATA(ls_field) = lo_field_content->get( ).
 
       table_fields-name = lo_field->name.
-      IF useUpperCamelCase = abap_true.
+      IF useuppercamelcase = abap_true.
         "table_fields-cds_view_field = to_mixed( table_fields-name ).
         table_fields-cds_view_field = xco_cp=>string( table_fields-name )->split( '_' )->compose( xco_cp_string=>composition->pascal_case )->value.
       ELSE.
@@ -2964,7 +2932,7 @@ CLASS /dmo/cl_rap_node IMPLEMENTATION.
       "add hardcoded mappings
       CASE table_fields-name.
         WHEN 'SPRAS'.
-          IF useUpperCamelCase = abap_true.
+          IF useuppercamelcase = abap_true.
             table_fields-cds_view_field = 'Language'.
           ENDIF.
       ENDCASE.
@@ -3207,7 +3175,7 @@ CLASS /dmo/cl_rap_node IMPLEMENTATION.
     DATA(lv_cds_view) = to_upper( iv_cds_view ) .
 
 
-    SELECT * FROM I_APIsForSAPCloudPlatform WHERE ReleasedObjectType = 'CDS_STOB' AND ReleasedObjectName = @lv_cds_view INTO TABLE @DATA(lt_result)..
+    SELECT * FROM i_apisforsapcloudplatform WHERE releasedobjecttype = 'CDS_STOB' AND releasedobjectname = @lv_cds_view INTO TABLE @DATA(lt_result)..
 
     "check if CDS view used as target exists
     IF  lt_result IS INITIAL .
