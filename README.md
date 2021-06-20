@@ -8,6 +8,12 @@ There is now a version of the RAP Generator available that works on SAP S/4HANA 
 
 Find out more about the on premise specifics in my blog post [How to use the RAP Generator in SAP S/4HANA on premise?](https://blogs.sap.com/2021/06/16/how-to-use-the-rap-generator-in-sap-s-4hana-on-premise)
 
+## Prerequisites
+
+The RAP Generator can either be used in
+- SAP BTP ABAP environment systems
+- SAP S/4HANA 2020 FSP1 and higher
+
 ## What's new with 2102
 
 - all objects of a draft enabled V4 service are can now be generated and be activated. The RAP Generator generates the draft tables for you.
