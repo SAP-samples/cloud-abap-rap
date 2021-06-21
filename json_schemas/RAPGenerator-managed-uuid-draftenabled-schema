@@ -23,7 +23,7 @@
             "const": "table"
         },
         "draftenabled": {
-            "const": "true"
+            "const": true
         },
         "prefix": {
             "type": "string"
