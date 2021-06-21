@@ -1,0 +1,194 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "properties": {
+        "$schema": {
+            "type": "string"
+        },
+        "implementationtype": {
+            "const": "managed_uuid"
+        },
+        "namespace": {
+            "type": "string",
+            "minLength": 1
+        },
+        "package": {
+            "type": "string",
+            "minLength": 1
+        },
+        "bindingType": {
+            "$ref": "#/definitions/bindingtype-schema",
+            "default": "odata_v4_ui"
+        },
+        "dataSourceType": {           
+            "const": "table"
+        },
+        "draftenabled": {
+            "const": "true"
+        },
+        "prefix": {
+            "type": "string"
+        },
+        "suffix": {
+            "type": "string"
+        },
+        "transportrequest": {
+            "type": "string"
+        },
+        "hierarchy": {
+            "$ref": "#/definitions/rootNode-schema"
+        }
+    },
+    "required": [
+        "implementationtype",
+        "namespace",
+        "package",
+        "bindingType",
+        "dataSourceType",
+        "draftenabled",
+        "hierarchy"
+    ],
+    "additionalProperties": false,
+    "definitions": {
+        "rootNode-schema": {
+            "properties": {
+                "entityName": {
+                    "type": "string",
+                    "minLength": 1
+                },
+                "dataSource": {
+                    "type": "string",
+                    "minLength": 1
+                },
+                "objectId": {
+                    "type": "string",
+                    "minLength": 1
+                },
+                "uuid": {
+                    "type": "string",
+                    "default": "uuid",
+                    "minLength": 1
+                },
+                "createdBy": {
+                    "type": "string",
+                    "default": "created_by",
+                    "minLength": 1
+                },
+                "createdAt": {
+                    "type": "string",
+                    "default": "created_at",
+                    "minLength": 1
+                },
+                "lastChangedBy": {
+                    "type": "string",
+                    "default": "last_changed_by",
+                    "minLength": 1
+                },
+                "lastChangedAt": {
+                    "type": "string",
+                    "default": "last_changed_at",
+                    "minLength": 1
+                },
+                "localInstanceLastChangedAt": {
+                    "type": "string",
+                    "default": "local_last_changed_at",
+                    "minLength": 1
+                },
+                "draftTable": {
+                    "type": "string",
+                    "minLength": 1
+                },
+                "children": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/childNode-schema"
+                    }
+                }
+            },
+            "required": [
+                "entityName",
+                "dataSource",
+                "objectId",
+                "uuid",
+                "createdBy",
+                "createdAt",
+                "lastChangedBy",
+                "lastChangedAt",
+                "localInstanceLastChangedAt",
+                "draftTable"
+            ],
+            "additionalProperties": false
+        },
+        "childNode-schema": {
+            "properties": {
+                "entityName": {
+                    "type": "string",
+                    "minLength": 1
+                },
+                "dataSource": {
+                    "type": "string",
+                    "minLength": 1
+                },
+                "objectId": {
+                    "type": "string",
+                    "minLength": 1
+                },
+                "uuid": {
+                    "type": "string",
+                    "default": "uuid",
+                    "minLength": 1
+                },
+                "parentUuid": {
+                    "type": "string",
+                    "default": "parent_uuid",
+                    "minLength": 1
+                },
+                "localInstanceLastChangedAt": {
+                    "type": "string",
+                    "default": "local_last_changed_at",
+                    "minLength": 1
+                },
+                "draftTable": {
+                    "type": "string",
+                    "minLength": 1
+                },
+                "children": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/childNode-schema"
+                    }
+                }
+            },
+            "required": [
+                "entityName",
+                "dataSource",
+                "objectId",
+                "uuid",
+                "parentUuid",
+                "localInstanceLastChangedAt",
+                "draftTable"
+            ],
+            "additionalProperties": false
+        },
+        "implementationtype-schema": {
+            "enum": [
+                "managed_uuid",
+                "managed_semantic_key",
+                "unmanaged_semantic_key"
+            ]
+        },
+        "bindingtype-schema": {
+            "enum": [
+                "odata_v4_ui",
+                "odata_v2_ui",
+                "odata_v4_web_api",
+                "odata_v2_web_api"
+            ]
+        },
+        "datasourceType-schema": {
+            "enum": [
+                "table",
+                "cds_view"
+            ]
+        }
+    }
+}
