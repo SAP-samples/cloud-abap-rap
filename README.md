@@ -186,18 +186,7 @@ Let’s start with the explanation of the (mandatory) properties of the business
 
 In this repository there is now a new folder that contains JSON schemas that describe which parameters are mandatory for certain scenarios.
 
-https://github.com/SAP-samples/cloud-abap-rap/tree/master/json_schemas
-
-<table style="width:100%">
-  <tr>
-    <th>Scenario</th>
-    <th>JSON schema</th>
-  </tr>
-  <tr>
-    <td>managed_uuid with draft</td>
-    <td>[json_schema](../../tree/master/json_schenmas/RAPGenerator-managed-uuid-draftenabled-schema)</td>   
-  </tr>
-</table>
+[json_templates](../../tree/master/json_templates) 
 
 ### Mandatory parameters of the root node
 
