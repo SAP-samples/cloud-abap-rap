@@ -186,7 +186,7 @@ Let’s start with the explanation of the (mandatory) properties of the business
 
 In this repository there is now a new folder that contains JSON schemas that describe which parameters are mandatory for certain scenarios.
 
-[json_templates](../../tree/master/json_templates) 
+[json_Schemas](../../tree/master/json_schemas) 
 
 ### Mandatory parameters of the root node
 
