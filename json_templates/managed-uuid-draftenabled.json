@@ -1,0 +1,34 @@
+{
+    "$schema": "https://raw.githubusercontent.com/SAP-samples/cloud-abap-rap/master/json_schemas/RAPGenerator-managed-uuid-draftenabled-schema",
+    "namespace": "Z",
+    "dataSourceType":"table",
+    "implementationtype":"managed_uuid",
+    "bindingType": "odata_v4_ui",
+    "package": "ZRAP_TRAVEL_AF59",
+    "draftenabled":true,
+    "prefix": "RAP_",
+    "suffix": "AF59",
+    "hierarchy": {
+        "entityName": "Travel",
+        "dataSource": "zrap_atrav_af59",
+        "draftTable": "zrap_atrav_d59",
+        "uuid": "travel_uuid",
+        "objectId": "travel_id",
+        "createdAt": "created_at",
+        "createdBy": "created_by",
+        "lastChangedAt": "last_changed_at",
+        "lastChangedBy": "last_changed_by",
+        "localInstanceLastChangedAt": "local_last_changed_at",
+        "children": [
+            {
+                "entityName": "Booking",
+                "dataSource": "zrap_abook_af59",
+                "draftTable": "zrap_dbook_af59",
+                "uuid": "booking_uuid",
+                "parentUuid": "travel_uuid",
+                "objectId": "booking_id",
+                "localInstanceLastChangedAt": "local_last_changed_at"                
+            }
+        ]
+    }
+}
