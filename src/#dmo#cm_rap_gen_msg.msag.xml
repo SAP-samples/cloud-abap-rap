@@ -332,6 +332,18 @@
      <MSGNR>054</MSGNR>
      <TEXT>&amp;1 Grandchild nodes are not supported for &amp;2 = &amp;3.</TEXT>
     </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>/DMO/CM_RAP_GEN_MSG</ARBGB>
+     <MSGNR>055</MSGNR>
+     <TEXT>No total etag field found in &amp;2.  lastChangedAt mapped as &amp;1.</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>/DMO/CM_RAP_GEN_MSG</ARBGB>
+     <MSGNR>056</MSGNR>
+     <TEXT>No local etag field found in &amp;2. localInstanceLastChangedAt mapped as &amp;1.</TEXT>
+    </T100>
    </T100>
   </asx:values>
  </asx:abap>

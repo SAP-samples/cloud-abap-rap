@@ -20,8 +20,10 @@ CLASS /dmo/cl_rap_node DEFINITION
       END OF additional_fields_object_types,
 
       BEGIN OF data_source_types,
-        table    TYPE string VALUE 'table',
-        cds_view TYPE string VALUE 'cds_view',
+        table     TYPE string VALUE 'table',
+        cds_view  TYPE string VALUE 'cds_view',
+        abap_type TYPE string VALUE 'abap_type',
+        structure TYPE string VALUE 'structure',
       END OF data_source_types,
 
       BEGIN OF cardinality,
@@ -56,10 +58,36 @@ CLASS /dmo/cl_rap_node DEFINITION
         Web_API TYPE string VALUE 'API_',
       END OF binding_type_prefix,
 
-      supported_binding_types TYPE string VALUE 'odata_v4_ui, odata_v2_ui, odata_v4_web_api, odata_v2_web_api',
+      BEGIN OF node_object_suffix,
+        custom_entity           TYPE string VALUE 'I_',
+        custom_query_impl_class TYPE string VALUE 'CL_CE_',
+        cds_view_i              TYPE string VALUE 'I_',
+        "ddic_view_i             TYPE sxco_dbt_object_name,
+        cds_view_p              TYPE string VALUE 'C_',
+        meta_data_extension     TYPE string VALUE 'C_',
+        behavior_implementation TYPE string VALUE 'BP_I_',
+        control_structure       TYPE string VALUE 'S',
+      END OF node_object_suffix,
 
-      uuid_type               TYPE cl_xco_ad_built_in_type=>tv_type   VALUE 'RAW',
-      uuid_length             TYPE cl_xco_ad_built_in_type=>tv_length  VALUE 16.
+
+
+      BEGIN OF root_node_object_suffix,
+        behavior_definition_i TYPE string VALUE 'I_',
+        behavior_definition_p TYPE string VALUE 'C_',
+        service_definition    TYPE string VALUE 'C_',
+        service_binding       TYPE string VALUE 'C_',
+      END OF root_node_object_suffix,
+
+      supported_binding_types  TYPE string VALUE 'odata_v4_ui, odata_v2_ui, odata_v4_web_api, odata_v2_web_api',
+
+      uuid_type                TYPE cl_xco_ad_built_in_type=>tv_type   VALUE 'RAW',
+      uuid_length              TYPE cl_xco_ad_built_in_type=>tv_length  VALUE 16,
+
+      singleton_field_name     TYPE sxco_cds_field_name  VALUE 'SingletonID',
+      singleton_suffix         TYPE string VALUE '_S',
+      singleton_child_tab_name TYPE string VALUE 'child_tab'.
+
+
 
     .
 
@@ -139,6 +167,8 @@ CLASS /dmo/cl_rap_node DEFINITION
 
     TYPES:
       BEGIN OF ts_node_objects,
+        custom_entity           TYPE sxco_cds_object_name,
+        custom_query_impl_class TYPE sxco_ao_object_name,
         cds_view_i              TYPE sxco_cds_object_name,
         ddic_view_i             TYPE sxco_dbt_object_name,
         cds_view_p              TYPE sxco_cds_object_name,
@@ -170,6 +200,23 @@ CLASS /dmo/cl_rap_node DEFINITION
       tt_additional_fields TYPE STANDARD TABLE OF ts_additional_fields WITH DEFAULT KEY.
 
     TYPES:
+      BEGIN OF ts_additional_fields_2,
+        name                   TYPE string,
+        cds_view_field         TYPE sxco_ddef_alias_name,
+        data_element           TYPE sxco_ad_object_name,
+        built_in_type          TYPE cl_xco_ad_built_in_type=>tv_type,
+        built_in_type_length   TYPE cl_xco_ad_built_in_type=>tv_length,
+        built_in_type_decimals TYPE cl_xco_ad_built_in_type=>tv_decimals,
+        localized              TYPE abap_bool,
+        cds_interface_view     TYPE abap_bool,
+        cds_projection_view    TYPE abap_bool,
+        draft_table            TYPE abap_bool,
+      END OF ts_additional_fields_2,
+
+      tt_additional_fields_2 TYPE STANDARD TABLE OF ts_additional_fields_2 WITH DEFAULT KEY.
+
+
+    TYPES:
       BEGIN OF ts_objects_with_add_fields,
         object            TYPE string,
         additional_fields TYPE tt_additional_fields,
@@ -177,6 +224,11 @@ CLASS /dmo/cl_rap_node DEFINITION
 
       tt_objects_with_add_fields TYPE STANDARD TABLE OF ts_objects_with_add_fields WITH DEFAULT KEY.
 
+    TYPES:
+      BEGIN OF ts_abap_type,
+        prefix    TYPE sxco_ao_object_name,
+        type_name TYPE   sxco_ao_component_name,
+      END OF ts_abap_type.
 
     TYPES:
       BEGIN OF ts_condition_fields,
@@ -224,8 +276,10 @@ CLASS /dmo/cl_rap_node DEFINITION
     DATA rap_node_objects TYPE ts_node_objects READ-ONLY.
     DATA rap_root_node_objects TYPE ts_root_node_objects READ-ONLY.
     DATA lt_fields TYPE STANDARD TABLE OF ts_field WITH DEFAULT KEY READ-ONLY.
+    DATA lt_additional_fields TYPE STANDARD TABLE OF ts_additional_fields_2 WITH DEFAULT KEY READ-ONLY.
     DATA lt_fields_persistent_table TYPE STANDARD TABLE OF ts_field WITH DEFAULT KEY READ-ONLY.
     DATA table_name          TYPE sxco_dbt_object_name READ-ONLY.
+    DATA structure_name      TYPE sxco_ad_object_name READ-ONLY.
     DATA semantic_key TYPE tt_semantic_key.
     DATA suffix              TYPE string READ-ONLY.
     DATA prefix              TYPE string READ-ONLY.
@@ -244,6 +298,7 @@ CLASS /dmo/cl_rap_node DEFINITION
                                   WITH UNIQUE KEY cds_view_field dbtable_field.
     DATA ls_mapping TYPE if_xco_gen_bdef_s_fo_b_mapping=>ts_field_mapping  .
     DATA transactional_behavior TYPE abap_bool READ-ONLY.
+    DATA multi_edit TYPE abap_bool READ-ONLY.
     DATA manage_business_configuration TYPE abap_bool READ-ONLY.
     DATA manage_business_config_names TYPE ts_manage_buiness_config READ-ONLY.
     DATA publish_service            TYPE abap_bool READ-ONLY.
@@ -271,6 +326,9 @@ CLASS /dmo/cl_rap_node DEFINITION
 
     METHODS add_transactional_behavior
       IMPORTING iv_value TYPE abap_bool .
+
+    METHODS add_multi_edit
+      IMPORTING iv_value TYPE abap_bool.
 
     METHODS add_to_manage_business_config
       IMPORTING iv_value TYPE abap_bool .
@@ -344,6 +402,16 @@ CLASS /dmo/cl_rap_node DEFINITION
                   TYPE REF TO /dmo/cl_rap_node
       RAISING   /dmo/cx_rap_generator.
 
+    METHODS add_virtual_root_node
+      RETURNING VALUE(ro_virtual_root_node)
+                  TYPE REF TO /dmo/cl_rap_node
+      RAISING   /dmo/cx_rap_generator.
+
+    METHODS add_child_node_hierarchy
+      IMPORTING
+                child_node TYPE REF TO /dmo/cl_rap_node
+      RAISING   /dmo/cx_rap_generator.
+
     METHODS check_repository_object_name
       IMPORTING
                 iv_type TYPE sxco_ar_object_type
@@ -397,6 +465,7 @@ CLASS /dmo/cl_rap_node DEFINITION
       RAISING   /dmo/cx_rap_generator.
 
     METHODS is_root RETURNING VALUE(rv_is_root) TYPE abap_bool.
+    METHODS is_virtual_root RETURNING VALUE(rv_is_virtual_root) TYPE abap_bool.
 
     METHODS is_child RETURNING VALUE(rv_is_child) TYPE abap_bool.
 
@@ -410,6 +479,11 @@ CLASS /dmo/cl_rap_node DEFINITION
     METHODS set_cds_view
       IMPORTING
                 iv_cds_view TYPE sxco_cds_object_name
+      RAISING   /dmo/cx_rap_generator.
+
+    METHODS set_structure
+      IMPORTING
+                iv_structure TYPE sxco_ad_object_name
       RAISING   /dmo/cx_rap_generator.
 
     METHODS set_data_source
@@ -454,6 +528,11 @@ CLASS /dmo/cl_rap_node DEFINITION
       RETURNING VALUE(rv_cds_i_view_name) TYPE sxco_cds_object_name
       RAISING   /dmo/cx_rap_generator.
 
+    METHODS set_custom_entity_name
+      IMPORTING iv_name                      TYPE sxco_cds_object_name OPTIONAL
+      RETURNING VALUE(rv_custom_entity_name) TYPE sxco_cds_object_name
+      RAISING   /dmo/cx_rap_generator.
+
     METHODS set_cds_view_p_name
       IMPORTING iv_name                   TYPE sxco_cds_object_name OPTIONAL
       RETURNING VALUE(rv_cds_p_view_name) TYPE sxco_cds_object_name
@@ -472,6 +551,11 @@ CLASS /dmo/cl_rap_node DEFINITION
     METHODS set_behavior_impl_name
       IMPORTING iv_name                     TYPE sxco_cds_object_name OPTIONAL
       RETURNING VALUE(rv_behavior_imp_name) TYPE sxco_cds_object_name
+      RAISING   /dmo/cx_rap_generator.
+
+    METHODS set_custom_query_impl_name
+      IMPORTING iv_name                           TYPE sxco_cds_object_name OPTIONAL
+      RETURNING VALUE(rv_custom_query_impl_class) TYPE sxco_cds_object_name
       RAISING   /dmo/cx_rap_generator.
 
     METHODS set_behavior_def_i_name
@@ -579,10 +663,19 @@ CLASS /dmo/cl_rap_node DEFINITION
         iv_object            TYPE string
         it_additional_fields TYPE tt_additional_fields.
 
+    METHODS add_additional_fields_2
+      IMPORTING
+        it_additional_fields TYPE tt_additional_fields_2.
+
 
     METHODS add_valuehelp_for_curr_quan.
 
-    METHODS set_is_root_node.
+    METHODS set_is_root_node
+      "  IMPORTING io_is_root_node TYPE abap_bool OPTIONAL.
+      IMPORTING io_is_root_node TYPE abap_bool DEFAULT abap_true.
+
+    METHODS set_is_virtual_root_node
+      IMPORTING io_is_root_node TYPE abap_bool OPTIONAL.
 
     METHODS set_object_id
       IMPORTING
@@ -595,6 +688,7 @@ CLASS /dmo/cl_rap_node DEFINITION
     DATA is_test_run TYPE abap_bool.
     DATA implementationtype  TYPE string.
     DATA is_root_node        TYPE abap_bool.
+    DATA is_virtual_root_node TYPE abap_bool.
     DATA is_child_node       TYPE abap_bool.
     DATA is_grand_child_node TYPE abap_bool.
     DATA bo_node_is_consistent  TYPE abap_bool.
@@ -611,6 +705,8 @@ CLASS /dmo/cl_rap_node DEFINITION
                 iv_number TYPE i
       RAISING   cx_parameter_invalid.
 
+    METHODS admin_fields_exist
+      RETURNING VALUE(rv_admin_fields_exists) TYPE abap_bool.
 
     METHODS field_name_exists_in_cds_view
       IMPORTING
@@ -623,11 +719,22 @@ CLASS /dmo/cl_rap_node DEFINITION
                 iv_field_name               TYPE string
       RETURNING VALUE(rv_field_name_exists) TYPE abap_bool.
 
-    METHODS read_database_table
+    METHODS get_database_table_fields
       IMPORTING
         io_database_table TYPE REF TO if_xco_database_table
       EXPORTING
         et_fields         TYPE tt_fields_default_key  .
+
+    METHODS get_field
+      IMPORTING
+                name            TYPE ts_field-name
+      RETURNING VALUE(rs_field) TYPE ts_field.
+
+    METHODS get_structure_components
+      IMPORTING
+        io_components TYPE REF TO if_xco_ad_structure
+      EXPORTING
+        et_fields     TYPE tt_fields_default_key  .
 
     METHODS      read_data_element
       IMPORTING
@@ -661,6 +768,10 @@ CLASS /dmo/cl_rap_node IMPLEMENTATION.
         data_source_type = data_source_types-table.
       WHEN 'cds_view'.
         data_source_type = data_source_types-cds_view.
+      WHEN 'abap_type'.
+        data_source_type = data_source_types-abap_type.
+      WHEN 'structure'.
+        data_source_type = data_source_types-structure.
       WHEN OTHERS.
 
         RAISE EXCEPTION TYPE /dmo/cx_rap_generator
@@ -741,7 +852,6 @@ CLASS /dmo/cl_rap_node IMPLEMENTATION.
 
   METHOD set_draft_table.
 
-
     DATA(lv_table) = to_upper( iv_draft_table ) .
 
     check_repository_object_name(
@@ -750,18 +860,7 @@ CLASS /dmo/cl_rap_node IMPLEMENTATION.
          iv_name = lv_table
      ).
 
-*    "check if table exists
-*    IF xco_lib->get_database_table(  CONV #( lv_table ) )->exists( ) = abap_false.
-*      APPEND | Table { lv_table } does not exist| TO lt_messages.
-*      bo_node_is_consistent = abap_false.
-*      RAISE EXCEPTION TYPE /DMO/CX_RAP_GENERATOR
-*        EXPORTING
-*          textid   = /DMO/CX_RAP_GENERATOR=>table_does_not_exist
-*          mv_value = CONV #( lv_table ).
-*    ENDIF.
-
     draft_table_name =  lv_table .
-
 
   ENDMETHOD.
 
@@ -908,9 +1007,11 @@ CLASS /dmo/cl_rap_node IMPLEMENTATION.
 
 
   METHOD set_is_root_node.
-    is_root_node = abap_true.
-    set_root( me ).
-    set_parent( me ).
+    is_root_node = io_is_root_node.
+    IF is_root_node = abap_true.
+      set_root( me ).
+      set_parent( me ).
+    ENDIF.
   ENDMETHOD.
 
 
@@ -918,15 +1019,17 @@ CLASS /dmo/cl_rap_node IMPLEMENTATION.
     "an automatic mapping can only be calculated if the data source is a table
     CLEAR lt_mapping.
 
-    IF data_source_type = data_source_types-table.
+    IF data_source_type = data_source_types-table
+    OR data_source_type = data_source_types-structure
+    OR data_source_type = data_source_types-abap_type.
 
 
       IF it_field_mappings IS NOT INITIAL.
 
         LOOP AT it_field_mappings INTO DATA(ls_field_mapping) WHERE dbtable_field  <> field_name-client.
 
-*       field_is_not_in_datasource,
-*       field_is_not_in_cds_view,
+          "field_is_not_in_datasource
+          "field_is_not_in_cds_view
 
           IF field_name_exists_in_db_table( CONV #( ls_field_mapping-dbtable_field ) ) = abap_true.
             ls_mapping-dbtable_field = to_upper( ls_field_mapping-dbtable_field ).
@@ -1000,11 +1103,11 @@ CLASS /dmo/cl_rap_node IMPLEMENTATION.
 
 
   METHOD set_mbc_description.
-*    check_parameter(
-*      EXPORTING
-*        iv_parameter_name = 'manage_business_config_names-description'
-*        iv_value          = CONV string( iv_value )
-*    ).
+    "  check_parameter(
+    "    EXPORTING
+    "      iv_parameter_name = 'manage_business_config_names-description'
+    "      iv_value          = CONV string( iv_value )
+    "  ).
     manage_business_config_names-description = iv_value.
   ENDMETHOD.
 
@@ -1015,18 +1118,17 @@ CLASS /dmo/cl_rap_node IMPLEMENTATION.
         iv_type = 'SMBC'
         iv_name = iv_value
     ).
-*  CATCH /dmo/cx_rap_generator.
 
     manage_business_config_names-identifier = iv_value.
   ENDMETHOD.
 
 
   METHOD set_mbc_name.
-*    check_parameter(
-*      EXPORTING
-*        iv_parameter_name = 'manage_business_config_names-name'
-*        iv_value          =  iv_value
-*    ).
+    "  check_parameter(
+    "    EXPORTING
+    "      iv_parameter_name = 'manage_business_config_names-name'
+    "      iv_value          =  iv_value
+    "  ).
     manage_business_config_names-name = iv_value.
   ENDMETHOD.
 
@@ -1129,18 +1231,6 @@ CLASS /dmo/cl_rap_node IMPLEMENTATION.
 
   METHOD set_package.
 
-*    check_parameter(
-*            EXPORTING
-*              iv_parameter_name = 'package'
-*              iv_value          = CONV #( iv_package )
-*          ).
-
-*    check_repository_object_name(
-*       EXPORTING
-*         iv_type = 'DEVC'
-*         iv_name = CONV #( iv_package )
-*     ).
-
     IF xco_lib->get_package( iv_package )->exists(  ) AND iv_package IS NOT INITIAL.
       package = iv_package.
       package = to_upper( package ).
@@ -1173,19 +1263,32 @@ CLASS /dmo/cl_rap_node IMPLEMENTATION.
 
     DATA(lv_table) = to_upper( iv_persistent_table ) .
 
-    "check if table exists
-    IF xco_lib->get_database_table(  CONV #( lv_table ) )->exists( ) = abap_false.
-      APPEND | Table { lv_table } does not exist| TO lt_messages.
-      bo_node_is_consistent = abap_false.
-      RAISE EXCEPTION TYPE /dmo/cx_rap_generator
-        EXPORTING
-          textid   = /dmo/cx_rap_generator=>table_does_not_exist
-          mv_value = CONV #( lv_table ).
-    ENDIF.
-
     persistent_table_name =  iv_persistent_table .
 
-    get_fields_persistent_table(  ).
+    IF data_source_type = data_source_types-table  OR
+       data_source_type = data_source_types-cds_view.
+      "check if table exists
+      IF xco_lib->get_database_table(  CONV #( lv_table ) )->exists( ) = abap_false.
+        APPEND | Table { lv_table } does not exist| TO lt_messages.
+        bo_node_is_consistent = abap_false.
+        RAISE EXCEPTION TYPE /dmo/cx_rap_generator
+          EXPORTING
+            textid   = /dmo/cx_rap_generator=>table_does_not_exist
+            mv_value = CONV #( lv_table ).
+      ENDIF.
+
+      get_fields_persistent_table(  ).
+
+      " ELSEIF data_source_type = data_source_types-structure.
+      " @todo
+      "
+      " ELSEIF data_source_type = data_source_types-abap_type.
+      " @todo
+
+    ENDIF.
+
+
+
 
   ENDMETHOD.
 
@@ -1196,11 +1299,9 @@ CLASS /dmo/cl_rap_node IMPLEMENTATION.
          iv_parameter_name = 'Prefix'
          iv_value          = CONV #( iv_prefix )
       ).
-*    IF iv_prefix IS NOT INITIAL.
-*      prefix = |{ iv_prefix }| .
-*    ELSE.
+
     prefix = iv_prefix.
-*    ENDIF.
+
   ENDMETHOD.
 
 
@@ -1248,10 +1349,10 @@ CLASS /dmo/cl_rap_node IMPLEMENTATION.
 
         "the cds view field name will be retrieved in the
         "finalize method because it can not
-        "be assumed that at this point that set_datasource
+        "be assumed at this point that set_datasource
         "has already been called.
         "This is because JSON files are used as input where the order of items
-        "can be arbitrary
+        "is arbitrary
         "Hence the order of the methods for setting the values cannot be enforced
         "the semantic key field is  data base field. The name has to be converted
         "to uppercase since otherwise checks for field names will fail
@@ -1671,78 +1772,91 @@ CLASS /dmo/cl_rap_node IMPLEMENTATION.
     ENDIF.
 
 
-    "validate if admin fields are present
 
-    IF me->draft_enabled = abap_true.
 
-*  created_by            : syuname;
-*  last_changed_by       : syuname;
-*  local_last_changed_at : timestampl;
+    IF root_node->draft_enabled = abap_true.
 
-      IF is_root(  ) OR is_child( ) OR  is_grand_child_or_deeper(  ).
+      "validate if total etag field is present in the root entity of the draft enabled BO
+      IF is_root(  ).
 
-        SELECT * FROM @lt_fields AS fields WHERE name  = @field_name-created_by INTO TABLE @DATA(result_created_by).
-        SELECT * FROM @lt_fields AS fields WHERE name  = @field_name-last_changed_by INTO TABLE @DATA(result_last_changed_by).
-        SELECT * FROM @lt_fields AS fields WHERE name  = @field_name-local_instance_last_changed_at INTO TABLE @DATA(result_loc_inst_last_chg_at).
-
-        IF result_created_by IS INITIAL.
+        IF line_exists( lt_fields[ name = field_name-last_changed_at ] ).
+          "DATA(last_changed_at) = lt_fields[ name = field_name-last_changed_at ]-cds_view_field.
+        ELSEIF line_exists( lt_additional_fields[ name = field_name-last_changed_at ] ).
+          "last_changed_at = lt_additional_fields[ name = field_name-last_changed_at ]-cds_view_field.
+        ELSE.
           RAISE EXCEPTION TYPE /dmo/cx_rap_generator
             EXPORTING
-              textid     = /dmo/cx_rap_generator=>admin_field_missing
-              mv_value   = field_name-created_by
-              mv_value_2 = CONV #( me->table_name ).
-        ENDIF.
-
-        IF result_last_changed_by IS INITIAL.
-          RAISE EXCEPTION TYPE /dmo/cx_rap_generator
-            EXPORTING
-              textid     = /dmo/cx_rap_generator=>admin_field_missing
-              mv_value   = field_name-last_changed_by
-              mv_value_2 = CONV #( me->table_name ).
-        ENDIF.
-
-        IF result_loc_inst_last_chg_at IS INITIAL.
-          RAISE EXCEPTION TYPE /dmo/cx_rap_generator
-            EXPORTING
-              textid     = /dmo/cx_rap_generator=>admin_field_missing
-              mv_value   = field_name-local_instance_last_changed_at
-              mv_value_2 = CONV #( me->table_name ).
+              textid    = /dmo/cx_rap_generator=>field_total_etag_missing
+              mv_value  = field_name-last_changed_at
+              mv_entity = entityname.
         ENDIF.
 
       ENDIF.
 
+      "validate if local etag field is present in each node of the draft enabled BO
 
-
-*   created_by            : syuname;
-*  created_at            : timestampl;
-*   last_changed_by       : syuname;
-*  last_changed_at       : timestampl;
-*   local_last_changed_at : timestampl;
-
-      IF is_root( ).
-
-        SELECT * FROM @lt_fields AS fields WHERE name  = @field_name-created_at INTO TABLE @DATA(result_created_at).
-        SELECT * FROM @lt_fields AS fields WHERE name  = @field_name-last_changed_at INTO TABLE @DATA(result_last_changed_at).
-      ENDIF.
-
-      IF result_created_at IS INITIAL.
+      IF line_exists( lt_fields[ name = field_name-local_instance_last_changed_at ] ).
+        "DATA(last_changed_at) = lt_fields[ name = field_name-last_changed_at ]-cds_view_field.
+      ELSEIF line_exists( lt_additional_fields[ name = field_name-local_instance_last_changed_at ] ).
+        "last_changed_at = lt_additional_fields[ name = field_name-last_changed_at ]-cds_view_field.
+      ELSE.
         RAISE EXCEPTION TYPE /dmo/cx_rap_generator
           EXPORTING
-            textid     = /dmo/cx_rap_generator=>admin_field_missing
-            mv_value   = field_name-created_at
-            mv_value_2 = CONV #( me->table_name ).
-      ENDIF.
-
-      IF result_last_changed_AT IS INITIAL.
-        RAISE EXCEPTION TYPE /dmo/cx_rap_generator
-          EXPORTING
-            textid     = /dmo/cx_rap_generator=>admin_field_missing
-            mv_value   = field_name-last_changed_at
-            mv_value_2 = CONV #( me->table_name ).
+            textid    = /dmo/cx_rap_generator=>field_local_etag_missing
+            mv_value  = field_name-local_instance_last_changed_at
+            mv_entity = entityname.
       ENDIF.
 
 
     ENDIF.
+
+    "created_by            : syuname;
+    "last_changed_by       : syuname;
+    "local_last_changed_at : timestampl;
+
+    IF  implementationtype = implementation_type-managed_semantic OR
+        implementationtype = implementation_type-managed_uuid.
+      IF is_root(  ).
+        IF line_exists( lt_fields[ name = field_name-created_by ] ).
+        ELSEIF line_exists( lt_additional_fields[ name = field_name-created_by ] ).
+        ELSE.
+          APPEND |{ entityname } is a managed BO. But { field_name-created_by } is not mapped| TO lt_messages.
+        ENDIF.
+
+        IF line_exists( lt_fields[ name = field_name-created_at ] ).
+        ELSEIF line_exists( lt_additional_fields[ name = field_name-created_at ] ).
+        ELSE.
+          APPEND |{ entityname } is a managed BO. But { field_name-created_at } is not mapped| TO lt_messages.
+        ENDIF.
+
+        IF line_exists( lt_fields[ name = field_name-last_changed_by ] ).
+        ELSEIF line_exists( lt_additional_fields[ name = field_name-last_changed_by ] ).
+        ELSE.
+          APPEND |{ entityname } is a managed BO. But { field_name-last_changed_by } is not mapped| TO lt_messages.
+        ENDIF.
+
+        IF line_exists( lt_fields[ name = field_name-last_changed_at ] ).
+        ELSEIF line_exists( lt_additional_fields[ name = field_name-last_changed_at ] ).
+        ELSE.
+          APPEND |{ entityname } is a managed BO. But { field_name-last_changed_at } is not mapped| TO lt_messages.
+        ENDIF.
+      ENDIF.
+      IF line_exists( lt_fields[ name = field_name-local_instance_last_changed_at ] ).
+      ELSEIF line_exists( lt_additional_fields[ name = field_name-local_instance_last_changed_at ] ).
+      ELSE.
+        APPEND |{ entityname } is a managed BO. But { field_name-local_instance_last_changed_at } is not mapped| TO lt_messages.
+      ENDIF.
+
+    ENDIF.
+
+    "created_by            : syuname;
+    "created_at            : timestampl;
+    "last_changed_by       : syuname;
+    "last_changed_at       : timestampl;
+    "local_last_changed_at : timestampl;
+
+
+
 
     "validate value helps
 
@@ -1818,38 +1932,18 @@ CLASS /dmo/cl_rap_node IMPLEMENTATION.
         EXPORTING
           textid    = /dmo/cx_rap_generator=>no_object_id_set
           mv_entity = entityname.
-
     ELSE.
       DATA object_id_upper_case  TYPE sxco_ad_field_name.
       object_id_upper_case = to_upper( object_id ).
 
-      CASE data_source_type.
-        WHEN data_source_types-table.
-          SELECT SINGLE * FROM @lt_fields AS db_field WHERE name  = @object_id_upper_case INTO @DATA(result).
-          IF result IS INITIAL.
-            RAISE EXCEPTION TYPE /dmo/cx_rap_generator
-              EXPORTING
-                textid        = /dmo/cx_rap_generator=>field_is_not_in_datasource
-                mv_value      = CONV #( object_id_upper_case )
-                mv_table_name = CONV #( table_name ).
-          ENDIF.
-
-        WHEN data_source_types-cds_view.
-          SELECT SINGLE * FROM @lt_fields AS db_field WHERE name  = @object_id_upper_case INTO @result.
-          IF result IS INITIAL.
-            RAISE EXCEPTION TYPE /dmo/cx_rap_generator
-              EXPORTING
-                textid        = /dmo/cx_rap_generator=>field_is_not_in_datasource
-                mv_value      = CONV #( object_id_upper_case )
-                mv_table_name = CONV #( cds_view_name ).
-          ENDIF.
-
-        WHEN OTHERS.
-          RAISE EXCEPTION TYPE /dmo/cx_rap_generator
-            EXPORTING
-              textid   = /dmo/cx_rap_generator=>invalid_data_source_type
-              mv_value = data_source_type.
-      ENDCASE.
+      SELECT SINGLE * FROM @lt_fields AS db_field WHERE name  = @object_id_upper_case INTO @DATA(result).
+      IF result IS INITIAL.
+        RAISE EXCEPTION TYPE /dmo/cx_rap_generator
+          EXPORTING
+            textid        = /dmo/cx_rap_generator=>field_is_not_in_datasource
+            mv_value      = CONV #( object_id_upper_case )
+            mv_table_name = CONV #( table_name ).
+      ENDIF.
 
       object_id_cds_field_name = result-cds_view_field.
 
@@ -1981,6 +2075,12 @@ CLASS /dmo/cl_rap_node IMPLEMENTATION.
           mv_value_2 = 'abap_true'.
     ENDIF.
 
+    IF data_source_type = data_source_types-structure.
+
+
+
+    ENDIF.
+
   ENDMETHOD.
 
 
@@ -1991,6 +2091,8 @@ CLASS /dmo/cl_rap_node IMPLEMENTATION.
         set_table( CONV sxco_ar_object_name( iv_data_source ) ).
       WHEN data_source_types-cds_view.
         set_cds_view( CONV sxco_cds_object_name( iv_data_source ) ).
+      WHEN data_source_types-structure.
+        set_structure( CONV sxco_ad_object_name( iv_data_source ) )  .
       WHEN OTHERS.
         RAISE EXCEPTION TYPE /dmo/cx_rap_generator
           EXPORTING
@@ -2008,13 +2110,6 @@ CLASS /dmo/cl_rap_node IMPLEMENTATION.
     DATA lv_object TYPE string.
     DATA ls_additional_fields TYPE ts_additional_fields.
     DATA ls_object_with_add_fields  TYPE ts_objects_with_add_fields.
-    "   FIELD-SYMBOLS: <fields> TYPE ts_field.
-
-*    check_parameter(
-*      EXPORTING
-*        iv_parameter_name = 'Alias'
-*        iv_value          = CONV #( iv_name )
-*    ).
 
     CASE to_lower( iv_object ).
 
@@ -2030,7 +2125,6 @@ CLASS /dmo/cl_rap_node IMPLEMENTATION.
 
     ls_object_with_add_fields-object = iv_object.
     ls_object_with_add_fields-additional_fields = it_additional_fields.
-
 
     APPEND ls_object_with_add_fields TO lt_objects_with_add_fields.
 
@@ -2079,11 +2173,11 @@ CLASS /dmo/cl_rap_node IMPLEMENTATION.
     ENDLOOP.
 
     "Make sure that the association is also using UpperCamelCase
-*    IF useuppercamelcase = abap_true.
-*      ls_assocation-name = xco_cp=>string( iv_name )->split( '_' )->compose( xco_cp_string=>composition->pascal_case )->value.
-*    ELSE.
+    "IF useuppercamelcase = abap_true.
+    "  ls_assocation-name = xco_cp=>string( iv_name )->split( '_' )->compose( xco_cp_string=>composition->pascal_case )->value.
+    "ELSE.
     ls_assocation-name = iv_name.
-*    ENDIF.
+    "ENDIF.
     ls_assocation-target = iv_target.
     ls_assocation-condition_components = it_condition_fields.
 
@@ -2140,18 +2234,15 @@ CLASS /dmo/cl_rap_node IMPLEMENTATION.
     transactional_behavior = iv_value.
   ENDMETHOD.
 
+  METHOD add_multi_edit.
+    multi_edit = iv_value.
+  ENDMETHOD.
 
   METHOD add_valuehelp.
 
     DATA lv_target TYPE string.
     DATA ls_valuehelp TYPE ts_valuehelp.
     FIELD-SYMBOLS: <fields> TYPE ts_field.
-
-*    check_parameter(
-*      EXPORTING
-*        iv_parameter_name = 'Alias'
-*        iv_value          = CONV #( iv_name )
-*    ).
 
     lv_target = to_upper( iv_name ).
 
@@ -2200,9 +2291,7 @@ CLASS /dmo/cl_rap_node IMPLEMENTATION.
 
         LOOP AT lt_fields ASSIGNING FIELD-SYMBOL(<field_curr>) WHERE name = field-currencycode.
           <field_curr>-is_currencycode = abap_true.
-          "@todo check to enable this based on the binding type being used
-          "currently two currencycode fiels could be displayed in the UI
-*          <field_curr>-is_hidden = abap_true.
+          <field_curr>-is_hidden = abap_true.
         ENDLOOP.
 
         "add_valuehelp  will set the flag has_valuehelp to abap_true
@@ -2220,9 +2309,7 @@ CLASS /dmo/cl_rap_node IMPLEMENTATION.
 
         LOOP AT lt_fields ASSIGNING FIELD-SYMBOL(<field_quan>) WHERE name = field-unitofmeasure.
           <field_quan>-is_unitofmeasure = abap_true.
-          "@todo check to enable this based on the binding type being used
-          "currently two quantiy fiels could be displayed in the UI
-*          <field_quan>-is_hidden = abap_true.
+          <field_quan>-is_hidden = abap_true.
         ENDLOOP.
 
         "add_valuehelp  will set the flag has_valuehelp to abap_true
@@ -2242,15 +2329,15 @@ CLASS /dmo/cl_rap_node IMPLEMENTATION.
 
   METHOD check_parameter.
 
+    "IF iv_value IS INITIAL.
+    "  RAISE EXCEPTION TYPE /DMO/CX_RAP_GENERATOR
+    "    EXPORTING
+    "      textid            = /DMO/CX_RAP_GENERATOR=>parameter_is_initial
+    "      mv_parameter_name = |Object:{ iv_parameter_name } |.
+    "ENDIF.
 
-
-    "check if parameter is initial
-*    IF iv_value IS INITIAL.
-*      RAISE EXCEPTION TYPE /DMO/CX_RAP_GENERATOR
-*        EXPORTING
-*          textid            = /DMO/CX_RAP_GENERATOR=>parameter_is_initial
-*          mv_parameter_name = |Object:{ iv_parameter_name } |.
-*    ENDIF.
+    "@todo
+    "Simply return if iv_value is intial?
 
     "search for spaces
     IF contains_no_blanks( CONV #( iv_value ) ) = abap_false.
@@ -2496,6 +2583,12 @@ CLASS /dmo/cl_rap_node IMPLEMENTATION.
 
   METHOD constructor.
 
+    IF io_xco_lib IS NOT INITIAL.
+      xco_lib = io_xco_lib.
+    ELSE.
+      xco_lib = NEW /dmo/cl_rap_xco_cloud_lib( ).
+    ENDIF.
+
     bo_node_is_consistent = abap_true.
     is_finalized = abap_false.
     draft_enabled = abap_false.
@@ -2520,11 +2613,8 @@ CLASS /dmo/cl_rap_node IMPLEMENTATION.
     transactional_behavior = abap_true.
     binding_type = binding_type_name-odata_v4_ui.
 
-    IF io_xco_lib IS NOT INITIAL.
-      xco_lib = io_xco_lib.
-    ELSE.
-      xco_lib = NEW /dmo/cl_rap_xco_cloud_lib( ).
-    ENDIF.
+    xco_lib = NEW /dmo/cl_rap_xco_cloud_lib( ).
+    "xco_lib = NEW /dmo/cl_rap_xco_on_prem_lib(  ).
 
     TEST-SEAM runs_as_cut.
       is_test_run = abap_false.
@@ -2557,13 +2647,8 @@ CLASS /dmo/cl_rap_node IMPLEMENTATION.
   ENDMETHOD.
 
 
+
   METHOD field_name_exists_in_db_table.
-*    rv_field_name_exists = abap_false.
-*    LOOP AT lt_fields INTO DATA(ls_field).
-*      IF ls_field-name = iv_field_name.
-*        rv_field_name_exists = abap_true.
-*      ENDIF.
-*    ENDLOOP.
     "safety measure if field name in JSON is not upper case
     DATA(lv_field_name_upper) = to_upper( iv_field_name ).
     "Check the field list contains a field with this name
@@ -2575,6 +2660,8 @@ CLASS /dmo/cl_rap_node IMPLEMENTATION.
   METHOD finalize.
     "namespace must be set for root node
     "namespace for child objects will be set in method add_child( )
+
+
 
     DATA manage_business_cfg_identifier TYPE if_mbc_cp_api_business_config=>ty_identifier.
 
@@ -2616,6 +2703,10 @@ CLASS /dmo/cl_rap_node IMPLEMENTATION.
           mv_entity = entityname.
     ENDIF.
 
+    "set root_uuid
+    IF is_grand_child_or_deeper(  ).
+      set_field_name_root_uuid( root_node->field_name-uuid ).
+    ENDIF.
 
     add_valuehelp_for_curr_quan(  ).
     "add additional checks from methods add_valuehelp( ), set_semantic_key_fields( ) and ADD ASSOCIATION( )
@@ -2648,12 +2739,27 @@ CLASS /dmo/cl_rap_node IMPLEMENTATION.
           <field_hidden>-is_hidden = abap_true.
       ENDCASE.
     ENDLOOP.
+    "for custom entities the key has to be specified via the json file
+    IF data_source_type = data_source_types-structure.
+      LOOP AT semantic_key INTO DATA(ls_semantic_key).
+        LOOP AT lt_fields ASSIGNING FIELD-SYMBOL(<field_without_key>) WHERE name = ls_semantic_key-name.
+          <field_without_key>-key_indicator = abap_true.
+        ENDLOOP.
+      ENDLOOP.
+      "to get key fields on top we have to sort by key_indicator descending
+      SORT lt_fields BY key_indicator DESCENDING name ASCENDING.
+    ENDIF.
+
+
+
 
     validate_bo( ).
 
     set_cds_view_i_name(  ).
     "we are using view entities as of 2008 and don't need to generate DDIC views anymore
     "set_ddic_view_i_name(  ).
+    set_custom_entity_name(  ).
+    set_custom_query_impl_name(  ).
     set_cds_view_p_name(  ).
     set_mde_name(  ).
     set_behavior_impl_name(  ).
@@ -2733,7 +2839,7 @@ CLASS /dmo/cl_rap_node IMPLEMENTATION.
 
           DATA(lo_database_table) = xco_lib->get_database_table( iv_name = table_name  ).
 
-          read_database_table(
+          get_database_table_fields(
                EXPORTING
                  io_database_table = lo_database_table
                IMPORTING
@@ -2742,6 +2848,19 @@ CLASS /dmo/cl_rap_node IMPLEMENTATION.
 
 
         END-TEST-SEAM.
+
+        set_mapping(  ).
+
+      WHEN data_source_types-structure.
+
+        DATA(lo_structure) = xco_lib->get_structure( iv_name = structure_name  ).
+
+        get_structure_components(
+                   EXPORTING
+                     io_components = lo_structure
+                   IMPORTING
+                     et_fields         = lt_Fields
+                 ).
 
         set_mapping(  ).
 
@@ -2812,20 +2931,24 @@ CLASS /dmo/cl_rap_node IMPLEMENTATION.
 
     ENDCASE.
 
-    IF implementationtype = implementation_type-managed_semantic OR
-       implementationtype = implementation_type-unmanged_semantic.
+    IF data_source_type = data_source_types-structure.
 
-      CLEAR semantic_key_fields.
-      CLEAR semantic_key.
+    ELSE.
 
-      LOOP AT lt_fields INTO ls_fields WHERE key_indicator = abap_true AND name <> field_name-client.
-        APPEND ls_fields-name TO semantic_key_fields.
-      ENDLOOP.
+      IF implementationtype = implementation_type-managed_semantic OR
+         implementationtype = implementation_type-unmanged_semantic.
 
-      set_semantic_key_fields( semantic_key_fields ).
+        CLEAR semantic_key_fields.
+        CLEAR semantic_key.
 
+        LOOP AT lt_fields INTO ls_fields WHERE key_indicator = abap_true AND name <> field_name-client.
+          APPEND ls_fields-name TO semantic_key_fields.
+        ENDLOOP.
+
+        set_semantic_key_fields( semantic_key_fields ).
+
+      ENDIF.
     ENDIF.
-
 
 
   ENDMETHOD.
@@ -2941,7 +3064,92 @@ CLASS /dmo/cl_rap_node IMPLEMENTATION.
   ENDMETHOD.
 
 
-  METHOD read_database_table.
+  METHOD is_virtual_root.
+    rv_is_virtual_root = is_virtual_root_node.
+  ENDMETHOD.
+
+  METHOD get_structure_components.
+
+    DATA table_fields  TYPE ts_field  .
+
+    LOOP AT io_components->components->all->get( ) INTO DATA(lo_field).
+      CLEAR table_fields.
+      DATA(lo_field_content) =  lo_field->content( ).
+      DATA(lo_field_content_type) = lo_field_content->get_type(  ).
+      DATA(ls_field) = lo_field_content->get( ).
+
+      table_fields-name = lo_field->name.
+      IF useUpperCamelCase = abap_true.
+        "table_fields-cds_view_field = to_mixed( table_fields-name ).
+        table_fields-cds_view_field = xco_cp=>string( table_fields-name )->split( '_' )->compose( xco_cp_string=>composition->pascal_case )->value.
+      ELSE.
+        table_fields-cds_view_field = table_fields-name.
+      ENDIF.
+
+      "add hardcoded mappings
+      CASE table_fields-name.
+        WHEN 'SPRAS'.
+          IF useUpperCamelCase = abap_true.
+            table_fields-cds_view_field = 'Language'.
+          ENDIF.
+      ENDCASE.
+
+      table_fields-is_data_element = lo_field_content_type->is_data_element( ).
+      table_fields-is_built_in_type = lo_field_content_type->is_built_in_type(  ).
+      IF table_fields-is_built_in_type = abap_true.
+        table_fields-built_in_type  = lo_field_content_type->get_built_in_type(  )->type.
+        table_fields-built_in_type_length = lo_field_content_type->get_built_in_type(  )->length.
+        table_fields-built_in_type_decimals = lo_field_content_type->get_built_in_type(  )->decimals.
+      ENDIF.
+      IF table_fields-name = 'QUANTITY'.
+        DATA(a) = 1.
+      ENDIF.
+      IF ls_field-type->is_data_element( ) EQ abap_true.
+        DATA(lo_data_element) = ls_field-type->get_data_element( ).
+
+        read_data_element(
+          EXPORTING
+            io_data_element = lo_data_element
+            is_fields       = table_fields
+          IMPORTING
+            es_fields       = table_fields
+        ).
+
+      ELSE.
+        IF ls_field-type->is_built_in_type(  ) = abap_true.
+          table_fields-built_in_type  = ls_field-type->get_built_in_type(  )->type.
+          table_fields-built_in_type_length = ls_field-type->get_built_in_type(  )->length.
+          table_fields-built_in_type_decimals = ls_field-type->get_built_in_type(  )->decimals.
+        ENDIF.
+      ENDIF.
+
+      DATA(currency_quantity) = ls_field-currency_quantity.
+
+      IF currency_quantity IS NOT INITIAL.
+        CASE table_fields-built_in_type.
+          WHEN 'CURR'.
+            table_fields-currencycode = ls_field-currency_quantity-reference_field.
+          WHEN 'QUAN'.
+            table_fields-unitofmeasure = ls_field-currency_quantity-reference_field.
+        ENDCASE.
+      ENDIF.
+
+      IF to_upper( right_string( iv_length = 2 iv_string = CONV #( table_fields-cds_view_field ) ) ) = 'ID'.
+        table_fields-cds_view_field = substring( val = table_fields-cds_view_field len = strlen( table_fields-cds_view_field ) - 2 ) && 'ID' .
+      ENDIF.
+
+      IF to_upper( right_string( iv_length = 4 iv_string = CONV #( table_fields-cds_view_field ) ) ) = 'UUID'.
+        table_fields-cds_view_field = substring( val = table_fields-cds_view_field len = strlen( table_fields-cds_view_field ) - 4 ) && 'UUID' .
+      ENDIF.
+
+      APPEND table_fields TO et_fields.
+
+    ENDLOOP.
+
+
+  ENDMETHOD.
+
+  METHOD get_database_table_fields.
 
     DATA table_fields  TYPE ts_field  .
 
@@ -3166,6 +3374,22 @@ CLASS /dmo/cl_rap_node IMPLEMENTATION.
 
   ENDMETHOD.
 
+  METHOD set_custom_query_impl_name.
+    IF iv_name IS INITIAL.
+      DATA(lv_name) = |{ namespace }CL_CE_{ prefix }{ entityname }{ suffix }|.
+    ELSE.
+      lv_name = iv_name.
+    ENDIF.
+
+    check_repository_object_name(
+       EXPORTING
+          iv_type = 'CLAS'
+          iv_name = lv_name
+         ).
+
+    rap_node_objects-custom_query_impl_class = lv_name.
+    rv_custom_query_impl_class = lv_name.
+  ENDMETHOD.
 
   METHOD set_behavior_impl_name.
 
@@ -3201,6 +3425,48 @@ CLASS /dmo/cl_rap_node IMPLEMENTATION.
     ENDIF.
   ENDMETHOD.
 
+  METHOD set_structure.
+
+    DATA(lv_structure) = to_upper( iv_structure ) .
+
+
+
+
+    "check if structure exists and structure has an active version
+    IF xco_lib->get_structure( CONV #( lv_structure ) )->exists( ) = abap_false .
+      APPEND | Structure { lv_structure } does not exist| TO lt_messages.
+      bo_node_is_consistent = abap_false.
+      RAISE EXCEPTION TYPE /dmo/cx_rap_generator
+        EXPORTING
+          textid   = /dmo/cx_rap_generator=>table_does_not_exist
+          mv_value = CONV #( lv_structure ).
+    ENDIF.
+
+    DATA(structure_state) = xco_lib->get_structure( CONV #( lv_structure ) )->get_state( xco_cp_abap_dictionary=>object_read_state->active_version ).
+
+    DATA(check_state_active) =  xco_cp_abap_dictionary=>object_state->active.
+
+    IF  structure_state <> xco_cp_abap_dictionary=>object_state->active.
+      APPEND | Structure { lv_structure } is not active | TO lt_messages.
+      bo_node_is_consistent = abap_false.
+      RAISE EXCEPTION TYPE /dmo/cx_rap_generator
+        EXPORTING
+          textid   = /dmo/cx_rap_generator=>table_is_inactive
+          mv_value = CONV #( lv_structure ).
+    ENDIF.
+
+    structure_name = lv_structure.
+
+    set_persistent_table( CONV #( lv_structure ) ).
+
+    get_fields(  ).
+
+
+
+
+
+
+  ENDMETHOD.
 
   METHOD set_cds_view.
 
@@ -3265,6 +3531,26 @@ CLASS /dmo/cl_rap_node IMPLEMENTATION.
     rap_node_objects-cds_view_i = lv_name.
 
     rv_cds_i_view_name = lv_name.
+
+  ENDMETHOD.
+
+  METHOD set_custom_entity_name.
+
+    IF iv_name IS INITIAL.
+      DATA(lv_name) = |{ namespace }I_{ prefix }{ entityname }{ suffix }|.
+    ELSE.
+      lv_name = iv_name.
+    ENDIF.
+
+    check_repository_object_name(
+      EXPORTING
+        iv_type = 'DDLS'
+        iv_name = lv_name
+    ).
+
+    rap_node_objects-custom_entity = lv_name.
+
+    rv_custom_entity_name = lv_name.
 
   ENDMETHOD.
 
@@ -3336,4 +3622,166 @@ CLASS /dmo/cl_rap_node IMPLEMENTATION.
       rv_no_underscore_at_pos_2_3 = abap_false.
     ENDIF.
   ENDMETHOD.
+
+  METHOD add_virtual_root_node.
+
+    ro_virtual_root_node = NEW /dmo/cl_rap_node( ).
+
+    ro_virtual_root_node->set_namespace( CONV #( me->namespace ) ).
+    ro_virtual_root_node->set_prefix( CONV #( me->prefix ) ).
+    ro_virtual_root_node->set_suffix( CONV #( me->suffix ) ).
+    ro_virtual_root_node->set_implementation_type( me->get_implementation_type(  ) ).
+    ro_virtual_root_node->set_data_source_type( data_source_types-cds_view ).
+    ro_virtual_root_node->set_xco_lib( me->xco_lib ).
+    ro_virtual_root_node->set_binding_type( me->binding_type ).
+    ro_virtual_root_node->set_transport_request( CONV #( me->transport_request ) ).
+    ro_virtual_root_node->set_draft_enabled( me->draft_enabled ).
+    ro_virtual_root_node->set_entity_name( |{ me->entityname }{ singleton_suffix }| ).
+
+
+    ro_virtual_root_node->set_is_virtual_root_node( ).
+
+    ro_virtual_root_node->add_child_node_hierarchy( me ).
+
+    me->set_is_root_node( abap_false ).
+    me->set_parent( ro_virtual_root_node ).
+    me->set_root( ro_virtual_root_node ).
+
+    me->add_additional_fields_2(
+                                 VALUE #(
+                                       (
+                                         name = '1'
+                                         cds_view_field = 'SingletonID'
+                                         built_in_type = 'INT1'
+                                         cds_interface_view = abap_true
+                                         cds_projection_view = abap_true
+                                         draft_table = abap_true
+                                         )
+                                       )
+                                      ).
+
+    LOOP AT me->all_childnodes INTO DATA(childnode).
+      childnode->set_root( ro_virtual_root_node ).
+    ENDLOOP.
+
+  ENDMETHOD.
+
+  METHOD add_child_node_hierarchy.
+    "todo
+    "delete root node flag from child_node
+    "set parent_node to me
+    "set root_node to me
+    "loop at all childnodes and set root node to me
+
+    IF all_childnodes IS INITIAL.
+      APPEND child_node TO all_childnodes.
+    ENDIF.
+
+    IF childnodes IS INITIAL.
+      APPEND child_node TO childnodes.
+    ENDIF.
+
+  ENDMETHOD.
+
+  METHOD set_is_virtual_root_node.
+
+
+    is_virtual_root_node = abap_true.
+    set_is_root_node(  ).
+    CLEAR childnodes.
+    CLEAR all_childnodes.
+
+    field_name-last_changed_at =  |max ({ singleton_child_tab_name }.last_changed_at)|  .
+
+    lt_fields = VALUE #(
+      (
+       name = 'CLIENT'
+       cds_view_field = 'Client'
+       key_indicator = 'X'
+       is_data_element = 'X'
+       data_element = 'MANDT'
+       )
+      (
+       name = '1'
+       cds_view_field = singleton_field_name
+       key_indicator = 'X'
+       is_built_in_type = 'X'
+       built_in_type = 'INT1'
+       built_in_type_length = 3
+       )
+
+
+     ).
+
+
+
+    "DATA semantic_key_fields  TYPE tt_semantic_key  .
+    semantic_key = VALUE #( ( name = '1' cds_view_field = singleton_field_name ) ).
+    object_id = '1'.
+    object_id_cds_field_name = singleton_field_name .
+    is_finalized = abap_true.
+    cds_view_name = 'I_Language'.
+
+
+    me->add_additional_fields_2(
+                                 VALUE #(
+                                       (
+                                         name = field_name-last_changed_at
+                                         cds_view_field = 'LastChangedAtMax'
+                                         data_element = 'TIMESTAMPL'
+                                         cds_interface_view = abap_true
+                                         cds_projection_view = abap_true
+                                         draft_table = abap_true
+                                         )
+                                       )
+                                      ).
+
+    data_source_name = 'I_Language'.
+    " data_source_type = ''
+    "set_ddic_view_i_name(  ).
+    "misuse the logic to create unique name for sql view for i view
+    DATA(draft_tab_name) = set_ddic_view_i_name(  ).
+    set_draft_table( CONV #( draft_tab_name ) ). "ddic_view_i
+    set_cds_view_i_name(  ).
+    set_cds_view_p_name(  ).
+    set_mde_name(  ).
+    set_behavior_impl_name(  ).
+    set_behavior_def_i_name(  ).
+    set_behavior_def_p_name(  ).
+    set_service_definition_name(  ).
+    set_service_binding_name(  ).
+
+  ENDMETHOD.
+
+  METHOD get_field.
+    "search fields from data source
+    READ TABLE lt_fields INTO rs_field WITH KEY name = to_upper( name ).
+    IF sy-subrc = 0.
+      RETURN.
+    ENDIF.
+
+
+  ENDMETHOD.
+
+  METHOD admin_fields_exist.
+
+    rv_admin_fields_exists = abap_true.
+
+    IF draft_enabled = abap_true.
+      "local_instance_last_changed_at
+      "last_changed_at
+    ELSE.
+      "last_changed_at
+    ENDIF.
+
+
+
+  ENDMETHOD.
+
+  METHOD add_additional_fields_2.
+    LOOP AT it_additional_fields INTO DATA(additonal_field).
+      APPEND  additonal_field  TO lt_additional_fields.
+    ENDLOOP.
+  ENDMETHOD.
+
 ENDCLASS.

@@ -39,7 +39,7 @@ CLASS /dmo/cl_rap_xco_json_visitor DEFINITION
 
     DATA:
 
-
+      json_schema                TYPE string,
       parent_node                TYPE REF TO /dmo/cl_rap_node,
       last_visited_member        TYPE string,
       current_node               TYPE REF TO /dmo/cl_rap_node,
@@ -53,17 +53,20 @@ CLASS /dmo/cl_rap_xco_json_visitor DEFINITION
       in_associations            TYPE abap_bool,
       in_conditions              TYPE abap_bool,
       in_mapping                 TYPE abap_bool,
-      in_objects_with_add_fields TYPE abap_bool,
+      "in_objects_with_add_fields TYPE abap_bool,
       in_additional_fields       TYPE abap_bool,
+      in_keys                    TYPE abap_bool,
       additional_binding         TYPE /dmo/cl_rap_node=>ts_additionalbinding,
       value_help                 TYPE t_valuehelp,
       condition_fields           TYPE /dmo/cl_rap_node=>ts_condition_fields,
       association                TYPE t_association,
-      additional_fields          TYPE /dmo/cl_rap_node=>ts_additional_fields,
+      additional_field           TYPE /dmo/cl_rap_node=>ts_additional_fields_2,
+      additional_fields          TYPE /dmo/cl_rap_node=>tt_additional_fields_2,
       objects_with_add_fields    TYPE t_objects_with_add_fields,
       field_mappings             TYPE HASHED TABLE OF  if_xco_gen_bdef_s_fo_b_mapping=>ts_field_mapping
                                     WITH UNIQUE KEY cds_view_field dbtable_field,
-      field_mapping              TYPE if_xco_gen_bdef_s_fo_b_mapping=>ts_field_mapping.
+      field_mapping              TYPE if_xco_gen_bdef_s_fo_b_mapping=>ts_field_mapping,
+      key_fields                 TYPE TABLE OF sxco_ad_field_name.
 
 
 
@@ -71,7 +74,7 @@ ENDCLASS.
 
 
 
-CLASS /DMO/CL_RAP_XCO_JSON_VISITOR IMPLEMENTATION.
+CLASS /dmo/cl_rap_xco_json_visitor IMPLEMENTATION.
 
 
   METHOD constructor.
@@ -82,6 +85,9 @@ CLASS /DMO/CL_RAP_XCO_JSON_VISITOR IMPLEMENTATION.
   METHOD if_xco_json_tree_visitor~enter_array.
     array_level += 1.
     CASE last_visited_member.
+      WHEN 'keys'.
+        CLEAR key_fields.
+        in_keys = abap_true.
       WHEN 'children'.
         IF current_node->is_child(  ) OR current_node->is_grand_child_or_deeper(  ).
           parent_node = current_node.
@@ -98,9 +104,9 @@ CLASS /DMO/CL_RAP_XCO_JSON_VISITOR IMPLEMENTATION.
         array_level_associations = array_level.
       WHEN 'conditions'.
         in_conditions = abap_true.
-      WHEN 'objectswithadditionalfields'.
-        in_objects_with_add_fields = abap_true.
-        array_level_obj_with_add_f = array_level.
+*      WHEN 'objectswithadditionalfields'.
+*        in_objects_with_add_fields = abap_true.
+*        array_level_obj_with_add_f = array_level.
       WHEN 'additionalfields'.
         in_additional_fields = abap_true.
       WHEN 'mapping'.
@@ -128,7 +134,7 @@ CLASS /DMO/CL_RAP_XCO_JSON_VISITOR IMPLEMENTATION.
     ENDIF.
 
     IF in_additional_fields = abap_true.
-      CLEAR additional_fields.
+      CLEAR additional_field.
     ENDIF.
 
     IF in_mapping  = abap_true.
@@ -140,7 +146,7 @@ CLASS /DMO/CL_RAP_XCO_JSON_VISITOR IMPLEMENTATION.
        in_value_helps = abap_false AND
        in_conditions = abap_false AND
        in_mapping  = abap_false AND
-       in_objects_with_add_fields = abap_false AND
+       "in_objects_with_add_fields = abap_false AND
        in_additional_fields = abap_false.
 
       IF object_number > 1.
@@ -173,8 +179,26 @@ CLASS /DMO/CL_RAP_XCO_JSON_VISITOR IMPLEMENTATION.
       in_associations = abap_false.
     ELSEIF in_additional_fields = abap_true.
       in_additional_fields = abap_false.
-    ELSEIF in_objects_with_add_fields = abap_true.
-      in_objects_with_add_fields = abap_false.
+
+      IF object_number = 1.
+        root_node->add_additional_fields_2(
+          EXPORTING
+            "iv_object            = objects_with_add_fields-object
+            it_additional_fields = additional_fields
+        ).
+        CLEAR additional_fields.
+
+      ELSE.
+        current_node->add_additional_fields_2(
+          EXPORTING
+            "iv_object            = objects_with_add_fields-object
+            it_additional_fields = additional_fields
+        ).
+        CLEAR additional_fields.
+      ENDIF.
+
+*    ELSEIF in_objects_with_add_fields = abap_true.
+*      in_objects_with_add_fields = abap_false.
     ELSEIF in_mapping = abap_true.
       in_mapping = abap_false.
 
@@ -189,7 +213,10 @@ CLASS /DMO/CL_RAP_XCO_JSON_VISITOR IMPLEMENTATION.
         ).
         CLEAR field_mappings.
       ENDIF.
-
+    ELSEIF in_keys = abap_true.
+      in_keys = abap_false.
+      current_node->set_semantic_key_fields( key_fields  ).
+      CLEAR key_fields.
     ELSE.
 
       IF current_node->is_grand_child_or_deeper( ).
@@ -277,29 +304,9 @@ CLASS /DMO/CL_RAP_XCO_JSON_VISITOR IMPLEMENTATION.
     "add additonal fields
 
     IF in_additional_fields = abap_true.
-      APPEND additional_fields TO objects_with_add_fields-additional_fields.
+      APPEND additional_field TO additional_fields.
     ENDIF.
 
-    IF in_additional_fields = abap_false AND
-         in_objects_with_add_fields = abap_true.
-      IF object_number = 1.
-        root_node->add_additional_fields(
-          EXPORTING
-            iv_object            = objects_with_add_fields-object
-            it_additional_fields = objects_with_add_fields-additional_fields
-        ).
-*        CATCH /dmo/cx_rap_generator.
-        CLEAR objects_with_add_fields.
-*CATCH /dmo/cx_rap_generator.
-      ELSE.
-        current_node->add_additional_fields(
-          EXPORTING
-            iv_object            = objects_with_add_fields-object
-            it_additional_fields = objects_with_add_fields-additional_fields
-        ).
-        CLEAR objects_with_add_fields.
-      ENDIF.
-    ENDIF.
 
 
     "add mapping
@@ -362,6 +369,8 @@ CLASS /DMO/CL_RAP_XCO_JSON_VISITOR IMPLEMENTATION.
           root_node->set_add_meta_data_extensions( iv_value ).
         WHEN 'iscustomizingtable'.
           root_node->set_is_customizing_table( iv_value ).
+        WHEN 'multiedit'.
+          root_node->add_multi_edit( iv_value ).
         WHEN OTHERS.
 
           error_message = |{ last_visited_member } in entity { root_node->entityname }|.
@@ -377,12 +386,17 @@ CLASS /DMO/CL_RAP_XCO_JSON_VISITOR IMPLEMENTATION.
 
     IF object_number > 1.
 
-      IF in_objects_with_add_fields = abap_true.
+      IF in_additional_fields = abap_true.
 
         CASE last_visited_member .
           WHEN 'localized'.
-            "objects_with_add_fields-localized =  iv_value .
-            additional_fields-localized = iv_value.
+            additional_field-localized = iv_value.
+          WHEN 'cdsinterfaceview'.
+            additional_field-cds_interface_view = iv_value .
+          WHEN 'cdsprojectionview'.
+            additional_field-cds_projection_view  = iv_value .
+          WHEN 'drafttable'.
+            additional_field-draft_table   = iv_value .
           WHEN OTHERS.
             error_message = |{ last_visited_member } in entity { current_node->entityname } in objects with add. fields|.
 
@@ -404,6 +418,10 @@ CLASS /DMO/CL_RAP_XCO_JSON_VISITOR IMPLEMENTATION.
 
     last_visited_member = to_lower( iv_name ).
 
+    IF in_keys = abap_true.
+      DATA(key_field) = iv_name.
+    ENDIF.
+
   ENDMETHOD.
 
 
@@ -411,8 +429,16 @@ CLASS /DMO/CL_RAP_XCO_JSON_VISITOR IMPLEMENTATION.
 
     DATA error_message TYPE string.
 
+    IF in_keys = abap_true.
+      APPEND iv_value TO key_fields.
+    ENDIF.
+
     IF object_number = 1.
       CASE last_visited_member.
+
+
+        WHEN '$schema'.
+          json_schema = iv_value.
         WHEN 'implementationtype'.
           root_node->set_implementation_type( iv_value ).
         WHEN 'namespace'.
@@ -525,18 +551,18 @@ CLASS /DMO/CL_RAP_XCO_JSON_VISITOR IMPLEMENTATION.
       ELSEIF in_additional_fields = abap_true.
 
         CASE last_visited_member .
-          WHEN 'fieldname'.
-            additional_fields-field_name = iv_value.
-          WHEN 'alias'.
-            additional_fields-alias = iv_value.
+          WHEN 'name'.
+            additional_field-name = iv_value.
+          WHEN 'cdsviewfield'.
+            additional_field-cds_view_field = iv_value.
           WHEN 'dataelement' .
-            additional_fields-data_element  = iv_value.
+            additional_field-data_element  = iv_value.
           WHEN 'builtintype'  .
-            additional_fields-built_in_type = iv_value.
+            additional_field-built_in_type = iv_value.
           WHEN 'builtintypelength'.
-            additional_fields-built_in_type_length = iv_value.
+            additional_field-built_in_type_length = iv_value.
           WHEN 'builtintypedecimals'.
-            additional_fields-built_in_type_decimals = iv_value.
+            additional_field-built_in_type_decimals = iv_value.
           WHEN OTHERS.
             error_message = |{ last_visited_member } in entity { current_node->entityname } in additional fields|.
 
@@ -546,20 +572,20 @@ CLASS /DMO/CL_RAP_XCO_JSON_VISITOR IMPLEMENTATION.
                 mv_value = error_message.
         ENDCASE.
 
-      ELSEIF in_objects_with_add_fields = abap_true.
-
-        CASE last_visited_member .
-          WHEN 'object'.
-            objects_with_add_fields-object =  iv_value .
-
-          WHEN OTHERS.
-            error_message = |{ last_visited_member } in entity { current_node->entityname } in objects with add. fields|.
-
-            RAISE EXCEPTION TYPE /dmo/cx_rap_generator
-              EXPORTING
-                textid   = /dmo/cx_rap_generator=>invalid_json_property_name
-                mv_value = error_message.
-        ENDCASE.
+*      ELSEIF in_objects_with_add_fields = abap_true.
+*
+*        CASE last_visited_member .
+*          WHEN 'object'.
+*            objects_with_add_fields-object =  iv_value .
+*
+*          WHEN OTHERS.
+*            error_message = |{ last_visited_member } in entity { current_node->entityname } in objects with add. fields|.
+*
+*            RAISE EXCEPTION TYPE /dmo/cx_rap_generator
+*              EXPORTING
+*                textid   = /dmo/cx_rap_generator=>invalid_json_property_name
+*                mv_value = error_message.
+*        ENDCASE.
 
       ELSEIF in_mapping = abap_true.
         CASE last_visited_member .
@@ -575,9 +601,14 @@ CLASS /DMO/CL_RAP_XCO_JSON_VISITOR IMPLEMENTATION.
                 mv_value = error_message.
         ENDCASE.
 
+      ELSEIF in_keys = abap_true.
+        DATA(test) = iv_value.
       ELSE.
 
         CASE last_visited_member .
+          WHEN 'keys'.
+            "do nothing
+
           WHEN 'entityname'.
             current_node->set_entity_name( CONV #( iv_value ) ).
           WHEN 'datasource'.
@@ -636,4 +667,49 @@ CLASS /DMO/CL_RAP_XCO_JSON_VISITOR IMPLEMENTATION.
     ENDIF.
 
   ENDMETHOD.
+
+
+  METHOD if_xco_json_tree_visitor~visit_number.
+    DATA error_message TYPE string.
+    IF object_number = 1.
+      CASE last_visited_member.
+
+*        WHEN 'transactionalbehavior'.
+*          root_node->add_transactional_behavior( iv_value ).
+
+        WHEN OTHERS.
+
+          error_message = |{ last_visited_member } in entity { root_node->entityname }|.
+
+          RAISE EXCEPTION TYPE /dmo/cx_rap_generator
+            EXPORTING
+              textid   = /dmo/cx_rap_generator=>invalid_json_property_name
+              mv_value = error_message.
+
+      ENDCASE.
+    ENDIF.
+
+
+    IF object_number > 1.
+
+      IF in_additional_fields = abap_true.
+
+        CASE last_visited_member .
+          WHEN 'builtintypelength'.
+            additional_field-built_in_type_length = iv_value.
+          WHEN 'builtintypedecimals'.
+            additional_field-built_in_type_decimals = iv_value .
+          WHEN OTHERS.
+            error_message = |{ last_visited_member } in entity { current_node->entityname } in objects with add. fields|.
+
+            RAISE EXCEPTION TYPE /dmo/cx_rap_generator
+              EXPORTING
+                textid   = /dmo/cx_rap_generator=>invalid_json_property_name
+                mv_value = error_message.
+        ENDCASE.
+      ENDIF.
+    ENDIF.
+
+  ENDMETHOD.
+
 ENDCLASS.

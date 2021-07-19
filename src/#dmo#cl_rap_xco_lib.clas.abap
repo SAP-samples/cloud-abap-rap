@@ -28,8 +28,10 @@ CLASS /dmo/cl_rap_xco_lib DEFINITION ABSTRACT
                                        RETURNING VALUE(ro_view) TYPE REF TO if_xco_cds_view .
     METHODS get_entity                 IMPORTING iv_name          TYPE sxco_cds_object_name
                                        RETURNING VALUE(ro_entity) TYPE REF TO if_xco_cds_entity .
-    METHODS get_aggregated_annotations IMPORTING io_field              TYPE REF TO if_xco_cds_field
+    METHODS get_aggregated_annotations IMPORTING io_field                         TYPE REF TO if_xco_cds_field
                                        RETURNING VALUE(ro_aggregated_annotations) TYPE REF TO if_xco_cds_annotations .
+    METHODS add_draft_include          IMPORTING table_name TYPE sxco_dbt_object_name.
+
 
   PROTECTED SECTION.
   PRIVATE SECTION.
@@ -37,7 +39,7 @@ ENDCLASS.
 
 
 
-CLASS /DMO/CL_RAP_XCO_LIB IMPLEMENTATION.
+CLASS /dmo/cl_rap_xco_lib IMPLEMENTATION.
 
 
   METHOD get_aggregated_annotations.
@@ -79,7 +81,6 @@ CLASS /DMO/CL_RAP_XCO_LIB IMPLEMENTATION.
 
   ENDMETHOD.
 
-
   METHOD get_service_binding.
 
   ENDMETHOD.
@@ -103,4 +104,9 @@ CLASS /DMO/CL_RAP_XCO_LIB IMPLEMENTATION.
   METHOD get_view_entity.
 
   ENDMETHOD.
+
+  METHOD add_draft_include.
+
+  ENDMETHOD.
+
 ENDCLASS.

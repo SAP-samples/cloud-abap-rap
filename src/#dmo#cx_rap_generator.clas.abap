@@ -455,7 +455,23 @@ CLASS /dmo/cx_rap_generator DEFINITION
         attr2 TYPE scx_attrname VALUE 'MV_VALUE',
         attr3 TYPE scx_attrname VALUE 'MV_VALUE_2',
         attr4 TYPE scx_attrname VALUE '',
-      END OF grand_child_not_supported
+      END OF grand_child_not_supported,
+      BEGIN OF field_total_etag_missing,
+        msgid TYPE symsgid VALUE '/DMO/CM_RAP_GEN_MSG',
+        msgno TYPE symsgno VALUE '055',
+        attr1 TYPE scx_attrname VALUE 'MV_VALUE',
+        attr2 TYPE scx_attrname VALUE 'MV_ENTITY',
+        attr3 TYPE scx_attrname VALUE '',
+        attr4 TYPE scx_attrname VALUE '',
+      END OF field_total_etag_missing,
+      BEGIN OF field_local_etag_missing,
+        msgid TYPE symsgid VALUE '/DMO/CM_RAP_GEN_MSG',
+        msgno TYPE symsgno VALUE '056',
+        attr1 TYPE scx_attrname VALUE 'MV_VALUE',
+        attr2 TYPE scx_attrname VALUE 'MV_ENTITY',
+        attr3 TYPE scx_attrname VALUE '',
+        attr4 TYPE scx_attrname VALUE '',
+      END OF field_local_etag_missing
 
 
       .
@@ -493,7 +509,7 @@ ENDCLASS.
 
 
 
-CLASS /DMO/CX_RAP_GENERATOR IMPLEMENTATION.
+CLASS /dmo/cx_rap_generator IMPLEMENTATION.
 
 
   METHOD class_constructor.
