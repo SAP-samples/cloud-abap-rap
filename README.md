@@ -674,7 +674,7 @@ Please note that the field names for additional fields in the draft table must m
 # Requirements
 
 This sample code does currently only work 
-  a) in SAP Cloud Platform, ABAP Environment where the XCO framework has been enabled and
+  a) in SAP BTP, ABAP Environment where the XCO framework has been enabled and
   b) in SAP S/4HANA on premise systems as of version 2020 FPS1 (because OData V4 is only supported as of FPS1)
 
 Make sure you have set the following option "Wrap and escape text when pasting into string literal" for your ABAP source code editor in your ADT preferences as described in my blog [How to wrap long strings automatically in ADT](https://blogs.sap.com/2020/07/29/how-to-wrap-long-strings-automatically-in-adt/)
