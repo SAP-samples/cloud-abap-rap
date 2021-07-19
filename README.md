@@ -684,7 +684,7 @@ https://blogs.sap.com/2020/05/17/the-rap-generator
 
 # Download and Installation
 
-The sample code can simply be downloaded using the abapGIT plugin in ABAP Development Tools in Eclipse when working with SAP Cloud Platform, ABAP Environment.
+The sample code can simply be downloaded using the abapGIT plugin in ABAP Development Tools in Eclipse when working with SAP BTP, ABAP Environment.
 For this you have to create a package in the Z-namespace (for example ZRAP_GENERATOR) and link it as an abapGit repository.
 
 # Known Issues
@@ -694,7 +694,7 @@ The sample code is provided "as-is".
 The current version of the RAP Generator can unfortunately currently be used in the trial systems, since a few new API's of the XCO framework have not been released in the trial systems yet. It is planned to enable them with an upcoming hot fix collection.
 
 # How to obtain support
-If you have problems or questions you can [post them in the SAP Community](https://answers.sap.com/questions/ask.html) using either the primary tag "[SAP Cloud Platform, ABAP environment](https://answers.sap.com/tags/73555000100800001164)" or "[ABAP RESTful Application Programming Model](https://answers.sap.com/tags/7e44126e-7b27-471d-a379-df205a12b1ff)".
+If you have problems or questions you can [post them in the SAP Community](https://answers.sap.com/questions/ask.html) using either the primary tag "[SAP BTP, ABAP environment](https://answers.sap.com/tags/73555000100800001164)" or "[ABAP RESTful Application Programming Model](https://answers.sap.com/tags/7e44126e-7b27-471d-a379-df205a12b1ff)".
 
 # Contributing
 This project is only updated by SAP employees.
