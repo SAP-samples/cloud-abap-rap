@@ -203,6 +203,11 @@
                     "default": "parent_uuid",
                     "minLength": 1
                 },
+                "rootUuid": {
+                    "type": "string",
+                    "default": "root_uuid",
+                    "minLength": 1
+                },
                 "localInstanceLastChangedAt": {
                     "type": "string",
                     "default": "local_last_changed_at",
