@@ -1,0 +1,271 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "properties": {
+        "$schema": {
+            "type": "string"
+        },
+        "implementationtype": {
+            "$ref": "#/definitions/implementationtype-schema",
+            "default": "managed_uuid"
+        },
+        "namespace": {
+            "type": "string",
+            "minLength": 1,
+            "default": "Z",
+            "description": "The namespace will be added to the names of the repository objects of your RAP business object. The name of the CDS interface view and the behavior definition is generated using the following string template:\n|{ namespace }I_{ prefix }{ entityname }{ suffix }|."
+        },
+        "package": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Enter the name of an existing package which fits to the namespace that you have chosen."
+        },
+        "bindingType": {
+            "$ref": "#/definitions/bindingtype-schema",
+            "default": "odata_v4_ui"
+        },
+        "dataSourceType": {
+            "$ref": "#/definitions/datasourceType-schema",
+            "default": "table"
+        },
+        "draftenabled": {
+            "type": "boolean",
+            "default": true,
+            "description": "When set to true the generator will genrate a draft table as well. If you want to determine the name of the draft table you can do so by setting the property draftTableName in each entity."
+        },
+        "prefix": {
+            "type": "string",
+            "description": "The prefix will be added to the names of the repository objects of your RAP business object. The name of the CDS interface view and the behavior definition is generated using the following string template:\n|{ namespace }I_{ prefix }{ entityname }{ suffix }|."
+        },
+        "suffix": {
+            "type": "string",
+            "description": "The suffix will be added to the names of the repository objects of your RAP business object. The name of the CDS interface view and the behavior definition is generated using the following string template:\n|{ namespace }I_{ prefix }{ entityname }{ suffix }|."
+        },
+        "transportrequest": {
+            "type": "string",
+            "description": "You can specifiy a modifiable transport request to be used. If no transport request is specified the generator will try to reuse an open transport request. If no transport request can be found a new transport request will be generated."
+        },
+        "multiInlineEdit": {
+            "type": "boolean",
+            "default": false,
+            "description": "If set to true the generator will add a technical root entity with just one instance. This singleton instance then allows to leverage the multi inline edit capabilies of the SAP Fiori Elements object page. \nWhen set to true requires the following settings:\n\"bindingType\" : \"odata_v4_ui\"\n\"draftenabled\" : true"
+        },
+        "isCustomizingTable": {
+            "type": "boolean",
+            "default": false,
+            "description": "Business configuration content can be recorded in customizing transport requests.\nWhen set to true requires the following settings:\n\"bindingType\" : \"odata_v4_ui\"\n\"draftenabled\" : true\n\"addBusinessConfigurationRegistration\" : true"
+        },
+        "addBusinessConfigurationRegistration": {
+            "type": "boolean",
+            "default": false,
+            "description": "If set to true your business object will be listed in the Maintain Business Configurations App. Please note that the Maintain Business Configurations API only supports one level of sub nodes, i.e. your root entity can have associations to an arbitrary amount of entities but these sub entities cannot have associations to further sub entities. The data model must consist only of client-dependent tables.\n When set to true requires the following settings:\n\"bindingType\" : \"odata_v4_ui\"\n\"draftenabled\" : true"
+        },    
+        "generateOnlyNodeHierachy": {
+            "type": "boolean",
+            "default": false,
+            "description": "Parameter for testing purposes. If set to true the method generate_bo will not be executed."
+        },
+        "hierarchy": {
+            "$ref": "#/definitions/rootNode-schema"
+        }
+    },
+    "required": [
+        "implementationtype",
+        "namespace",
+        "package",
+        "bindingType",
+        "dataSourceType",
+        "draftenabled",
+        "hierarchy"
+    ],
+    "additionalProperties": false,
+    "definitions": {
+        "rootNode-schema": {
+            "properties": {
+                "entityName": {
+                    "type": "string",
+                    "minLength": 1
+                },
+                "dataSource": {
+                    "type": "string",
+                    "minLength": 1
+                },
+                "objectId": {
+                    "type": "string",
+                    "minLength": 1
+                },
+                "uuid": {
+                    "type": "string",
+                    "default": "uuid",
+                    "minLength": 1
+                },
+                "createdBy": {
+                    "type": "string",
+                    "default": "created_by",
+                    "minLength": 1
+                },
+                "createdAt": {
+                    "type": "string",
+                    "default": "created_at",
+                    "minLength": 1
+                },
+                "lastChangedBy": {
+                    "type": "string",
+                    "default": "last_changed_by",
+                    "minLength": 1
+                },
+                "lastChangedAt": {
+                    "type": "string",
+                    "default": "last_changed_at",
+                    "minLength": 1
+                },
+                "localInstanceLastChangedAt": {
+                    "type": "string",
+                    "default": "local_last_changed_at",
+                    "minLength": 1
+                },
+                "draftTable": {
+                    "type": "string",
+                    "minLength": 1
+                },
+                "cdsInterfaceView": {
+                    "type": "string",
+                    "minLength": 1
+                },
+                "cdsProjectionView": {
+                    "type": "string",
+                    "minLength": 1
+                },
+                "metadataExtensionView": {
+                    "type": "string",
+                    "minLength": 1
+                },
+                "behaviorimplementationclass": {
+                    "type": "string",
+                    "minLength": 1
+                },
+                "serviceDefinition": {
+                    "type": "string",
+                    "minLength": 1
+                },
+                "serviceBinding": {
+                    "type": "string",
+                    "minLength": 1
+                },
+                "controlStructure": {
+                    "type": "string",
+                    "minLength": 1
+                },
+                "customQueryImplementationClass": {
+                    "type": "string",
+                    "minLength": 1
+                },
+                "keys": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "children": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/childNode-schema"
+                    }
+                }
+            },
+            "required": [
+                "entityName",
+                "dataSource",
+                "objectId"
+            ],
+            "additionalProperties": false
+        },
+        "childNode-schema": {
+            "properties": {
+                "entityName": {
+                    "type": "string",
+                    "minLength": 1
+                },
+                "dataSource": {
+                    "type": "string",
+                    "minLength": 1
+                },
+                "objectId": {
+                    "type": "string",
+                    "minLength": 1
+                },
+                "uuid": {
+                    "type": "string",
+                    "default": "uuid",
+                    "minLength": 1
+                },
+                "parentUuid": {
+                    "type": "string",
+                    "default": "parent_uuid",
+                    "minLength": 1
+                },
+                "localInstanceLastChangedAt": {
+                    "type": "string",
+                    "default": "local_last_changed_at",
+                    "minLength": 1
+                },
+                "draftTable": {
+                    "type": "string",
+                    "minLength": 1
+                },
+                "cdsInterfaceView": {
+                    "type": "string",
+                    "minLength": 1
+                },
+                "cdsProjectionView": {
+                    "type": "string",
+                    "minLength": 1
+                },
+                "metadataExtensionView": {
+                    "type": "string",
+                    "minLength": 1
+                },
+                "keys": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "children": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/childNode-schema"
+                    }
+                }
+            },
+            "required": [
+                "entityName",
+                "dataSource",
+                "objectId"
+            ],
+            "additionalProperties": false
+        },
+        "implementationtype-schema": {
+            "enum": [
+                "managed_uuid",
+                "managed_semantic",
+                "unmanaged_semantic"
+            ]
+        },
+        "bindingtype-schema": {
+            "enum": [
+                "odata_v4_ui",
+                "odata_v2_ui",
+                "odata_v4_web_api",
+                "odata_v2_web_api"
+            ]
+        },
+        "datasourceType-schema": {
+            "enum": [
+                "table",
+                "cds_view",
+                "abap_type",
+                "structure"
+            ]
+        }
+    }
+}
