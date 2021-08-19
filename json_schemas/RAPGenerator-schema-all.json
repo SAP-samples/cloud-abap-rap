@@ -58,7 +58,7 @@
             "type": "boolean",
             "default": false,
             "description": "If set to true your business object will be listed in the Maintain Business Configurations App. Please note that the Maintain Business Configurations API only supports one level of sub nodes, i.e. your root entity can have associations to an arbitrary amount of entities but these sub entities cannot have associations to further sub entities. The data model must consist only of client-dependent tables.\n When set to true requires the following settings:\n\"bindingType\" : \"odata_v4_ui\"\n\"draftenabled\" : true"
-        },    
+        },
         "generateOnlyNodeHierachy": {
             "type": "boolean",
             "default": false,
@@ -97,6 +97,18 @@
                     "type": "string",
                     "default": "uuid",
                     "minLength": 1
+                },
+                "etagMaster": {
+                    "type": "string",
+                    "default": "local_last_changed_at",
+                    "minLength": 1,
+                    "description": "Since eTags are required for each entity when consuming the RAP BO via OData this schema enforces you to specify the field of the datasource that contains a timestamp, a hash value, or any other versioning that precisely identifies the version of the data set."
+                },
+                "totalEtag": {
+                    "type": "string",
+                    "default": "last_changed_at",
+                    "minLength": 1,
+                    "description": "A total etag field is mandatory the root entity when using draft. It must be different from the field that is defined as an etag."
                 },
                 "createdBy": {
                     "type": "string",
@@ -139,7 +151,7 @@
                     "type": "string",
                     "minLength": 1
                 },
-                "behaviorimplementationclass": {
+                "behaviorImplementationClass": {
                     "type": "string",
                     "minLength": 1
                 },
@@ -175,7 +187,8 @@
             "required": [
                 "entityName",
                 "dataSource",
-                "objectId"
+                "objectId",
+                "etagMaster"
             ],
             "additionalProperties": false
         },
@@ -192,6 +205,12 @@
                 "objectId": {
                     "type": "string",
                     "minLength": 1
+                },
+                "etagMaster": {
+                    "type": "string",
+                    "default": "local_last_changed_at",
+                    "minLength": 1,
+                    "description": "Since eTags are required for each entity when consuming the RAP BO via OData this schema enforces you to specify the field of the datasource that contains a timestamp, a hash value, or any other versioning that precisely identifies the version of the data set."
                 },
                 "uuid": {
                     "type": "string",
@@ -245,7 +264,8 @@
             "required": [
                 "entityName",
                 "dataSource",
-                "objectId"
+                "objectId",
+                "etagMaster"
             ],
             "additionalProperties": false
         },
