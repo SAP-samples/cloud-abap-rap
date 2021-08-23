@@ -1,0 +1,38 @@
+{
+    "$schema": "https://raw.githubusercontent.com/SAP-samples/cloud-abap-rap/main/json_schemas/RAPGenerator-schema-all.json",
+    "namespace":"Z",
+    "dataSourceType": "table",
+    "implementationtype": "managed_semantic",
+    "bindingType": "odata_v4_ui",
+    "package": "Z_###_YOUR_PACKAGE",
+    "draftenabled":false,
+    "prefix": "",
+    "suffix": "",
+    "hierarchy": {
+        "entityName": "Travel",        
+        "dataSource": "/dmo/travel_m",
+        "objectId": "travel_id",
+        "localInstanceLastChangedAt": "last_changed_at",       
+        "etagMaster": "last_changed_at",
+        "children": [
+            {
+                "entityName": "Booking",
+                "dataSource": "/dmo/booking_m",
+                "objectId": "booking_id",
+                "localInstanceLastChangedAt": "last_changed_at",
+                "etagMaster": "last_changed_at",
+                "children": [
+                    {
+                        "entityName": "Supplements",
+                        "dataSource": "/dmo/booksuppl_m",
+                        "objectId": "booking_supplement_id",
+                        "localInstanceLastChangedAt": "last_changed_at",
+                        "etagMaster": "last_changed_at"
+                    }
+                ]
+            }
+        ]
+    }
+
+
+}

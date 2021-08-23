@@ -1,0 +1,20 @@
+{
+    "$schema": "https://raw.githubusercontent.com/SAP-samples/cloud-abap-rap/main/json_schemas/RAPGenerator-schema-all.json",
+    "namespace": "Z",
+    "dataSourceType": "abap_type",
+    "implementationtype": "unmanaged_semantic",
+    "bindingType": "odata_v2_ui",
+    "package": "Z_###_YOUR_PACKAGE",
+    "draftenabled": false,
+    "prefix": "",
+    "suffix": "",
+    "hierarchy": {
+        "entityName": "FactoryCal",
+        "dataSource": "cl_scal_api=>scals_factory_calendar",
+        "objectId": "ident",
+        "keys": [
+            "ident",
+            "spras"
+        ]
+    }
+}
