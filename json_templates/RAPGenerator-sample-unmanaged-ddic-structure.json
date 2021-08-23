@@ -1,0 +1,18 @@
+{
+    "$schema": "https://raw.githubusercontent.com/SAP-samples/cloud-abap-rap/main/json_schemas/RAPGenerator-schema-all.json",
+    "namespace": "Z",
+    "dataSourceType": "structure",
+    "implementationtype": "unmanaged_semantic",
+    "bindingType": "odata_v2_ui",
+    "package": "$TMP",
+    "draftenabled":false,
+    "prefix": "AF_",
+    "suffix": "_01",
+    "hierarchy": {
+        "entityName": "Product",
+        "dataSource": "BAPI_EPM_PRODUCT_HEADER",
+        "objectId": "PRODUCT_ID",       
+        "etagMaster": "changed_at",
+        "keys": ["Product_id"]
+    }
+}

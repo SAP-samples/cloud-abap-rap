@@ -1,0 +1,26 @@
+{
+    "$schema": "https://raw.githubusercontent.com/SAP-samples/cloud-abap-rap/main/json_schemas/RAPGenerator-schema-all.json",
+    "namespace": "Z",
+    "bindingType": "odata_v2_ui",
+    "dataSourceType": "cds_view",
+    "implementationtype": "unmanaged_semantic",
+    "package": "ZAF_GWSAMPLE_BASIC",
+    "draftenabled": false,
+    "prefix": "AF_",
+    "suffix": "_01",
+    "hierarchy": {
+        "entityName": "SalesOrder",
+        "dataSource": "ZAF_SALESORDERSET",
+        "objectId": "SalesOrderID",
+        "etagMaster": "changedat",
+        "children": [
+            {
+                "entityName": "SalesOrderItem",
+                "dataSource": "ZAF_SALESORDERLINEITEMSET",
+                "objectId": "ItemPosition",
+                "etagMaster": "changedat"
+            }
+        ]
+        
+    }
+}

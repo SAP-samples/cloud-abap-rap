@@ -1,0 +1,30 @@
+{
+    "$schema": "https://raw.githubusercontent.com/SAP-samples/cloud-abap-rap/main/json_schemas/RAPGenerator-schema-all.json",
+    "namespace": "Z",
+    "package": "Z_###_YOUR_PACKAGE",
+    "dataSourceType": "table",
+    "multiInlineEdit": true,
+    "isCustomizingTable": true,
+    "addBusinessConfigurationRegistration": true,
+    "implementationtype": "managed_semantic",
+    "bindingType": "odata_v4_ui",
+    "prefix": "AFME",
+    "suffix": "_##",
+    "draftenabled": true,
+    "hierarchy": {
+        "entityName": "Holiday",
+        "dataSource": "/dmo/fcal_holi",
+        "objectId": "holiday_id",
+        "localInstanceLastChangedAt": "local_last_changed_at",        
+        "etagMaster": "local_last_changed_at",
+        "children": [
+            {
+                "entityName": "HolidayText",
+                "dataSource": "/dmo/fcal_holi_t",
+                "objectId": "holiday_id",
+                "localInstanceLastChangedAt": "local_last_changed_at",
+                "etagMaster": "local_last_changed_at"
+            }
+        ]
+    }
+}

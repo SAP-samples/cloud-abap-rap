@@ -1,0 +1,46 @@
+{
+    "$schema": "https://raw.githubusercontent.com/SAP-samples/cloud-abap-rap/main/json_schemas/RAPGenerator-schema-all.json",
+    "namespace": "Z",
+    "dataSourceType": "table",
+    "implementationtype": "managed_uuid",
+    "bindingType": "odata_v4_ui",
+    "package": "Z_###_YOUR_PACKAGE",
+    "draftenabled": true,
+    "prefix": "",
+    "suffix": "",
+    "hierarchy": {
+        "entityName": "Travel",
+        "dataSource": "/dmo/a_travel_d",
+        "objectId": "travel_id",
+        "uuid": "travel_uuid",
+        "etagMaster": "local_last_changed_at",
+        "lastChangedAt": "last_changed_at",
+        "lastChangedBy": "last_changed_by",
+        "localInstanceLastChangedAt": "local_last_changed_at",
+        "createdAt": "created_at",
+        "createdBy": "created_by",
+        "children": [
+            {
+                "entityName": "Booking",
+                "dataSource": "/dmo/a_booking_d",
+                "objectId": "booking_id",
+                "uuid": "booking_uuid",
+                "parentUuid": "parent_uuid",
+                "etagMaster": "local_last_changed_at",
+                "localInstanceLastChangedAt": "local_last_changed_at",
+                "children": [
+                    {
+                        "entityName": "Supplements",
+                        "dataSource": "/dmo/a_bksuppl_d",
+                        "objectId": "booking_supplement_id",
+                        "uuid": "booksuppl_uuid",
+                        "parentUuid": "parent_uuid",
+                        "etagMaster": "local_last_changed_at",
+                        "localInstanceLastChangedAt": "local_last_changed_at"
+                       
+                    }
+                ]
+            }
+        ]
+    }
+}

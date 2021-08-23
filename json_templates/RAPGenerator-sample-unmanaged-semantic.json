@@ -1,0 +1,32 @@
+{
+    "$schema": "./RAPGenerator-schema-all.json",
+    "namespace": "Z",
+    "dataSourceType": "table",
+    "implementationtype": "unmanaged_semantic",
+    "bindingType": "odata_v2_ui",
+    "package": "Z_###_YOUR_PACKAGE",
+    "draftenabled": false,
+    "prefix": "",
+    "suffix": "",
+    "hierarchy": {
+        "entityName": "Travel",
+        "dataSource": "/dmo/travel",
+        "objectId": "travel_id",
+        "etagMaster": "lastchangedat",
+        "children": [
+            {
+                "entityName": "Booking",
+                "dataSource": "/dmo/booking",
+                "objectId": "booking_id",
+                "etagMaster": "lastchangedat",
+                "children": [
+                    {
+                        "entityName": "Supplements",
+                        "dataSource": "/dmo/book_suppl",
+                        "objectId": "booking_supplement_id"
+                    }
+                ]
+            }
+        ]
+    }
+}
