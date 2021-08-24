@@ -395,6 +395,18 @@ If no name is provided upfront the generator will generate a valid draft table n
 
 where the a hexadecimal number is calculated to get a unique repository object name that has not been used so far.
 
+# Additional parameters for workshops and enhanced scenarios
+
+The RAP Generator has been used to generate repository objects for various hands-on sessions at SAP TechEd and in the openSAP courses that have been offered recently for the ABAP RESTful Programming Model and for SAP Fiori.  
+
+Here additional requirements had to be met such as creating repository objects with additional fields that are not part of the data source or adding additional value helps and association upfront. These requirements meant to offer the option to add this additional information in the configuration JSON file as well.  
+
+As a result the JSON files used in such scenarios become more complex and it would not be helpful to offer all these options to the developer that just wants to create a RAP business object as a starter object.
+
+So I have decided to provide the information about these advanced features that are quite valuable if you have the need for them in a separate readme file that you can find here:
+
+[Additional parameters for workshops](optional_parameters.md).
+
 # Requirements
 
 This sample code does currently only work in SAP Cloud Platform, ABAP Environment where the XCO framework has been enabled as of version 2008.
