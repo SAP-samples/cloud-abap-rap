@@ -383,11 +383,17 @@ In draft scenarios the fields used as etagMaster and totalEtag will be mapped as
 
 #### drafttable
 
-When you specify that a RAP business object shall support draft using the parameter **"draftenabled" : true** you have to specifiy the name of the draft table that is being generated for each node using the following syntax
+When you specify that a RAP business object shall support draft using the parameter **"draftenabled" : true** you can specifiy the name of the draft table that is being generated for each node using the following syntax
 
 <pre>
 "drafttable": "zd_book_0000",
 </pre>
+
+If no name is provided upfront the generator will generate a valid draft table name using the following string template:
+
+`to_upper( namespace ) &&  to_upper( prefix )  && to_upper( lv_entityname ) && hex_number && 'D' && to_upper( suffix  ).`
+
+where the a hexadecimal number is calculated to get a unique repository object name that has not been used so far.
 
 # Requirements
 
@@ -413,7 +419,7 @@ The current version of the RAP Generator can unfortunately currently be used in 
 If you have problems or questions you can [post them in the SAP Community](https://answers.sap.com/questions/ask.html) using either the primary tag "[SAP Cloud Platform, ABAP environment](https://answers.sap.com/tags/73555000100800001164)" or "[ABAP RESTful Application Programming Model](https://answers.sap.com/tags/7e44126e-7b27-471d-a379-df205a12b1ff)".
 
 # Contributing
-This project is only updated by SAP employees.
+You can add proposals for enhancements as issues. 
 
 # License
 Copyright (c) 2020 SAP SE or an SAP affiliate company. All rights reserved. This file is licensed under the Apache Software License, version 2.0 except as noted otherwise in the [LICENSE](LICENSE) file.
