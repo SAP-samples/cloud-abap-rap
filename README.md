@@ -338,15 +338,24 @@ you have to specify these field names in the definition of the node by providing
 ...
 </pre>
 
-#### etagMaster
+#### etag support
+
+OData services need to have etags in order to support optimistic locking. In addition the RAP framework supports to update automatically administrative fields that contain the information when an entity has been created, updated and by whom these actions have been performed.  For this appropriate annoations have to be set in the CDS interface views.  
+In addition to set these annotions in the CDS views it is required to specify which field plays the role of an etag in the behavior definition of your RAP business object. So we have to provide both informations:   
+- fields that contain administrative information (for managed scenarios)   
+- fields that act as etag for an entity ("etagMaster")
+- field that acts as the etag for the whole business object ("totalEtag") in case you are using a draft scenario   
+
+##### etagMaster
 
 Since eTags are required for each entity when consuming the RAP BO via OData this schema enforces you to specify the field of the datasource that contains a timestamp, a hash value, or any other versioning that precisely identifies the version of the data set.
 
-#### totalEtag  ( only needed for the root entity)
+##### totalEtag  ( only needed for the root entity)
 
 A total etag field is mandatory for the root entity when using draft. It must be different from the field that is defined as the etagMaster.
 
-#### "lastChangedAt",  "lastChangedBy",  "createdAt" and  "createdBy" 
+##### "lastChangedAt",  "lastChangedBy",  "createdAt", "createdBy" and "localInstanceLastChangedAt"
+
 In a managed scenario it is required that the root entity provides fields to store administrative data when an entity was created and changed and by whom these actions have been performed.
 
 Again the generator assumes some default values for these field names, namely:
@@ -369,27 +378,6 @@ A good example is the table which is used in the Flight reference draft scenario
 </pre>
 
 In draft scenarios the fields used as etagMaster and totalEtag will be mapped as follows
-
-<table style="width:100%">
-  <tr>
-    <th>parameter name</th>
-    <th>root entity</th>
-    <th>child entity</th>
-    <th>Comment</th>
-  </tr>
-  <tr>
-    <td>last_changed_a</td>
-    <td>local_last_changed_at</td>
-    <td></td>
-    <td></td>
-  </tr>
-  <tr>
-    <td>managed</td>
-    <td>semantic key</td>
-    <td>table</td>
-    <td>Requires external numbering</td>
-  </tr>
-</table>   
 
 ### Optional parameters for node
 
