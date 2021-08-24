@@ -2,6 +2,7 @@
 CLASS ltc_rap_node DEFINITION FINAL FOR TESTING
   DURATION MEDIUM
   RISK LEVEL HARMLESS.
+  PUBLIC SECTION.
 
   PRIVATE SECTION.
 
@@ -36,7 +37,25 @@ CLASS ltc_rap_node DEFINITION FINAL FOR TESTING
       "object id
       gc_root_table_sem_key_mu       TYPE string VALUE 'TRAVEL_ID',
       gc_child_table_sem_key_mu      TYPE string VALUE 'BOOKING_ID',
-      gc_grandchild_table_sem_key_mu type string value 'booking_supplement_id'.
+      gc_grandchild_table_sem_key_mu TYPE string VALUE 'booking_supplement_id',
+      gc_etag_master_mu              TYPE string VALUE 'lastchangedat',
+      "view
+      gc_view_name                   TYPE string VALUE 'I_Country',
+      gc_view_object_id              TYPE sxco_ad_field_name  VALUE 'Country',
+      gc_view_etag_master            TYPE string VALUE 'CountryThreeLetterISOCode',
+      "view entity
+      gc_view_entity_name            TYPE string VALUE 'DDCDS_CUSTOMER_DOMAIN_VALUE',
+      gc_view_entity_object_id       TYPE sxco_ad_field_name  VALUE 'domain_name',
+      gc_view_entity_etag_master     TYPE string VALUE 'value_high',
+      "abstract entity
+      "/DMO/TEST_ABSTRACT_CHILDENTITY
+      gc_abstract_entity_name        TYPE string VALUE 'D_SELECTCUSTOMIZINGTRANSPTREQP ',
+      gc_abstract_entity_object_id   TYPE sxco_ad_field_name  VALUE 'TransportRequestID',
+      gc_abstract_entity_etag_master TYPE string VALUE 'TransportRequestID'
+      .
+
+
+    .
 
     TYPES:
       BEGIN OF ts_field,
@@ -49,14 +68,14 @@ CLASS ltc_rap_node DEFINITION FINAL FOR TESTING
       END OF ts_field.
 
     DATA:
-       mo_cut TYPE REF TO /dmo/cl_rap_node.
+      mo_cut     TYPE REF TO /dmo/cl_rap_node,
+      mo_xco_lib TYPE REF TO /dmo/cl_rap_xco_lib.
 
     CLASS-METHODS:
       class_setup,
       class_teardown.
 
-    METHODS:
-      setup,
+    METHODS: setup,
       teardown,
       set_namespace FOR TESTING RAISING cx_static_check,
       set_prefix FOR TESTING RAISING cx_static_check,
@@ -64,7 +83,7 @@ CLASS ltc_rap_node DEFINITION FINAL FOR TESTING
       set_cds_view_i_name FOR TESTING RAISING cx_static_check,
       set_cds_view_p_name FOR TESTING RAISING cx_static_check,
       set_mde_name FOR TESTING RAISING cx_static_check,
-      set_ddic_view_i_name FOR TESTING RAISING cx_static_check,
+
       set_behavior_def_i_name FOR TESTING RAISING cx_static_check ,
       set_behavior_def_p_name FOR TESTING RAISING cx_static_check ,
       set_behavior_impl_name FOR TESTING RAISING cx_static_check ,
@@ -75,9 +94,13 @@ CLASS ltc_rap_node DEFINITION FINAL FOR TESTING
       create_root_with_childs FOR TESTING RAISING cx_static_check,
 
       set_table FOR TESTING RAISING cx_static_check,
-      get_fields FOR TESTING RAISING cx_static_check,
+      get_fields_from_table FOR TESTING RAISING cx_static_check,
+      get_fields_from_view FOR TESTING RAISING cx_static_check,
+      get_fields_from_view_entity FOR TESTING RAISING cx_static_check,
+      get_fields_from_abstractentity FOR TESTING RAISING cx_static_check,
       check_for_key_field_uuid FOR TESTING RAISING cx_static_check,
       check_for_parent_key_field FOR TESTING RAISING cx_static_check,
+      check_for_client_field FOR TESTING RAISING cx_static_check,
       check_for_root_key_field FOR TESTING RAISING cx_static_check,
       check_set_objectid_wo_data_src FOR TESTING RAISING cx_static_check,
       "managed scenario
@@ -93,6 +116,9 @@ CLASS ltc_rap_node IMPLEMENTATION.
   METHOD class_setup.
     "create test doubles for the following tables that are read or written to by this class
     "this should be only done once we thus do this in the class method class_setup
+
+
+
   ENDMETHOD.
 
   METHOD class_teardown.
@@ -100,6 +126,10 @@ CLASS ltc_rap_node IMPLEMENTATION.
   ENDMETHOD.
 
   METHOD setup.
+
+    "mo_xco_lib = NEW /dmo/cl_rap_xco_on_prem_lib(  ).
+    mo_xco_lib = NEW /dmo/cl_rap_xco_cloud_lib(  ).
+
     "create test data so that three different nodes can be created
 
     DATA lt_fields_gc_root_mu TYPE STANDARD TABLE OF ts_field WITH DEFAULT KEY.
@@ -148,7 +178,6 @@ CLASS ltc_rap_node IMPLEMENTATION.
     ( name = 'BOOKING_SUPPL_ID' cds_view_field = 'BookingSupplId' )
     ( name = 'ARTICLE' cds_view_field = 'Article' )
     ).
-
 
   ENDMETHOD.
 
@@ -365,39 +394,6 @@ CLASS ltc_rap_node IMPLEMENTATION.
     ENDTRY.
   ENDMETHOD.
 
-  METHOD set_ddic_view_i_name.
-    "in set_ddic_view_i_name the object me->root_node is initial when run under test
-    "setting the root node as me is only possible for root nodes.
-    "hence we skip this code
-
-    TEST-INJECTION is_not_a_root_node.
-    END-TEST-INJECTION.
-
-    "ZRAP_TRAVE00_048
-
-    DATA(lv_expected_name) = |{ gc_namespace_z  }{ gc_prefix_rap }{ gc_ddic_view_i_name_z }{ gc_suffix_4711 }|.
-    DATA lv_name TYPE string.
-
-    " Given is a node object
-    TRY.
-        mo_cut = NEW #( ).
-      CATCH /dmo/cx_rap_generator INTO DATA(lx_rap_generator).
-        cl_abap_unit_assert=>fail( msg = lx_rap_generator->get_text(  ) ).
-    ENDTRY.
-
-    TRY.
-        mo_cut->set_entity_name( gc_root_entity_name ).
-        mo_cut->set_namespace( gc_namespace_z ).
-        mo_cut->set_prefix( gc_prefix_rap ).
-        mo_cut->set_suffix( gc_suffix_4711 ).
-        mo_cut->set_ddic_view_i_name(  ).
-        lv_name = mo_cut->rap_node_objects-ddic_view_i.
-        cl_abap_unit_assert=>assert_equals( exp = lv_expected_name act = lv_name ).
-      CATCH /dmo/cx_rap_generator INTO lx_rap_generator.
-        cl_abap_unit_assert=>fail( msg = lx_rap_generator->get_text(  ) ).
-    ENDTRY.
-
-  ENDMETHOD.
 
   METHOD set_behavior_def_i_name.
     "check
@@ -641,7 +637,7 @@ CLASS ltc_rap_node IMPLEMENTATION.
 
 
     TRY.
-        mo_cut = NEW /dmo/cl_rap_node( ).
+        mo_cut = NEW /dmo/cl_rap_node( mo_xco_lib ).
       CATCH /dmo/cx_rap_generator INTO DATA(lx_rap_generator).
         cl_abap_unit_assert=>fail( msg = lx_rap_generator->get_text(  ) ).
     ENDTRY.
@@ -676,7 +672,7 @@ CLASS ltc_rap_node IMPLEMENTATION.
     DATA lv_expected_name TYPE string.
 
     TRY.
-        mo_cut = NEW /dmo/cl_rap_node( ).
+        mo_cut = NEW /dmo/cl_rap_node( mo_xco_lib ).
       CATCH /dmo/cx_rap_generator INTO DATA(lx_rap_generator).
         cl_abap_unit_assert=>fail( msg = lx_rap_generator->get_text(  ) ).
     ENDTRY.
@@ -748,7 +744,7 @@ CLASS ltc_rap_node IMPLEMENTATION.
     ENDTRY.
   ENDMETHOD.
 
-  METHOD get_fields.
+  METHOD get_fields_from_table.
 
     DATA(lv_expected_name) = |{ gc_namespace_z  }C_{ gc_prefix_rap }{ gc_root_entity_name }{ gc_suffix_4711 }|.
 
@@ -756,7 +752,7 @@ CLASS ltc_rap_node IMPLEMENTATION.
     "DATA(lv_tablename) = gc_child_table.
 
     TRY.
-        mo_cut = NEW /dmo/cl_rap_node( ).
+        mo_cut = NEW /dmo/cl_rap_node( mo_xco_lib ).
       CATCH /dmo/cx_rap_generator INTO DATA(lx_rap_generator).
         cl_abap_unit_assert=>fail( msg = lx_rap_generator->get_text(  ) ).
     ENDTRY.
@@ -794,6 +790,212 @@ CLASS ltc_rap_node IMPLEMENTATION.
 
     "/dmo/cx_rap_generator=>table_does_not_exist
   ENDMETHOD.
+
+
+  METHOD get_fields_from_view.
+
+    DATA(lv_expected_name) = |{ gc_namespace_z  }C_{ gc_prefix_rap }{ gc_root_entity_name }{ gc_suffix_4711 }|.
+
+    DATA(lv_view_name) = gc_view_name.
+    "DATA(lv_tablename) = gc_child_table.
+
+    TRY.
+        mo_cut = NEW /dmo/cl_rap_node( mo_xco_lib ).
+      CATCH /dmo/cx_rap_generator INTO DATA(lx_rap_generator).
+        cl_abap_unit_assert=>fail( msg = lx_rap_generator->get_text(  ) ).
+    ENDTRY.
+
+    TRY.
+        mo_cut->set_is_root_node(  ).
+        mo_cut->set_implementation_type( /dmo/cl_rap_node=>implementation_type-unmanged_semantic ).
+        mo_cut->set_data_source_type( /dmo/cl_rap_node=>data_source_types-cds_view ).
+        mo_cut->set_entity_name(  gc_root_entity_name ).
+        mo_cut->set_object_id( CONV #( gc_view_object_id ) ).
+        mo_cut->set_field_name_etag_master( gc_view_etag_master ).
+        "/dmo/agency
+        mo_cut->set_cds_view( CONV #( lv_view_name ) ).
+        mo_cut->get_fields( ).
+        DATA(lt_fields) = mo_cut->lt_fields.
+        "cl_abap_unit_assert=>fail( msg = 'Exception /dmo/cx_rap_generator=>root_cause_exception not raised' ).
+        cl_abap_unit_assert=>assert_not_initial(
+          EXPORTING
+            act              = lt_fields
+            msg              = 'No fields retrieved'
+        ).
+*        LOOP AT mo_cut->lt_fields  INTO  DATA(ls_header_fields) WHERE  name  <> mo_cut->field_name-client.
+*          IF ls_header_fields-name = mo_cut->field_name-etag_master.
+*            DATA(lv_etag_master) = ls_header_fields-name.
+*          ENDIF.
+*        ENDLOOP.
+        READ TABLE mo_cut->lt_fields WITH KEY name = mo_cut->field_name-etag_master INTO DATA(ls_etag_master).
+        IF sy-subrc = 0.
+          DATA(lv_etag_master) = ls_etag_master-name.
+        ENDIF.
+        cl_abap_unit_assert=>assert_equals( msg = |View { lv_view_name } has no field { mo_cut->field_name-etag_master }| exp = mo_cut->field_name-etag_master act = lv_etag_master ).
+
+
+        DATA(no_data_element_internal_type) = abap_false.
+
+        LOOP AT mo_cut->lt_fields  INTO  DATA(ls_header_fields).
+
+          IF ls_header_fields-is_built_in_type = abap_false AND
+             ls_header_fields-is_data_element = abap_false.
+
+            cl_abap_unit_assert=>fail( msg = |Data source: { mo_cut->data_source_name } Field: { ls_header_Fields-name }  No data element and internal type found. | ).
+
+          ENDIF.
+        ENDLOOP.
+
+
+      CATCH /dmo/cx_rap_generator INTO lx_rap_generator.
+
+        cl_abap_unit_assert=>fail( msg = lx_rap_generator->get_text(  ) ).
+
+
+    ENDTRY.
+
+
+
+  ENDMETHOD.
+
+  METHOD get_fields_from_view_entity.
+
+    DATA(lv_expected_name) = |{ gc_namespace_z  }C_{ gc_prefix_rap }{ gc_root_entity_name }{ gc_suffix_4711 }|.
+
+    DATA(lv_view_name) = gc_view_entity_name.
+    "DATA(lv_tablename) = gc_child_table.
+
+    TRY.
+        mo_cut = NEW /dmo/cl_rap_node( mo_xco_lib ).
+      CATCH /dmo/cx_rap_generator INTO DATA(lx_rap_generator).
+        cl_abap_unit_assert=>fail( msg = lx_rap_generator->get_text(  ) ).
+    ENDTRY.
+
+    TRY.
+        mo_cut->set_is_root_node(  ).
+        mo_cut->set_implementation_type( /dmo/cl_rap_node=>implementation_type-unmanged_semantic ).
+        mo_cut->set_data_source_type( /dmo/cl_rap_node=>data_source_types-cds_view ).
+        mo_cut->set_entity_name(  gc_root_entity_name ).
+        mo_cut->set_object_id( CONV #( gc_view_entity_object_id ) ).
+        mo_cut->set_field_name_etag_master( gc_view_entity_etag_master ).
+        "/dmo/agency
+        mo_cut->set_cds_view( CONV #( lv_view_name ) ).
+        mo_cut->get_fields( ).
+        DATA(lt_fields) = mo_cut->lt_fields.
+        "cl_abap_unit_assert=>fail( msg = 'Exception /dmo/cx_rap_generator=>root_cause_exception not raised' ).
+        cl_abap_unit_assert=>assert_not_initial(
+          EXPORTING
+            act              = lt_fields
+            msg              = 'No fields retrieved'
+        ).
+
+*        LOOP AT mo_cut->lt_fields  INTO  DATA(ls_header_fields) WHERE  name  <> mo_cut->field_name-client.
+*          IF ls_header_fields-name = mo_cut->field_name-etag_master.
+*            DATA(lv_etag_master) = ls_header_fields-name.
+*          ENDIF.
+*        ENDLOOP.
+
+        READ TABLE mo_cut->lt_fields WITH KEY name = mo_cut->field_name-etag_master INTO DATA(ls_etag_master).
+        IF sy-subrc = 0.
+          DATA(lv_etag_master) = ls_etag_master-name.
+        ENDIF.
+
+        cl_abap_unit_assert=>assert_equals( msg = |View { lv_view_name } has no field { mo_cut->field_name-etag_master }| exp = mo_cut->field_name-etag_master act = lv_etag_master ).
+
+
+        DATA(no_data_element_internal_type) = abap_false.
+
+        LOOP AT mo_cut->lt_fields  INTO  DATA(ls_header_fields).
+
+          IF ls_header_fields-is_built_in_type = abap_false AND
+             ls_header_fields-is_data_element = abap_false.
+
+            cl_abap_unit_assert=>fail( msg = |Data source: { mo_cut->data_source_name } Field: { ls_header_Fields-name }  No data element and internal type found. | ).
+
+          ENDIF.
+        ENDLOOP.
+
+
+      CATCH /dmo/cx_rap_generator INTO lx_rap_generator.
+
+        cl_abap_unit_assert=>fail( msg = lx_rap_generator->get_text(  ) ).
+
+
+    ENDTRY.
+
+
+
+  ENDMETHOD.
+
+
+  METHOD get_fields_from_abstractentity.
+
+    DATA(lv_expected_name) = |{ gc_namespace_z  }C_{ gc_prefix_rap }{ gc_root_entity_name }{ gc_suffix_4711 }|.
+
+    DATA(lv_view_name) = gc_abstract_entity_name.
+    "DATA(lv_tablename) = gc_child_table.
+
+    TRY.
+        mo_cut = NEW /dmo/cl_rap_node( mo_xco_lib ).
+      CATCH /dmo/cx_rap_generator INTO DATA(lx_rap_generator).
+        cl_abap_unit_assert=>fail( msg = lx_rap_generator->get_text(  ) ).
+    ENDTRY.
+
+    TRY.
+        mo_cut->set_is_root_node(  ).
+        mo_cut->set_implementation_type( /dmo/cl_rap_node=>implementation_type-unmanged_semantic ).
+        mo_cut->set_data_source_type( /dmo/cl_rap_node=>data_source_types-cds_view ).
+        mo_cut->set_entity_name(  gc_root_entity_name ).
+        mo_cut->set_object_id( CONV #( gc_abstract_entity_object_id ) ).
+        mo_cut->set_field_name_etag_master( gc_abstract_entity_etag_master ).
+        "/dmo/agency
+        mo_cut->set_cds_view( CONV #( lv_view_name ) ).
+        mo_cut->get_fields( ).
+        DATA(lt_fields) = mo_cut->lt_fields.
+        "cl_abap_unit_assert=>fail( msg = 'Exception /dmo/cx_rap_generator=>root_cause_exception not raised' ).
+        cl_abap_unit_assert=>assert_not_initial(
+          EXPORTING
+            act              = lt_fields
+            msg              = 'No fields retrieved'
+        ).
+*        LOOP AT mo_cut->lt_fields  INTO  DATA(ls_header_fields) WHERE  name  <> mo_cut->field_name-client.
+*          IF ls_header_fields-name = mo_cut->field_name-etag_master.
+*            DATA(lv_etag_master) = ls_header_fields-name.
+*          ENDIF.
+*        ENDLOOP.
+
+        READ TABLE mo_cut->lt_fields WITH KEY name = mo_cut->field_name-etag_master INTO DATA(ls_etag_master).
+        IF sy-subrc = 0.
+          DATA(lv_etag_master) = ls_etag_master-name.
+        ENDIF.
+
+        cl_abap_unit_assert=>assert_equals( msg = |View { lv_view_name } has no field { mo_cut->field_name-etag_master }| exp = mo_cut->field_name-etag_master act = lv_etag_master ).
+
+
+        DATA(no_data_element_internal_type) = abap_false.
+
+        LOOP AT mo_cut->lt_fields  INTO  DATA(ls_header_fields).
+
+          IF ls_header_fields-is_built_in_type = abap_false AND
+             ls_header_fields-is_data_element = abap_false.
+
+            cl_abap_unit_assert=>fail( msg = |Data source: { mo_cut->data_source_name } Field: { ls_header_Fields-name }  No data element and internal type found. | ).
+
+          ENDIF.
+        ENDLOOP.
+
+
+      CATCH /dmo/cx_rap_generator INTO lx_rap_generator.
+
+        cl_abap_unit_assert=>fail( msg = lx_rap_generator->get_text(  ) ).
+
+
+    ENDTRY.
+
+
+
+  ENDMETHOD.
+
 
   METHOD set_table.
     DATA(lv_expected_name) = |{ gc_namespace_z  }C_{ gc_prefix_rap }{ gc_root_entity_name }{ gc_suffix_4711 }|.
@@ -887,7 +1089,8 @@ CLASS ltc_rap_node IMPLEMENTATION.
 
 
     TRY.
-        mo_cut = NEW /dmo/cl_rap_node(  ).
+
+        mo_cut = NEW /dmo/cl_rap_node( mo_xco_lib ).
 
       CATCH /dmo/cx_rap_generator INTO DATA(lx_rap_generator).
         cl_abap_unit_assert=>fail( msg = lx_rap_generator->get_text(  ) ).
@@ -926,9 +1129,74 @@ CLASS ltc_rap_node IMPLEMENTATION.
 
   ENDMETHOD.
 
+  METHOD check_for_client_field.
+    TEST-INJECTION get_mock_data_fields.
+
+      lt_fields = VALUE #(
+     ( name = 'WRONGCLIENT' key_indicator = 'X'   not_null = 'X' cds_view_field = 'Client' )
+     ( name = 'UUID' key_indicator = 'X'  data_element = 'SYSUUID_X16' not_null = 'X' cds_view_field = 'Uuid' )
+     ( name = 'TRAVEL_ID' cds_view_field = 'TravelId' )
+     ( name = 'AGENCY_ID' cds_view_field = 'AgencyId' )
+     ( name = 'CUSTOMER_ID' cds_view_field = 'CustomerId' )
+     ( name = 'BEGIN_DATE' cds_view_field = 'BeginDate' )
+     ( name = 'END_DATE' cds_view_field = 'EndDate' )
+     ( name = 'BOOKING_FEE' cds_view_field = 'BookingFee' )
+     ( name = 'TOTAL_PRICE' cds_view_field = 'TotalPrice' )
+     ( name = 'CURRENCY_CODE' cds_view_field = 'CurrencyCode' )
+     ( name = 'DESCRIPTION' cds_view_field = 'Description' )
+     ( name = 'OVERALL_STATUS' cds_view_field = 'OverallStatus' )
+     ( name = 'CREATED_BY' cds_view_field = 'CreatedBy' )
+     ( name = 'CREATED_AT' cds_view_field = 'CreatedAt' )
+     ( name = 'LAST_CHANGED_BY' cds_view_field = 'LastChangedBy' )
+     ( name = 'LAST_CHANGED_AT' cds_view_field = 'LastChangedAt' )
+     ).
+
+    END-TEST-INJECTION.
+
+
+    TRY.
+
+        mo_cut = NEW /dmo/cl_rap_node( mo_xco_lib ).
+
+      CATCH /dmo/cx_rap_generator INTO DATA(lx_rap_generator).
+        cl_abap_unit_assert=>fail( msg = lx_rap_generator->get_text(  ) ).
+    ENDTRY.
+
+
+
+
+
+    TRY.
+        mo_cut->set_entity_name(  gc_root_entity_name ).
+        mo_cut->set_is_root_node(  ).
+        mo_cut->set_implementation_type( /dmo/cl_rap_node=>implementation_type-managed_uuid ).
+        mo_cut->set_namespace( gc_namespace_z ).
+        mo_cut->set_data_source_type( /dmo/cl_rap_node=>data_source_types-table ).
+
+        mo_cut->set_prefix( gc_prefix_rap ).
+        mo_cut->set_suffix( gc_suffix_4711 ).
+
+
+        mo_cut->set_data_source( CONV #( gc_root_table_MU ) ).
+        mo_cut->set_object_id( CONV sxco_ad_field_name( gc_root_table_sem_key_mu )    ).
+        mo_cut->finalize(  ).
+
+        cl_abap_unit_assert=>fail( msg = 'Exception /dmo/cx_rap_generator=>CLNT_is_not_key_field not raised' ).
+      CATCH /dmo/cx_rap_generator INTO lx_rap_generator.
+
+        cl_abap_unit_assert=>assert_equals( exp = /dmo/cx_rap_generator=>CLNT_is_not_key_field-msgid
+                                            act = lx_rap_generator->if_t100_message~t100key-msgid ).
+
+        cl_abap_unit_assert=>assert_equals( exp = /dmo/cx_rap_generator=>CLNT_is_not_key_field-msgno
+                                            act = lx_rap_generator->if_t100_message~t100key-msgno ).
+
+    ENDTRY.
+
+  ENDMETHOD.
+
   METHOD check_for_parent_key_field.
     TRY.
-        mo_cut = NEW /dmo/cl_rap_node(  ).
+        mo_cut = NEW /dmo/cl_rap_node( mo_xco_lib ).
       CATCH /dmo/cx_rap_generator INTO DATA(lx_rap_generator).
         cl_abap_unit_assert=>fail( msg = lx_rap_generator->get_text(  ) ).
     ENDTRY.
@@ -953,7 +1221,7 @@ CLASS ltc_rap_node IMPLEMENTATION.
         mo_cut->set_table( CONV #( gc_root_table_MU ) ).
         mo_cut->set_field_name_uuid( gc_root_table_uuid  ).
         mo_cut->set_object_id( CONV sxco_ad_field_name( gc_root_table_sem_key_mu )    ).
-       " mo_cut->set_semantic_key_fields( VALUE #( ( CONV #( gc_root_table_sem_key_mu  ) ) ) ).
+        " mo_cut->set_semantic_key_fields( VALUE #( ( CONV #( gc_root_table_sem_key_mu  ) ) ) ).
         mo_cut->finalize(  ).
       CATCH /dmo/cx_rap_generator INTO lx_rap_generator.
         cl_abap_unit_assert=>fail( msg = lx_rap_generator->get_text(  ) ).
@@ -984,7 +1252,7 @@ CLASS ltc_rap_node IMPLEMENTATION.
 
   METHOD check_for_root_key_field.
     TRY.
-        mo_cut = NEW /dmo/cl_rap_node(  ).
+        mo_cut = NEW /dmo/cl_rap_node( mo_xco_lib ).
       CATCH /dmo/cx_rap_generator INTO DATA(lx_rap_generator).
         cl_abap_unit_assert=>fail( msg = lx_rap_generator->get_text(  ) ).
     ENDTRY.
@@ -1056,7 +1324,7 @@ CLASS ltc_rap_node IMPLEMENTATION.
     DATA lv_expected_name TYPE string.
 
     TRY.
-        mo_cut = NEW /dmo/cl_rap_node( ).
+        mo_cut = NEW /dmo/cl_rap_node( mo_xco_lib ).
       CATCH /dmo/cx_rap_generator INTO DATA(lx_rap_generator).
         cl_abap_unit_assert=>fail( msg = lx_rap_generator->get_text(  ) ).
     ENDTRY.
@@ -1075,6 +1343,7 @@ CLASS ltc_rap_node IMPLEMENTATION.
         mo_cut->set_suffix( gc_suffix_4711 ).
         mo_cut->set_table( '/DMO/TRAVEL' ).
         mo_cut->set_semantic_key_fields( VALUE #( ( 'TRAVEL_ID' ) ) ).
+        mo_cut->set_field_name_etag_master( gc_etag_master_mu ).
         mo_cut->finalize(  ).
 
         DATA(child1_bo) = mo_cut->add_child(  ).

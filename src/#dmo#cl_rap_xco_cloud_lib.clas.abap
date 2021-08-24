@@ -17,6 +17,7 @@ CLASS /dmo/cl_rap_xco_cloud_lib DEFINITION INHERITING FROM /dmo/cl_rap_xco_lib
     METHODS get_view_entity REDEFINITION.
     METHODS get_view REDEFINITION.
     METHODS get_entity REDEFINITION.
+    METHODS get_abstract_entity REDEFINITION.
 
 
   PROTECTED SECTION.
@@ -25,7 +26,7 @@ ENDCLASS.
 
 
 
-CLASS /DMO/CL_RAP_XCO_CLOUD_LIB IMPLEMENTATION.
+CLASS /dmo/cl_rap_xco_cloud_lib IMPLEMENTATION.
 
 
   METHOD  get_aggregated_annotations.
@@ -54,7 +55,7 @@ CLASS /DMO/CL_RAP_XCO_CLOUD_LIB IMPLEMENTATION.
 
 
   METHOD get_entity.
-    ro_entity = xco_cp_cds=>view_entity( iv_name ).
+    ro_entity = xco_cp_cds=>entity( iv_name ).
   ENDMETHOD.
 
 
@@ -91,4 +92,9 @@ CLASS /DMO/CL_RAP_XCO_CLOUD_LIB IMPLEMENTATION.
   METHOD get_view_entity.
     ro_view_entity = xco_cp_cds=>view_entity( iv_name ).
   ENDMETHOD.
+
+  METHOD get_abstract_entity.
+    ro_abstract_entity = xco_cp_cds=>abstract_entity( iv_name ).
+  ENDMETHOD.
+
 ENDCLASS.

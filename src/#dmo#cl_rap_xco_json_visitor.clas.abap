@@ -369,11 +369,13 @@ CLASS /dmo/cl_rap_xco_json_visitor IMPLEMENTATION.
           root_node->set_add_meta_data_extensions( iv_value ).
         WHEN 'iscustomizingtable'.
           root_node->set_is_customizing_table( iv_value ).
-        WHEN 'multiedit'.
+        WHEN 'multiinlineedit'.
           root_node->add_multi_edit( iv_value ).
+        WHEN 'generateonlynodehierachy'.
+          root_node->set_generate_only_node_hierach( iv_value ).
         WHEN OTHERS.
 
-          error_message = |{ last_visited_member } in entity { root_node->entityname }|.
+          error_message = |{ last_visited_member } in entity { root_node->entityname }| ##NO_TEXT.
 
           RAISE EXCEPTION TYPE /dmo/cx_rap_generator
             EXPORTING
@@ -398,7 +400,7 @@ CLASS /dmo/cl_rap_xco_json_visitor IMPLEMENTATION.
           WHEN 'drafttable'.
             additional_field-draft_table   = iv_value .
           WHEN OTHERS.
-            error_message = |{ last_visited_member } in entity { current_node->entityname } in objects with add. fields|.
+            error_message = |{ last_visited_member } in entity { current_node->entityname } in objects with add. fields| ##NO_TEXT.
 
             RAISE EXCEPTION TYPE /dmo/cx_rap_generator
               EXPORTING
@@ -450,9 +452,9 @@ CLASS /dmo/cl_rap_xco_json_visitor IMPLEMENTATION.
         WHEN 'package'.
           root_node->set_package( CONV sxco_package( iv_value ) ).
         WHEN 'datasourcetype'.
-          root_node->set_data_source_type( CONV #( iv_value ) ).
+          root_node->set_data_source_type( iv_value  ).
         WHEN 'bindingtype'.
-          root_node->set_binding_type( CONV #( iv_value ) ).
+          root_node->set_binding_type(  iv_value  ).
         WHEN 'transportrequest'.
           root_node->set_transport_request( CONV #( iv_value ) ).
         WHEN 'businessconfigurationname'.
@@ -463,7 +465,7 @@ CLASS /dmo/cl_rap_xco_json_visitor IMPLEMENTATION.
           root_node->set_mbc_description( iv_value ).
         WHEN OTHERS.
 
-          error_message = |{ last_visited_member } in entity { root_node->entityname }|.
+          error_message = |{ last_visited_member } in entity { root_node->entityname }| ##NO_TEXT.
 
           RAISE EXCEPTION TYPE /dmo/cx_rap_generator
             EXPORTING
@@ -485,7 +487,7 @@ CLASS /dmo/cl_rap_xco_json_visitor IMPLEMENTATION.
             additional_binding-element = iv_value.
           WHEN OTHERS.
 
-            error_message = |{ last_visited_member } in entity { current_node->entityname } in additionalBinding|.
+            error_message = |{ last_visited_member } in entity { current_node->entityname } in additionalBinding| ##NO_TEXT.
 
             RAISE EXCEPTION TYPE /dmo/cx_rap_generator
               EXPORTING
@@ -505,7 +507,7 @@ CLASS /dmo/cl_rap_xco_json_visitor IMPLEMENTATION.
           WHEN 'element'.
             value_help-element = CONV sxco_cds_field_name( iv_value ).
           WHEN OTHERS.
-            error_message = |{ last_visited_member } in entity { current_node->entityname } in valueHelps|.
+            error_message = |{ last_visited_member } in entity { current_node->entityname } in valueHelps| ##NO_TEXT.
 
             RAISE EXCEPTION TYPE /dmo/cx_rap_generator
               EXPORTING
@@ -522,7 +524,7 @@ CLASS /dmo/cl_rap_xco_json_visitor IMPLEMENTATION.
           WHEN 'associationfield'.
             condition_fields-association_field = iv_value.
           WHEN OTHERS.
-            error_message = |{ last_visited_member } in entity { current_node->entityname } in conditions|.
+            error_message = |{ last_visited_member } in entity { current_node->entityname } in conditions| ##NO_TEXT.
 
             RAISE EXCEPTION TYPE /dmo/cx_rap_generator
               EXPORTING
@@ -540,7 +542,7 @@ CLASS /dmo/cl_rap_xco_json_visitor IMPLEMENTATION.
           WHEN 'cardinality'.
             association-cardinality = iv_value.
           WHEN OTHERS.
-            error_message = |{ last_visited_member } in entity { current_node->entityname } in associations|.
+            error_message = |{ last_visited_member } in entity { current_node->entityname } in associations| ##NO_TEXT.
 
             RAISE EXCEPTION TYPE /dmo/cx_rap_generator
               EXPORTING
@@ -564,7 +566,7 @@ CLASS /dmo/cl_rap_xco_json_visitor IMPLEMENTATION.
           WHEN 'builtintypedecimals'.
             additional_field-built_in_type_decimals = iv_value.
           WHEN OTHERS.
-            error_message = |{ last_visited_member } in entity { current_node->entityname } in additional fields|.
+            error_message = |{ last_visited_member } in entity { current_node->entityname } in additional fields| ##NO_TEXT.
 
             RAISE EXCEPTION TYPE /dmo/cx_rap_generator
               EXPORTING
@@ -594,7 +596,7 @@ CLASS /dmo/cl_rap_xco_json_visitor IMPLEMENTATION.
           WHEN 'cds_view_field' .
             field_mapping-cds_view_field = CONV sxco_cds_field_name( iv_value ).
           WHEN OTHERS.
-            error_message = |{ last_visited_member } in entity { current_node->entityname } in mapping|.
+            error_message = |{ last_visited_member } in entity { current_node->entityname } in mapping| ##NO_TEXT.
             RAISE EXCEPTION TYPE /dmo/cx_rap_generator
               EXPORTING
                 textid   = /dmo/cx_rap_generator=>invalid_json_property_name
@@ -612,14 +614,12 @@ CLASS /dmo/cl_rap_xco_json_visitor IMPLEMENTATION.
           WHEN 'entityname'.
             current_node->set_entity_name( CONV #( iv_value ) ).
           WHEN 'datasource'.
-            current_node->set_data_source( CONV #( iv_value ) ).
+            current_node->set_data_source( iv_value  ).
           WHEN 'persistenttable' .
-            current_node->set_persistent_table( CONV #( iv_value ) ).
+            current_node->set_persistent_table(  iv_value  ).
           WHEN 'objectid'.
             "current_node->set_semantic_key_fields( it_semantic_key = VALUE #( ( CONV #( iv_value ) ) ) ).
             current_node->set_object_id( CONV sxco_ad_field_name( iv_value ) ).
-          WHEN 'client'.
-            "current_node->set_field_name_( CONV #( iv_value ) ).
           WHEN 'uuid'.
             current_node->set_field_name_uuid( iv_value ).
           WHEN 'parentuuid'.
@@ -638,22 +638,46 @@ CLASS /dmo/cl_rap_xco_json_visitor IMPLEMENTATION.
             current_node->set_field_name_loc_last_chg_at( iv_value ).
           WHEN 'localinstancelastchangedby'.
             current_node->set_field_name_loc_last_chg_by( iv_value ).
+          WHEN 'etagmaster'.
+            current_node->set_field_name_etag_master( iv_value ).
+          WHEN 'totaletag'.
+            current_node->set_field_name_total_etag( iv_value ).
+          WHEN 'client'.
+            current_node->set_field_name_client( iv_value ).
+          WHEN 'language'.
+            current_node->set_field_name_language( iv_value ).
           WHEN 'drafttable'.
             current_node->set_draft_table( iv_value ).
+          WHEN 'cdsinterfaceview' .
+            current_node->set_cds_view_i_name( CONV #( iv_value ) ).
+          WHEN 'cdsprojectionview'.
+            current_node->set_cds_view_p_name( CONV #( iv_value ) ).
+          WHEN 'metadataextensionview'.
+            current_node->set_mde_name( CONV #( iv_value ) ).
+          WHEN 'behaviorimplementationclass'.
+            current_node->set_behavior_impl_name( CONV #( iv_value )  ).
+          WHEN 'servicedefinition'.
+            current_node->set_service_definition_name( CONV #( iv_value )  ).
+          WHEN 'servicebinding'.
+            current_node->set_service_binding_name( CONV #( iv_value )  ).
+          WHEN 'controlstructure'.
+            current_node->set_control_structure_name( CONV #( iv_value )  ).
+          WHEN 'customqueryimplementationclass'.
+            current_node->set_custom_query_impl_name( CONV #( iv_value )  ).
           WHEN 'textelement' .
-            error_message = |{ last_visited_member } in entity { current_node->entityname }|.
+            error_message = |{ last_visited_member } in entity { current_node->entityname }| ##NO_TEXT.
             RAISE EXCEPTION TYPE /dmo/cx_rap_generator
               EXPORTING
                 textid   = /dmo/cx_rap_generator=>not_implemented
                 mv_value = error_message.
           WHEN 'description'.
-            error_message = |{ last_visited_member } in entity { current_node->entityname }|.
+            error_message = |{ last_visited_member } in entity { current_node->entityname }| ##NO_TEXT.
             RAISE EXCEPTION TYPE /dmo/cx_rap_generator
               EXPORTING
                 textid   = /dmo/cx_rap_generator=>not_implemented
                 mv_value = error_message.
           WHEN OTHERS.
-            error_message = |{ last_visited_member } in entity { current_node->entityname }|.
+            error_message = |{ last_visited_member } in entity { current_node->entityname }| ##NO_TEXT.
 
             RAISE EXCEPTION TYPE /dmo/cx_rap_generator
               EXPORTING
@@ -679,7 +703,7 @@ CLASS /dmo/cl_rap_xco_json_visitor IMPLEMENTATION.
 
         WHEN OTHERS.
 
-          error_message = |{ last_visited_member } in entity { root_node->entityname }|.
+          error_message = |{ last_visited_member } in entity { root_node->entityname }| ##NO_TEXT.
 
           RAISE EXCEPTION TYPE /dmo/cx_rap_generator
             EXPORTING
@@ -700,7 +724,7 @@ CLASS /dmo/cl_rap_xco_json_visitor IMPLEMENTATION.
           WHEN 'builtintypedecimals'.
             additional_field-built_in_type_decimals = iv_value .
           WHEN OTHERS.
-            error_message = |{ last_visited_member } in entity { current_node->entityname } in objects with add. fields|.
+            error_message = |{ last_visited_member } in entity { current_node->entityname } in objects with add. fields| ##NO_TEXT.
 
             RAISE EXCEPTION TYPE /dmo/cx_rap_generator
               EXPORTING

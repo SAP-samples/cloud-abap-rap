@@ -342,7 +342,37 @@
      <SPRSL>E</SPRSL>
      <ARBGB>/DMO/CM_RAP_GEN_MSG</ARBGB>
      <MSGNR>056</MSGNR>
-     <TEXT>No local etag field found in &amp;2. localInstanceLastChangedAt mapped as &amp;1.</TEXT>
+     <TEXT>No etag master field found in &amp;2. etag_master mapped as &amp;1.</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>/DMO/CM_RAP_GEN_MSG</ARBGB>
+     <MSGNR>057</MSGNR>
+     <TEXT>ABAP type &amp;1 specified for &amp;2 is not valid: &amp;3.</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>/DMO/CM_RAP_GEN_MSG</ARBGB>
+     <MSGNR>058</MSGNR>
+     <TEXT>For multi-edit entity &amp;1 must be draft enabled and must use OData V4</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>/DMO/CM_RAP_GEN_MSG</ARBGB>
+     <MSGNR>059</MSGNR>
+     <TEXT>For customizing entity &amp;1 must be draft enabled and must use OData V4</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>/DMO/CM_RAP_GEN_MSG</ARBGB>
+     <MSGNR>060</MSGNR>
+     <TEXT>Customizing table &amp;1 must use delivery class &apos;C&apos; not &apos;&amp;2&apos;.</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>/DMO/CM_RAP_GEN_MSG</ARBGB>
+     <MSGNR>061</MSGNR>
+     <TEXT>&amp;1: view type &amp;2 not supported</TEXT>
     </T100>
    </T100>
   </asx:values>
