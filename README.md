@@ -412,7 +412,7 @@ The generator uses string templates that contain the *namespace*, the *prefix* t
 **"behaviorImplementationClass"**  
 <pre>|{ namespace }BP_I_{ prefix }{ entityname }{ suffix }|.</pre>    
 **"serviceDefinition"**  
-|{ namespace }{ prefix }{ entityname }{ suffix }|.</pre>    
+<pre>|{ namespace }{ prefix }{ entityname }{ suffix }|.</pre>    
 **"serviceBinding"**  
 <pre>|{ namespace }{ binding }{ prefix }{ entityname }{ suffix }{ protocol_version }|.</pre>    
 **"controlStructure"**  
