@@ -1,7 +1,13 @@
 CLASS /dmo/cl_rap_generator DEFINITION
  PUBLIC
   FINAL
-  CREATE PRIVATE .
+  CREATE PRIVATE
+*  global friends
+*  /dmo/cl_fe_travel_generator
+*  /dmo/cl_gen_dev260_artifacts
+*  /dmo/cl_gen_dev268_artifacts
+*  /dmo/cl_gen_rap400_artifacts
+  .
 
   PUBLIC SECTION.
 
@@ -893,7 +899,7 @@ CLASS /dmo/cl_rap_generator IMPLEMENTATION.
         CASE lo_childnode->get_implementation_type(  ).
           WHEN /dmo/cl_rap_node=>implementation_type-managed_uuid.
             "determination CalculateSemanticKey on modify { create; }
-            lv_determination_name = 'Calculate' && lo_childnode->object_id_cds_field_name ##NO_TEXT.
+            lv_determination_name = 'Calculate' && lo_childnode->object_id_cds_field_name.
 
             lo_item_behavior->add_determination( CONV #( lv_determination_name )
               )->set_time( xco_cp_behavior_definition=>evaluation->time->on_save
@@ -2525,7 +2531,7 @@ CLASS /dmo/cl_rap_generator IMPLEMENTATION.
         lo_findings = lo_result->findings.
         lt_findings = lo_findings->get( ).
 
-        framework_message-message = 'Messages and warnings from ADT:'   ##NO_TEXT .
+        framework_message-message = 'Messages and warnings from ADT:'.
         framework_message-severity = 'I'.
         APPEND framework_message TO framework_messages.
 
@@ -2614,7 +2620,7 @@ CLASS /dmo/cl_rap_generator IMPLEMENTATION.
           ).
           CLEAR framework_message.
           framework_message-severity = 'S'.
-          framework_message-message = |{ root_node->manage_business_config_names-identifier } registered successfully.|  ##NO_TEXT.
+          framework_message-message = |{ root_node->manage_business_config_names-identifier } registered successfully.| .
           APPEND framework_message TO  framework_messages.
 
         ENDIF.
@@ -2638,7 +2644,7 @@ CLASS /dmo/cl_rap_generator IMPLEMENTATION.
         lt_findings = lo_findings->get( ).
 
         CLEAR framework_message.
-        framework_message-message =  'PUT operation failed:' ##NO_TEXT.
+        framework_message-message =  'PUT operation failed:'.
         APPEND framework_message TO framework_messages.
 
         IF lt_findings IS NOT INITIAL.

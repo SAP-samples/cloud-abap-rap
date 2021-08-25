@@ -575,6 +575,11 @@ CLASS /dmo/cl_rap_node DEFINITION
       RETURNING VALUE(rv_ddic_i_view_name) TYPE sxco_dbt_object_name
       RAISING   /dmo/cx_rap_generator.
 
+    METHODS get_valid_mbc_identifier
+      IMPORTING iv_name                  TYPE sxco_cds_object_name OPTIONAL
+      RETURNING VALUE(rv_mbc_identifier) TYPE sxco_cds_object_name
+      RAISING   /dmo/cx_rap_generator.
+
     METHODS set_behavior_impl_name
       IMPORTING iv_name                     TYPE sxco_cds_object_name OPTIONAL
       RETURNING VALUE(rv_behavior_imp_name) TYPE sxco_cds_object_name
@@ -849,6 +854,116 @@ CLASS /dmo/cl_rap_node IMPLEMENTATION.
 
   ENDMETHOD.
 
+  METHOD get_valid_mbc_identifier.
+
+    "lv_name will be shortened to 16 characters
+    DATA lv_name TYPE string.
+    DATA lv_entityname TYPE sxco_ddef_alias_name.
+    DATA is_valid_mbc_identifier TYPE abap_bool.
+    DATA li_counter TYPE i.
+
+    IF iv_name IS INITIAL.
+      "      DATA(lv_name) = ||.
+
+
+      DATA(lv_mandatory_name_components) =   to_upper( prefix )  && to_upper( suffix  ).
+      DATA(max_length_mandatory_name_comp) = 10.
+      DATA(length_mandatory_name_comp) = strlen( lv_mandatory_name_components ).
+      DATA(remaining_num_characters) = 20 - length_mandatory_name_comp.
+
+      IF length_mandatory_name_comp > max_length_mandatory_name_comp.
+        APPEND |{ lv_mandatory_name_components } mandatory components are too long more than { max_length_mandatory_name_comp } characters| TO lt_messages.
+        bo_node_is_consistent = abap_false.
+        RAISE EXCEPTION TYPE /dmo/cx_rap_generator
+          EXPORTING
+            textid        = /dmo/cx_rap_generator=>is_too_long
+            mv_value      = |{ lv_mandatory_name_components } mandatory components for MBC identifier |
+            mv_max_length = max_length_mandatory_name_comp.
+      ENDIF.
+
+      IF strlen( entityname ) > remaining_num_characters - 3.
+        lv_entityname = substring( val = entityname len = remaining_num_characters - 3 ).
+      ELSE.
+        lv_entityname = entityname.
+      ENDIF.
+
+      is_valid_mbc_identifier = abap_false.
+
+      li_counter       = 0.
+      DATA(unique_hex_number) = CONV xstring( li_counter ).
+
+      lv_name = |{ prefix }{ lv_entityname }{ unique_hex_number }{ suffix }|.
+      lv_name = to_upper( lv_name ).
+
+      WHILE is_valid_mbc_identifier = abap_false AND li_counter < 255 .
+        "check if a table with this name alreardy exists.
+
+        DATA(first_letter_mbc_namespace) = substring( val = me->namespace  len = 1 ).
+
+        "The MBC registration API uses a namespace only if it is a "real" namespace.
+        "If a customer namespace 'Y' or 'Z' is used or if
+        "SAP objects are created such as I_Test that also do not have a namespace
+        "then the MBC namespace must be initial.
+
+        CASE first_letter_mbc_namespace.
+          WHEN '/' .
+            DATA(abap_object_mbc_name) = namespace && lv_name.
+          WHEN 'Y' OR 'Z'.
+            abap_object_mbc_name = namespace && lv_name.
+          WHEN OTHERS.
+            abap_object_mbc_name = lv_name.
+        ENDCASE.
+
+        SELECT * FROM I_CustABAPObjDirectoryEntry WHERE
+        ABAPObject = @abap_object_mbc_name AND ABAPObjectCategory = 'R3TR' AND ABAPObjectType = 'SMBC' INTO TABLE @DATA(lt_smbc).
+
+        IF lines( lt_smbc ) = 0.
+          is_valid_mbc_identifier = abap_true.
+        ENDIF.
+
+
+
+*        IF NOT xco_lib->get_database_table( CONV #( lv_name ) )->exists( ).
+*          is_valid_draft_table_name = abap_true.
+*        ENDIF.
+*
+*        "check if a table with the same existis elsewhere in the BO
+*        IF root_node->draft_table_name = lv_name.
+*          is_valid_draft_table_name = abap_false.
+*        ELSE.
+*          "check if draft table name is used elsewhere in the BO
+*          LOOP AT me->root_node->all_childnodes INTO DATA(lo_bo_node).
+*            IF lo_bo_node->draft_table_name = lv_name.
+*              is_valid_draft_table_name = abap_false.
+*            ENDIF.
+*          ENDLOOP.
+*        ENDIF.
+        IF is_valid_mbc_identifier = abap_false.
+          li_counter       = li_counter + 1.
+          unique_hex_number = CONV xstring( li_counter ).
+          lv_name = |{ prefix }{ lv_entityname }{ unique_hex_number }{ suffix }|.
+          lv_name = to_upper( lv_name ).
+        ENDIF.
+      ENDWHILE.
+
+    ELSE.
+      lv_name = iv_name.
+    ENDIF.
+
+    "check if name already exists within the BO
+
+
+    check_repository_object_name(
+     EXPORTING
+       iv_type = 'SMBC'
+       iv_name = lv_name
+   ).
+
+    "rap_node_objects-ddic_view_i = lv_name.
+    rv_mbc_identifier = lv_name.
+    "rv_ = lv_name.
+
+  ENDMETHOD.
 
   METHOD get_valid_draft_table_name.
 
@@ -887,8 +1002,10 @@ CLASS /dmo/cl_rap_node IMPLEMENTATION.
       is_valid_draft_table_name = abap_false.
 
       li_counter       = 0.
-      DATA(lv_node_number_as_hex) = CONV xstring( li_counter ).
-      lv_name =  to_upper( namespace ) &&  to_upper( prefix )  && to_upper( lv_entityname ) && lv_node_number_as_hex && 'D' && to_upper( suffix  ).
+      DATA(unique_hex_number) = CONV xstring( li_counter ).
+      "lv_name =  to_upper( namespace ) &&  to_upper( prefix )  && to_upper( lv_entityname ) && unique_hex_number && 'D' && to_upper( suffix  ).
+      lv_name = |{ namespace }{ prefix }{ lv_entityname }{ unique_hex_number }D{ suffix }|.
+      lv_name = to_upper( lv_name ).
 
       WHILE is_valid_draft_table_name = abap_false AND li_counter < 255 .
         "check if a table with this name alreardy exists.
@@ -910,8 +1027,10 @@ CLASS /dmo/cl_rap_node IMPLEMENTATION.
         ENDIF.
         IF is_valid_draft_table_name = abap_false.
           li_counter       = li_counter + 1.
-          lv_node_number_as_hex = CONV xstring( li_counter ).
-          lv_name =  to_upper( namespace ) &&  to_upper( prefix )  && to_upper( lv_entityname ) && lv_node_number_as_hex && 'D' && to_upper( suffix  ).
+          unique_hex_number = CONV xstring( li_counter ).
+          "lv_name =  to_upper( namespace ) &&  to_upper( prefix )  && to_upper( lv_entityname ) && unique_hex_number && 'D' && to_upper( suffix  ).
+          lv_name = |{ namespace }{ prefix }{ lv_entityname }{ unique_hex_number }D{ suffix }|.
+          lv_name = to_upper( lv_name ).
         ENDIF.
       ENDWHILE.
 
@@ -1231,7 +1350,28 @@ CLASS /dmo/cl_rap_node IMPLEMENTATION.
         iv_name = iv_value
     ).
 
-    manage_business_config_names-identifier = iv_value.
+    DATA(first_letter_mbc_namespace) = substring( val = me->namespace  len = 1 ).
+
+    "The MBC registration API uses a namespace only if it is a "real" namespace.
+    "If a customer namespace 'Y' or 'Z' is used or if
+    "SAP objects are created such as I_Test that also do not have a namespace
+    "then the MBC namespace must be initial.
+
+    CASE first_letter_mbc_namespace.
+      WHEN '/' .
+        " DATA(abap_object_mbc_name) = namespace && lv_name.
+        manage_business_config_names-identifier = iv_value.
+      WHEN 'Y' OR 'Z'.
+        "abap_object_mbc_name = namespace && lv_name.
+        manage_business_config_names-identifier = namespace && iv_value.
+      WHEN OTHERS.
+        "abap_object_mbc_name = lv_name.
+        manage_business_config_names-identifier = iv_value.
+    ENDCASE.
+
+
+
+
   ENDMETHOD.
 
 
@@ -1249,11 +1389,18 @@ CLASS /dmo/cl_rap_node IMPLEMENTATION.
 
     DATA(first_letter_mbc_namespace) = substring( val = me->namespace  len = 1 ).
 
+    "The MBC registration API uses a namespace only if it is a "real" namespace.
+    "If a customer namespace 'Y' or 'Z' is used or if
+    "SAP objects are created such as I_Test that also do not have a namespace
+    "then the MBC namespace must be initial.
+
     CASE first_letter_mbc_namespace.
-      WHEN 'Y'  OR 'Z'.
+      WHEN '/' .
+        manage_business_config_names-namespace = namespace.
+      WHEN 'Y' OR 'Z'.
         manage_business_config_names-namespace = ''.
       WHEN OTHERS.
-        manage_business_config_names-namespace = me->namespace.
+        manage_business_config_names-namespace = ''.
     ENDCASE.
 
   ENDMETHOD.
@@ -1366,7 +1513,7 @@ CLASS /dmo/cl_rap_node IMPLEMENTATION.
       RAISE EXCEPTION TYPE /dmo/cx_rap_generator
         EXPORTING
           textid            = /dmo/cx_rap_generator=>parameter_is_initial
-          mv_parameter_name = 'Parent node' ##NO_TEXT .
+          mv_parameter_name = 'Parent node' ##NO_TEXT.
     ENDIF.
   ENDMETHOD.
 
@@ -1427,7 +1574,7 @@ CLASS /dmo/cl_rap_node IMPLEMENTATION.
       RAISE EXCEPTION TYPE /dmo/cx_rap_generator
         EXPORTING
           textid            = /dmo/cx_rap_generator=>parameter_is_initial
-          mv_parameter_name = 'Parent node' ##NO_TEXT .
+          mv_parameter_name = 'Parent node' ##NO_TEXT.
     ENDIF.
     IF me <> io_root_node.
       root_node = io_root_node.
@@ -1453,7 +1600,7 @@ CLASS /dmo/cl_rap_node IMPLEMENTATION.
       RAISE EXCEPTION TYPE /dmo/cx_rap_generator
         EXPORTING
           textid            = /dmo/cx_rap_generator=>parameter_is_initial
-          mv_parameter_name = 'Semantic key field(s)' ##NO_TEXT .
+          mv_parameter_name = 'Semantic key field(s)' ##NO_TEXT.
 
     ELSE.
 
@@ -1615,7 +1762,7 @@ CLASS /dmo/cl_rap_node IMPLEMENTATION.
         RAISE EXCEPTION TYPE /dmo/cx_rap_generator
           EXPORTING
             textid   = /dmo/cx_rap_generator=>table_does_not_exist
-            mv_value =  lv_table .
+            mv_value = lv_table.
       ENDIF.
 
       DATA(table_state) = xco_lib->get_database_table( CONV #( lv_table ) )->get_state( xco_cp_abap_dictionary=>object_read_state->active_version ).
@@ -1628,7 +1775,7 @@ CLASS /dmo/cl_rap_node IMPLEMENTATION.
         RAISE EXCEPTION TYPE /dmo/cx_rap_generator
           EXPORTING
             textid   = /dmo/cx_rap_generator=>table_is_inactive
-            mv_value = lv_table .
+            mv_value = lv_table.
       ENDIF.
     END-TEST-SEAM.
 
@@ -2615,6 +2762,9 @@ CLASS /dmo/cl_rap_node IMPLEMENTATION.
     DATA(lv_name) = to_upper( iv_name ).
     DATA lv_object_already_exists TYPE abap_bool.
 
+    DATA(number_of_characters_namespace) = strlen( namespace ).
+    DATA(object_name_without_namespace) = substring( val = lv_name off = number_of_characters_namespace ).
+
     "check if repository already exists
 
     lv_object_already_exists = abap_false.
@@ -2660,8 +2810,26 @@ CLASS /dmo/cl_rap_node IMPLEMENTATION.
 *        IF  xco_lib->get_structure( CONV #( lv_name ) )->exists( ).
 *          lv_object_already_exists = abap_true.
 *        ENDIF.
+
+
+        DATA(first_letter_mbc_namespace) = substring( val = me->namespace  len = 1 ).
+
+        "The MBC registration API uses a namespace only if it is a "real" namespace.
+        "If a customer namespace 'Y' or 'Z' is used or if
+        "SAP objects are created such as I_Test that also do not have a namespace
+        "then the MBC namespace must be initial.
+
+        CASE first_letter_mbc_namespace.
+          WHEN '/' .
+            DATA(abap_object_mbc_name) = namespace && lv_name.
+          WHEN 'Y' OR 'Z'.
+            abap_object_mbc_name = namespace && lv_name.
+          WHEN OTHERS.
+            abap_object_mbc_name = lv_name.
+        ENDCASE.
+
         SELECT * FROM I_CustABAPObjDirectoryEntry WHERE
-        ABAPObject = @lv_name AND ABAPObjectCategory = 'R3TR' AND ABAPObjectType = 'SMBC' INTO TABLE @DATA(lt_smbc).
+        ABAPObject = @abap_object_mbc_name AND ABAPObjectCategory = 'R3TR' AND ABAPObjectType = 'SMBC' INTO TABLE @DATA(lt_smbc).
 
         IF lines( lt_smbc ) = 1.
           lv_object_already_exists = abap_true.
@@ -2707,13 +2875,13 @@ CLASS /dmo/cl_rap_node IMPLEMENTATION.
     ENDIF.
 
     "search for non alpha numeric characters
-    IF is_alpha_numeric( CONV #( lv_name ) ) = abap_false.
+    IF is_alpha_numeric( CONV #( object_name_without_namespace ) ) = abap_false.
       APPEND |Name of { lv_type } { lv_name } contains non alpha numeric characters| TO lt_messages.
       bo_node_is_consistent = abap_false.
       RAISE EXCEPTION TYPE /dmo/cx_rap_generator
         EXPORTING
           textid   = /dmo/cx_rap_generator=>non_alpha_numeric_characters
-          mv_value = |Object Type: { lv_type } Object Name:{ lv_name }|.
+          mv_value = | { lv_type }:{ lv_name }|.
     ENDIF.
 
     "search for spaces
@@ -3695,15 +3863,9 @@ CLASS /dmo/cl_rap_node IMPLEMENTATION.
 
       IF manage_business_config_names-identifier IS INITIAL.
 
-        IF strlen( root_node->rap_root_node_objects-behavior_definition_i ) > 20.
-          RAISE EXCEPTION TYPE /dmo/cx_rap_generator
-            EXPORTING
-              textid        = /dmo/cx_rap_generator=>is_too_long
-              mv_value      = |mbc identifier { root_node->rap_root_node_objects-behavior_definition_i } ({ strlen( root_node->rap_root_node_objects-behavior_definition_i ) }) |
-              mv_max_length = 20.
-        ENDIF.
 
-        set_mbc_identifier( CONV #(  root_node->rap_root_node_objects-behavior_definition_i )  ).
+        DATA(valid_mbc_identifier) = get_valid_mbc_identifier(  ).
+        set_mbc_identifier( CONV #(  valid_mbc_identifier )  ).
 
       ENDIF.
 
@@ -4013,17 +4175,9 @@ CLASS /dmo/cl_rap_node IMPLEMENTATION.
 
       IF manage_business_config_names-identifier IS INITIAL.
 
-        IF strlen( root_node->rap_root_node_objects-behavior_definition_i ) > 20.
-          RAISE EXCEPTION TYPE /dmo/cx_rap_generator
-            EXPORTING
-              textid        = /dmo/cx_rap_generator=>is_too_long
-              mv_value      = |mbc identifier { root_node->rap_root_node_objects-behavior_definition_i } ({ strlen( root_node->rap_root_node_objects-behavior_definition_i ) }) |
-              mv_max_length = 20.
-        ENDIF.
+        DATA(valid_mbc_identifier) = get_valid_mbc_identifier(  ).
 
-        " data(manage_business_cfg_identifier) = root_node->rap_root_node_objects-behavior_definition_i.
-
-        set_mbc_identifier( CONV #(  root_node->rap_root_node_objects-behavior_definition_i )  ).
+        set_mbc_identifier( CONV #( valid_mbc_identifier ) ).
       ENDIF.
 
       IF   manage_business_config_names-name IS INITIAL.
@@ -4206,7 +4360,7 @@ CLASS /dmo/cl_rap_node IMPLEMENTATION.
                       is_unmanaged_semantic = abap_true )
                       "if transactional_behavior is ABAP_FALSE no
                       "BIL must be created
-                      and
+                      AND
                       transactional_behavior = abap_true
                       ).
 
