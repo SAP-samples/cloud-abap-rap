@@ -473,9 +473,17 @@ https://blogs.sap.com/2020/05/17/the-rap-generator
 
 In the trial systems of the ABAP Environment in SAP BTP there is no need to install the RAP Generator since it has been been installed and is updated everytime a new version or fix has been available via GitHub.  
 
-When you want to install this sample code in your own ABAP Environment systems you can simply download it using the abapGIT plugin in ABAP Development Tools in Eclipse when working with SAP Cloud Platform, ABAP Environment. For this you have to create a package in the /DMO/-namespace (for example //DMO/RAP_GENERATOR) and link it as an abapGit repository.
+When you want to install this sample code in your own ABAP Environment systems you can simply download it using the abapGIT plugin in ABAP Development Tools in Eclipse when working with SAP Cloud Platform, ABAP Environment. For this you have to create a package in the /DMO/-namespace (for example /DMO/RAP_GENERATOR) and link it as an abapGit repository.
+
+Please make sure that you use this URL
+
+https://github.com/SAP-samples/cloud-abap-rap/tree/main
+
+so that you have used the "main" branch.
 
 It is also possible to install the RAP Generator in an on-premise system as of SAP S/4HANA 2020. For this you have to set up the namespace `/DMO/`in your on premise system as described in the setup guide for the new [ABAP Flight Reference Scenario for the ABAP RESTful Application Programming Model](https://github.com/SAP-samples/abap-platform-refscen-flight/blob/On-Premise-2020/README.md#set-up-namespace).
+
+And for **on premise** systems you have to use the branch **On-Premise-2020** https://github.com/SAP-samples/cloud-abap-rap/tree/On-Premise-2020
 
 # Known Issues
 
