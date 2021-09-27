@@ -1,7 +1,7 @@
 # Description
 
 This repository contains sample code that helps you to create boiler plate coding for the ABAP RESTful Application Programming Model (RAP) in SAP Cloud Platform, ABAP environment.  
-
+[![REUSE status](https://api.reuse.software/badge/github.com/SAP-samples/cloud-abap-rap)](https://api.reuse.software/info/github.com/SAP-samples/cloud-abap-rap)
 ## What's new with 2108
 
 - There are now JSON schemas available that simplyfy the creation of the JSON files that are used as input by the RAP Generator
