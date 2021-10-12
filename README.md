@@ -1,7 +1,9 @@
+[![REUSE status](https://api.reuse.software/badge/github.com/SAP-samples/cloud-abap-rap)](https://api.reuse.software/info/github.com/SAP-samples/cloud-abap-rap)
+
 # Description
 
-This repository contains sample code that helps you to create boiler plate coding for the ABAP RESTful Application Programming Model (RAP) in SAP Cloud Platform, ABAP environment.  
-[![REUSE status](https://api.reuse.software/badge/github.com/SAP-samples/cloud-abap-rap)](https://api.reuse.software/info/github.com/SAP-samples/cloud-abap-rap)
+This repository contains sample code that helps you to create boiler plate coding for the ABAP RESTful Application Programming Model (RAP) in SAP BTP, ABAP environment.  
+
 ## What's new with 2108
 
 - There are now JSON schemas available that simplyfy the creation of the JSON files that are used as input by the RAP Generator
@@ -462,7 +464,7 @@ So I have decided to provide the information about these advanced features that 
 
 # Requirements
 
-This sample code does currently only work in SAP Cloud Platform, ABAP Environment where the XCO framework has been enabled as of version 2008.
+This sample code does currently only work in SAP BTP, ABAP environment where the XCO framework has been enabled as of version 2008.
 
 Make sure you have set the following option "Wrap and escape text when pasting into string literal" for your ABAP source code editor in your ADT preferences as described in my blog [How to wrap long strings automatically in ADT](https://blogs.sap.com/2020/07/29/how-to-wrap-long-strings-automatically-in-adt/)
 
@@ -473,7 +475,7 @@ https://blogs.sap.com/2020/05/17/the-rap-generator
 
 In the trial systems of the ABAP Environment in SAP BTP there is no need to install the RAP Generator since it has been been installed and is updated everytime a new version or fix has been available via GitHub.  
 
-When you want to install this sample code in your own ABAP Environment systems you can simply download it using the abapGIT plugin in ABAP Development Tools in Eclipse when working with SAP Cloud Platform, ABAP Environment. For this you have to create a package in the /DMO/-namespace (for example /DMO/RAP_GENERATOR) and link it as an abapGit repository.
+When you want to install this sample code in your own ABAP Environment systems you can simply download it using the abapGIT plugin in ABAP Development Tools in Eclipse when working with SAP BTP, ABAP environment. For this you have to create a package in the /DMO/-namespace (for example /DMO/RAP_GENERATOR) and link it as an abapGit repository.
 
 Please make sure that you use this URL
 
@@ -493,7 +495,7 @@ It is currently not possible to set the names of the repository objects used by 
 
 
 # How to obtain support
-If you have problems or questions you can [post them in the SAP Community](https://answers.sap.com/questions/ask.html) using either the primary tag "[SAP Cloud Platform, ABAP environment](https://answers.sap.com/tags/73555000100800001164)" or "[ABAP RESTful Application Programming Model](https://answers.sap.com/tags/7e44126e-7b27-471d-a379-df205a12b1ff)".
+If you have problems or questions you can [post them in the SAP Community](https://answers.sap.com/questions/ask.html) using either the primary tag "[SAP BTP, ABAP environment](https://answers.sap.com/tags/73555000100800001164)" or "[ABAP RESTful Application Programming Model](https://answers.sap.com/tags/7e44126e-7b27-471d-a379-df205a12b1ff)".
 
 # Contributing
 You can add proposals for enhancements as issues. 
