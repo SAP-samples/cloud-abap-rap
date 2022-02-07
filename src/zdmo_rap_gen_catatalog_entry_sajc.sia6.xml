@@ -1,0 +1,24 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<abapGit version="v1.0.0" serializer="LCL_OBJECT_SIA6" serializer_version="v1.0.0">
+ <asx:abap xmlns:asx="http://www.sap.com/abapxml" version="1.0">
+  <asx:values>
+   <SIA6>
+    <MAIN_OBJECT>
+     <NAME>ZDMO_RAP_GEN_CATATALOG_ENTRY_SAJC</NAME>
+     <TYPE>SIA6</TYPE>
+     <DESCRIPTION>IAM APP:ZDMO_RAP_GEN_CATATALOG_ENTRY_SAJC</DESCRIPTION>
+     <RESPONSIBLE>CB0000000022</RESPONSIBLE>
+     <MASTER_LANGUAGE>EN</MASTER_LANGUAGE>
+     <MASTER_SYSTEM>D20</MASTER_SYSTEM>
+     <PACKAGE_REF>
+      <PACKAGE_NAME>ZDMO_RAP_GENERATOR</PACKAGE_NAME>
+     </PACKAGE_REF>
+    </MAIN_OBJECT>
+    <APP_ID>ZDMO_RAP_GEN_CATATALOG_ENTRY_SAJC</APP_ID>
+    <APP_TYPE>SAJC</APP_TYPE>
+    <ABAP_LANGUAGE_VERSION>5</ABAP_LANGUAGE_VERSION>
+    <SECONDARY_ID>ZDMO_RAP_GEN_CATATALOG_ENTRY</SECONDARY_ID>
+   </SIA6>
+  </asx:values>
+ </asx:abap>
+</abapGit>

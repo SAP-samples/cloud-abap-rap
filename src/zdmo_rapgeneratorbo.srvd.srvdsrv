@@ -1,0 +1,6 @@
+@EndUserText.label: 'Service Definition for RAP Genertor BO'
+define service ZDMO_RAPGENERATORBO {
+  expose ZDMO_C_RAPGENERATORBO as RAPGeneratorBO;
+  expose ZDMO_C_RAPGENERATORBONODE as RAPGeneratorBONode;
+  expose ZDMO_I_RAP_GENERATOR_DSRC_TYPE as BindingType;
+}
