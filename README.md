@@ -15,8 +15,7 @@ This repository contains sample code that helps you to create boiler plate codin
 - There are now JSON schemas available that simplyfy the creation of the JSON files that are used as input by the RAP Generator
 - Draft tables are now automatically generated without having to specify the table names upfront    
 - Support for unmanaged RAP BO's with custom entities for the following data source types  
-   - Abstract entities which are for example being generated when a Service Consumption Model is created  
-   - DDIC structures  
+   - Abstract entities which are for example being generated when a Service Consumption Model is created   
 - Support for Multi-Inline-Edit (see [Blog Post - Generating SAP Fiori table maintenance dialogs using the RAP Generator](https://blogs.sap.com/2021/08/23/generating-sap-fiori-table-maintenance-dialogs-using-the-rap-generator/).
 - calling the RAP Generator as an API was made more simple using a static method to accomodate on prem and cloud scenarios. 
   It simply boils down to three lines of code  
