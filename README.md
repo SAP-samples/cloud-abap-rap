@@ -48,8 +48,22 @@ To make the use of the tool as easy as possible the input that is needed by the 
 
 This can also be used just to generate a **JSON file**. This JSON file is based on a schema so that there is a input help and validity check when a JSON Editor such as Visual Studio Code is used.  
 
+## How to install the RAP Generator 
+
+1. Create a package **'ZDMO_RAP_GENERATOR'**
+2. Link this package with the URL of the RAP Generator repo
+3. Pull changes
+4. Use mass activation to activate the objects that have been imported in step 3
+5. Run the class `zdmo_cl_rap_generator_setup`. This class generates the following objects
+   - Application job catalog entry - ZDMO_RAP_GEN_CATATALOG_ENTRY 
+   - Application job template - ZDMO_RAP_GEN_JOB_TEMPLATE
+   - Application log object - ZDMO_RAP_GEN_APPLLOG
+   - Service binding - ZDMO_UI_RAP_GENERATOR_O4
+6. Activate the service binding ZDMO_UI_RAP_GENERATOR_O4
+
 **SAP Fiori Elements UI (Preview)**
 
+Open the service binding **`ZDMO_UI_RAP_GENERATOR_O4`**, select the entity **`RAPGeneratorBO`** and double-click or click on the button **Preview**.  
 
 **JSON schemas**
 
@@ -113,21 +127,6 @@ A simple sample of such a JSON file that would generate a managed business objec
     }
 }
 </pre>
-
-## How to use the RAP Generator 
-
-1. Create a package **'ZDMO_RAP_GENERATOR'**
-2. Link this package with the URL of the RAP Generator repo
-3. Pull changes
-4. Use mass activation to activate the objects that have been imported in step 3
-5. Run the class `zdmo_cl_rap_generator_setup`. This class generates the following objects
-   - Application job catalog entry - ZDMO_RAP_GEN_CATATALOG_ENTRY 
-   - Application job template - ZDMO_RAP_GEN_JOB_TEMPLATE
-   - Application log object - ZDMO_RAP_GEN_APPLLOG
-   - Service binding - ZDMO_UI_RAP_GENERATOR_O4
-6. Activate the service binding ZDMO_UI_RAP_GENERATOR_O4
-
-
 
 ## Run the RAP Generator using a JSON input file
 
