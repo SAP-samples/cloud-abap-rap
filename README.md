@@ -42,9 +42,14 @@ As a second data source the RAP generator supports **CDS views**. This way it wi
 
 In addition the generator supports **abstract CDS views** as a third data source. This way you can now easily leverage the abstract entities that are generated when creating a *Service Consumption Model*. In the JSON configuration file both types of CDS views are denoted as **"datasource" : "cds_view"**.  The generator automatically detects which entity type is used and will use the appropriate XCO API.
 
-As a third and fourth data source there is now support for **DDIC structures** and **ABAP types**. Through the support of DDIC structures scenarios can be addressed that so far have been implemented using code based implementation using SEGW and the binding of DDIC structures. The support of ABAP types is so far limited to ABAP types that itself are based on DDIC structures. So for example ABAP type definitions that you may find in the model provider class of a SEGW project where entity types have been created using the binding of a DDIC structure.  
+As a third data source there is now support for **abstract entities**. Through the support of abstract entities you can generate a RAP BO based on the abstract entities that are generated when a service consumption model is created.  
 
-To make the use of the tool as easy as possible the input that is needed by the generator can be provided as a **JSON file**. This JSON file is based on a schema so that there is a input help and validity check when a JSON Editor such as Visual Studio Code is used.  
+To make the use of the tool as easy as possible the input that is needed by the generator can now be run via a SAP Fiori Elements UI.
+
+This can also be used just to generate a **JSON file**. This JSON file is based on a schema so that there is a input help and validity check when a JSON Editor such as Visual Studio Code is used.  
+
+**SAP Fiori Elements UI (Preview)**
+
 
 **JSON schemas**
 
@@ -111,9 +116,23 @@ A simple sample of such a JSON file that would generate a managed business objec
 
 ## How to use the RAP Generator 
 
-The package **`/DMO/RAP_Generator`** has been imported to all trial systems for your convenience.
+1. Create a package **'ZDMO_RAP_GENERATOR'**
+2. Link this package with the URL of the RAP Generator repo
+3. Pull changes
+4. Use mass activation to activate the objects that have been imported in step 3
+5. Run the class `zdmo_cl_rap_generator_setup`. This class generates the following objects
+   - Application job catalog entry - ZDMO_RAP_GEN_CATATALOG_ENTRY 
+   - Application job template - ZDMO_RAP_GEN_JOB_TEMPLATE
+   - Application log object - ZDMO_RAP_GEN_APPLLOG
+   - Service binding - ZDMO_UI_RAP_GENERATOR_O4
+6. Activate the service binding ZDMO_UI_RAP_GENERATOR_O4
+
+
+
+## Run the RAP Generator using a JSON input file
 
 This is a short description how the RAP Generator can be used.
+
 1. Make sure you have set the following option **Wrap and escape text when pasting into string literal** for your ABAP source code editor in your ADT preferences as described in my blog [How to wrap long strings automatically in ADT](https://blogs.sap.com/2020/07/29/how-to-wrap-long-strings-automatically-in-adt/)  
 2. Create an class **zcl_rap_generator_console_####** in your package using the following code as a template. You can duplicate the class **`/dmo/cl_rap_generator_console`** for that.
 
