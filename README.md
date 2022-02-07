@@ -6,6 +6,7 @@ This repository contains sample code that helps you to create boiler plate codin
 
 ## What's new with 2202
 
+- Move from namespace /DMO/ to "namespace" ZDMO_
 - SAP RAP Business object ZDMO_I_RAPGENERATORBO 
 - RAP Generator can be used using the Fiori Elements UI preview
 
