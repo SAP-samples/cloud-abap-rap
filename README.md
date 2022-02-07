@@ -4,6 +4,11 @@
 
 This repository contains sample code that helps you to create boiler plate coding for the ABAP RESTful Application Programming Model (RAP) in SAP BTP, ABAP environment.  
 
+## What's new with 2202
+
+- SAP RAP Business object ZDMO_I_RAPGENERATORBO 
+- RAP Generator can be used using the Fiori Elements UI preview
+
 ## What's new with 2108
 
 - There are now JSON schemas available that simplyfy the creation of the JSON files that are used as input by the RAP Generator
