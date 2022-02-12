@@ -34,6 +34,22 @@ CLASS zdmo_cl_rap_generator_on_prem DEFINITION
 
     TYPES: t_generated_repository_objects TYPE STANDARD TABLE OF t_generated_repository_object WITH EMPTY KEY.
 
+    TYPES: BEGIN OF t_method_exists_in_interface,
+             interface_name TYPE c LENGTH 30,
+             method_name    TYPE c LENGTH 61,
+             method_exists  TYPE abap_bool,
+           END OF t_method_exists_in_interface.
+
+    TYPES : t_method_exists_in_interfaces TYPE STANDARD TABLE OF t_method_exists_in_interface.
+
+    TYPES: BEGIN OF t_method_exists_in_class,
+             class_name    TYPE c LENGTH 30,
+             method_name   TYPE c LENGTH 61,
+             method_exists TYPE abap_bool,
+           END OF t_method_exists_in_class.
+
+    TYPES : t_method_exists_in_classes TYPE STANDARD TABLE OF t_method_exists_in_class.
+
 
     TYPES:
       BEGIN OF ts_condition_components,
@@ -131,11 +147,16 @@ CLASS zdmo_cl_rap_generator_on_prem DEFINITION
     DATA generated_repository_objects TYPE t_generated_repository_objects.
     DATA generated_repository_object TYPE t_generated_repository_object.
 
+    DATA method_exists_in_interface TYPE t_method_exists_in_interface.
+    DATA method_exists_in_classe TYPE t_method_exists_in_class.
+    DATA method_exists_in_interfaces TYPE t_method_exists_in_interfaces.
+    DATA method_exists_in_classes TYPE t_method_exists_in_classes.
+
 ********************************************************************************
     "cloud
-    data mo_environment type ref to if_xco_cp_gen_env_dev_system.
-    data mo_put_operation  type ref to if_xco_cp_gen_d_o_put .
-    data mo_draft_tabl_put_opertion type ref to if_xco_cp_gen_d_o_put .
+    DATA mo_environment TYPE REF TO if_xco_cp_gen_env_dev_system.
+    DATA mo_put_operation  TYPE REF TO if_xco_cp_gen_d_o_put .
+    DATA mo_draft_tabl_put_opertion TYPE REF TO if_xco_cp_gen_d_o_put .
     DATA mo_srvb_put_operation    TYPE REF TO if_xco_cp_gen_d_o_put .
 ********************************************************************************
     "onpremise
@@ -497,12 +518,18 @@ CLASS zdmo_cl_rap_generator_on_prem IMPLEMENTATION.
 **********************************************************************
 
     IF io_rap_bo_node->is_virtual_root(  ) .
+      method_exists_in_interface-interface_name = 'if_xco_gen_bdef_s_fo_b_chara'.
+      method_exists_in_interface-method_name    = 'SET_WITH_UNMANAGED_SAVE'.
       IF xco_api->method_exists_in_interface(
-           interface_name = 'if_xco_gen_bdef_s_fo_b_chara'
-           method_name    = 'SET_WITH_UNMANAGED_SAVE'
+           interface_name = method_exists_in_interface-interface_name
+           method_name    = method_exists_in_interface-method_name
          ).
-        CALL METHOD characteristics->('SET_WITH_UNMANAGED_SAVE').
+        CALL METHOD characteristics->(method_exists_in_interface-method_name).
+        method_exists_in_interface-method_exists = abap_true.
+      ELSE.
+        method_exists_in_interface-method_exists = abap_false.
       ENDIF.
+      APPEND method_exists_in_interface TO method_exists_in_interfaces.
     ENDIF.
 
 **********************************************************************
@@ -517,16 +544,31 @@ CLASS zdmo_cl_rap_generator_on_prem IMPLEMENTATION.
 *    "authorization master(global)
 *    "is allowed
 
+*    IF xco_api->method_exists_in_interface(
+*               interface_name = 'if_xco_gen_bdef_s_fo_b_auth'
+*               method_name    = 'SET_MASTER_GLOBAL'
+*             ).
+*      DATA(authorization) = characteristics->authorization.
+*      CALL METHOD authorization->('SET_MASTER_GLOBAL').
+*      "if_xco_gen_bdef_s_fo_b_auth~set_master_global
+*      "    call method authorization->( 'if_xco_gen_bdef_s_fo_b_auth~set_master_global' ).
+*      "authorization->set_master_global( ).
+*    ENDIF.
+
+    method_exists_in_interface-interface_name = 'if_xco_gen_bdef_s_fo_b_auth'.
+    method_exists_in_interface-method_name    = 'SET_MASTER_GLOBAL'.
     IF xco_api->method_exists_in_interface(
-               interface_name = 'if_xco_gen_bdef_s_fo_b_auth'
-               method_name    = 'SET_MASTER_GLOBAL'
-             ).
+         interface_name = method_exists_in_interface-interface_name
+         method_name    = method_exists_in_interface-method_name
+       ).
       DATA(authorization) = characteristics->authorization.
-      CALL METHOD authorization->('SET_MASTER_GLOBAL').
-      "if_xco_gen_bdef_s_fo_b_auth~set_master_global
-      "    call method authorization->( 'if_xco_gen_bdef_s_fo_b_auth~set_master_global' ).
-      "authorization->set_master_global( ).
+      CALL METHOD authorization->(method_exists_in_interface-method_name).
+      method_exists_in_interface-method_exists = abap_true.
+    ELSE.
+      method_exists_in_interface-method_exists = abap_false.
     ENDIF.
+    APPEND method_exists_in_interface TO method_exists_in_interfaces.
+
 
 **********************************************************************
 ** End of deletion 2108
@@ -573,16 +615,34 @@ CLASS zdmo_cl_rap_generator_on_prem IMPLEMENTATION.
       " lock type ref to if_xco_gen_bdef_s_fo_b_lock
       DATA(lock) = characteristics->lock.
 
+*      IF xco_api->method_exists_in_interface(
+*                    interface_name = 'if_xco_gen_bdef_s_fo_b_lock'
+*                    method_name    = 'SET_MASTER_TOTAL_ETAG'
+*                  ).
+*        "lock->set_master_total_etag(  total_etag  ).
+*        CALL METHOD lock->('SET_MASTER_TOTAL_ETAG')
+*          EXPORTING
+*            iv_master_total_etag = total_etag.
+*        APPEND 'SET_MASTER_TOTAL_ETAG' TO call_method_succeeded_list.
+*      ENDIF.
+
+      method_exists_in_interface-interface_name = 'if_xco_gen_bdef_s_fo_b_lock'.
+      method_exists_in_interface-method_name    = 'SET_MASTER_TOTAL_ETAG'.
       IF xco_api->method_exists_in_interface(
-                    interface_name = 'if_xco_gen_bdef_s_fo_b_lock'
-                    method_name    = 'SET_MASTER_TOTAL_ETAG'
-                  ).
-        "lock->set_master_total_etag(  total_etag  ).
-        CALL METHOD lock->('SET_MASTER_TOTAL_ETAG')
+           interface_name = method_exists_in_interface-interface_name
+           method_name    = method_exists_in_interface-method_name
+         ).
+        CALL METHOD lock->(method_exists_in_interface-method_name)
           EXPORTING
             iv_master_total_etag = total_etag.
         APPEND 'SET_MASTER_TOTAL_ETAG' TO call_method_succeeded_list.
+        method_exists_in_interface-method_exists = abap_true.
+      ELSE.
+        method_exists_in_interface-method_exists = abap_false.
       ENDIF.
+      APPEND method_exists_in_interface TO method_exists_in_interfaces.
+
+
 
 **********************************************************************
 ** End of deletion 2020
@@ -629,24 +689,40 @@ CLASS zdmo_cl_rap_generator_on_prem IMPLEMENTATION.
       DATA(lo_action_resume) = lo_header_behavior->add_action( 'Resume'  ) ##no_text.
       DATA(lo_action_prepare) = lo_header_behavior->add_action( 'Prepare'  ) ##no_text.
 
-      IF xco_api->method_exists_in_interface(
-                    interface_name = 'if_xco_gen_bdef_s_fo_b_action'
-                    method_name    = 'SET_DETERMINE'
-                  ).
-        CALL METHOD lo_action_edit->('SET_DRAFT').
-        CALL METHOD lo_action_activate->('SET_DRAFT').
-        CALL METHOD lo_action_discard->('SET_DRAFT').
-        CALL METHOD lo_action_resume->('SET_DRAFT').
-        CALL METHOD lo_action_prepare->('SET_DRAFT').
-        APPEND 'SET_DRAFT' TO call_method_succeeded_list.
-      ENDIF.
+      method_exists_in_interface-interface_name = 'if_xco_gen_bdef_s_fo_b_action'.
+      method_exists_in_interface-method_name    = 'SET_DRAFT'.
 
       IF xco_api->method_exists_in_interface(
-                    interface_name = 'if_xco_gen_bdef_s_fo_b_action'
-                    method_name    = 'SET_DETERMINE'
+                     interface_name = method_exists_in_interface-interface_name
+                     method_name    = method_exists_in_interface-method_name
                   ).
-        CALL METHOD lo_action_prepare->('SET_DETERMINE').
+        CALL METHOD lo_action_edit->(method_exists_in_interface-method_name).
+        CALL METHOD lo_action_activate->(method_exists_in_interface-method_name).
+        CALL METHOD lo_action_discard->(method_exists_in_interface-method_name).
+        CALL METHOD lo_action_resume->(method_exists_in_interface-method_name).
+        CALL METHOD lo_action_prepare->(method_exists_in_interface-method_name).
+        method_exists_in_interface-method_exists = abap_true.
+      ELSE.
+        method_exists_in_interface-method_exists = abap_false.
       ENDIF.
+      APPEND method_exists_in_interface TO method_exists_in_interfaces.
+
+
+      method_exists_in_interface-interface_name = 'if_xco_gen_bdef_s_fo_b_action'.
+      method_exists_in_interface-method_name    = 'SET_DETERMINE'.
+
+      IF xco_api->method_exists_in_interface(
+                     interface_name = method_exists_in_interface-interface_name
+                     method_name    = method_exists_in_interface-method_name
+                   ).
+        CALL METHOD lo_action_prepare->(method_exists_in_interface-method_name).
+        method_exists_in_interface-method_exists = abap_true.
+      ELSE.
+        method_exists_in_interface-method_exists = abap_false.
+      ENDIF.
+      APPEND method_exists_in_interface TO method_exists_in_interfaces.
+
+    ENDIF.
 
 
 **********************************************************************
@@ -654,7 +730,7 @@ CLASS zdmo_cl_rap_generator_on_prem IMPLEMENTATION.
 **********************************************************************
 
 
-    ENDIF.
+
 
     " add standard operations for root node
 
@@ -672,23 +748,22 @@ CLASS zdmo_cl_rap_generator_on_prem IMPLEMENTATION.
 **********************************************************************
     xco_api->todo( 'in create bdef. make sure is_customizing_table is false on premise' ).
 
-    IF io_rap_bo_node->is_customizing_table = abap_true
-       AND io_rap_bo_node->is_virtual_root( ) = abap_false.
+    IF io_rap_bo_node->is_customizing_table = abap_true AND io_rap_bo_node->is_virtual_root( ) = abap_false.
       " if_xco_gen_bdef_s_fo_b_validtn
       lv_validation_name = |validateChanges| .
 
       DATA(validation) = lo_header_behavior->add_validation( CONV #( lv_validation_name ) ).
       validation->set_time( xco_cp_behavior_definition=>evaluation->time->on_save ).
+
+      method_exists_in_interface-interface_name = 'if_xco_gen_bdef_s_fo_b_validtn'.
+      method_exists_in_interface-method_name    = 'SET_TRIGGER_OPERATIONS'.
       IF xco_api->method_exists_in_interface(
-                  interface_name = 'if_xco_gen_bdef_s_fo_b_validtn'
-                  method_name    = 'SET_TRIGGER_OPERATIONS'
+                  interface_name = method_exists_in_interface-interface_name
+                  method_name    = method_exists_in_interface-method_name
                 ).
         DATA  trigger_operations  TYPE sxco_t_bdef_trigger_operations  .
         " DATA  trigger_operations_class TYPE REF TO cl_xco_bdef_eval_trigger_op_f.
 
-        CLEAR <fs_create>.
-        CLEAR <fs_update>.
-        CLEAR <fs_delete>.
         ASSIGN xco_cp_behavior_definition=>evaluation->trigger_operation->('CREATE') TO <fs_create>.
         ASSIGN xco_cp_behavior_definition=>evaluation->trigger_operation->('UPDATE') TO <fs_update>.
         ASSIGN xco_cp_behavior_definition=>evaluation->trigger_operation->('DELETE') TO <fs_delete>.
@@ -703,10 +778,19 @@ CLASS zdmo_cl_rap_generator_on_prem IMPLEMENTATION.
           APPEND <fs_delete> TO trigger_operations.
         ENDIF.
 
-        CALL METHOD validation->('SET_TRIGGER_OPERATIONS')
-          IMPORTING
-            it_trigger_operations = trigger_operations.
+* @todo: dynamic call currently fails
+*        CALL METHOD validation->('SET_TRIGGER_OPERATIONS')
+*          IMPORTING
+*            it_trigger_operations = trigger_operations.
+
+        validation->set_trigger_operations( trigger_operations  ).
+
+        method_exists_in_interface-method_exists = abap_true.
+      ELSE.
+        method_exists_in_interface-method_exists = abap_false.
       ENDIF.
+      APPEND method_exists_in_interface TO method_exists_in_interfaces.
+
     ENDIF.
 
     IF io_rap_bo_node->is_virtual_root(  ) = abap_true.
@@ -906,17 +990,23 @@ CLASS zdmo_cl_rap_generator_on_prem IMPLEMENTATION.
 **********************************************************************
 ** Begin of deletion 2108
 **********************************************************************
+
+          method_exists_in_interface-interface_name = 'if_xco_gen_bdef_s_fo_b_auth'.
+          method_exists_in_interface-method_name    = 'SET_MASTER_GLOBAL'.
+          "if root node can't be set as MASTER GLOBAL child nodes can't be set as dependent_by
           IF xco_api->method_exists_in_interface(
-                     interface_name = 'if_xco_gen_bdef_s_fo_b_auth'
-                     method_name    = 'SET_DEPENDENT_BY'
+                     interface_name = method_exists_in_interface-interface_name
+                     method_name    = method_exists_in_interface-method_name
                    ).
             DATA(item_authorization) = item_characteristics->authorization.
             DATA(authorization_association) =  |_{ lo_childnode->root_node->rap_node_objects-alias }|.
-
-            CALL METHOD item_authorization->('SET_DEPENDENT_BY')
-              EXPORTING
-                iv_association_name = CONV sxco_cds_association_name( authorization_association ).
+            item_authorization->set_dependent_by( CONV sxco_cds_association_name( authorization_association ) ).
+            method_exists_in_interface-method_exists = abap_true.
+          ELSE.
+            method_exists_in_interface-method_exists = abap_false.
           ENDIF.
+          APPEND method_exists_in_interface TO method_exists_in_interfaces.
+
 
 *          item_characteristics->authorization->set_dependent_by( '_' && lo_childnode->root_node->rap_node_objects-alias  ).
 *          "ENDIF.
@@ -962,17 +1052,22 @@ CLASS zdmo_cl_rap_generator_on_prem IMPLEMENTATION.
 **********************************************************************
 ** Begin of deletion 2108
 **********************************************************************
-
+          method_exists_in_interface-interface_name = 'if_xco_gen_bdef_s_fo_b_auth'.
+          method_exists_in_interface-method_name    = 'SET_MASTER_GLOBAL'.
+          "if root node can't be set as MASTER GLOBAL child nodes can't be set as dependent_by
           IF xco_api->method_exists_in_interface(
-                          interface_name = 'if_xco_gen_bdef_s_fo_b_auth'
-                          method_name    = 'SET_DEPENDENT_BY'
-                        ).
+                     interface_name = method_exists_in_interface-interface_name
+                     method_name    = method_exists_in_interface-method_name
+                   ).
             item_authorization = item_characteristics->authorization.
-            authorization_association = |_{ lo_childnode->parent_node->rap_node_objects-alias }|.
-            CALL METHOD item_authorization->('SET_DEPENDENT_BY')
-              EXPORTING
-                iv_association_name = CONV sxco_cds_association_name( authorization_association ).
+            authorization_association =  |_{ lo_childnode->root_node->rap_node_objects-alias }|.
+            item_authorization->set_dependent_by( CONV sxco_cds_association_name( authorization_association ) ).
+            method_exists_in_interface-method_exists = abap_true.
+          ELSE.
+            method_exists_in_interface-method_exists = abap_false.
           ENDIF.
+          APPEND method_exists_in_interface TO method_exists_in_interfaces.
+
 
 *          item_characteristics->authorization->set_dependent_by( '_' && lo_childnode->parent_node->rap_node_objects-alias  ).
 
@@ -1040,30 +1135,30 @@ CLASS zdmo_cl_rap_generator_on_prem IMPLEMENTATION.
 *                                        "( xco_cp_behavior_definition=>evaluation->trigger_operation->delete )
 *                                       ).
 
-          CLEAR <fs_create>.
-          CLEAR <fs_update>.
-          CLEAR <fs_delete>.
+          CLEAR trigger_operations.
           ASSIGN xco_cp_behavior_definition=>evaluation->trigger_operation->('CREATE') TO <fs_create>.
           ASSIGN xco_cp_behavior_definition=>evaluation->trigger_operation->('UPDATE') TO <fs_update>.
-          "ASSIGN xco_cp_behavior_definition=>evaluation->trigger_operation->('DELETE') TO <fs_delete>.
+
+
           IF <fs_create> IS ASSIGNED.
             APPEND <fs_create> TO trigger_operations.
           ENDIF.
           IF <fs_update> IS ASSIGNED.
             APPEND <fs_update> TO trigger_operations.
           ENDIF.
-          IF <fs_delete> IS ASSIGNED.
-            APPEND <fs_delete> TO trigger_operations.
-          ENDIF.
-
 
           IF xco_api->method_exists_in_interface(
             interface_name = 'if_xco_gen_bdef_s_fo_b_validtn'
             method_name    = 'SET_TRIGGER_OPERATIONS'
           ).
-            CALL METHOD item_validation->('SET_TRIGGER_OPERATIONS')
-              IMPORTING
-                it_trigger_operations = trigger_operations.
+
+* todo: dynamic call currently fails
+*              CALL METHOD item_validation->('SET_TRIGGER_OPERATIONS')
+*                IMPORTING
+*                  it_trigger_operations = trigger_operations.
+
+            item_validation->set_trigger_operations( trigger_operations  ).
+
           ENDIF.
         ENDIF.
 **********************************************************************
@@ -2660,14 +2755,14 @@ CLASS zdmo_cl_rap_generator_on_prem IMPLEMENTATION.
 **********************************************************************
 ** Begin of insertion 2020
 **********************************************************************
-*            lo_result = mo_draft_tabl_put_opertion->execute( VALUE #( ( xco_cp_generation=>put_operation_option->skip_activation ) ) ).
+            lo_result = mo_draft_tabl_put_opertion->execute( VALUE #( ( xco_cp_generation=>put_operation_option->skip_activation ) ) ).
 **********************************************************************
 ** End of deletion 2020
 **********************************************************************
 **********************************************************************
 ** Begin of insertion 2020
 **********************************************************************
-        lo_result = mo_draft_tabl_put_opertion->execute(  ).
+*        lo_result = mo_draft_tabl_put_opertion->execute(  ).
 **********************************************************************
 ** End of insertion 2020
 **********************************************************************
@@ -2813,14 +2908,14 @@ CLASS zdmo_cl_rap_generator_on_prem IMPLEMENTATION.
 **********************************************************************
 ** Start of deletion 2020
 **********************************************************************
-*          lo_result = mo_put_operation->execute( VALUE #( ( xco_cp_generation=>put_operation_option->skip_activation ) ) ).
+          lo_result = mo_put_operation->execute( VALUE #( ( xco_cp_generation=>put_operation_option->skip_activation ) ) ).
 **********************************************************************
 ** End of deletion 2020
 **********************************************************************
 **********************************************************************
 ** End of insertion 2020
 **********************************************************************
-      lo_result = mo_put_operation->execute(  ).
+*      lo_result = mo_put_operation->execute(  ).
 **********************************************************************
 ** End of insertion 2020
 **********************************************************************
@@ -2917,7 +3012,7 @@ CLASS zdmo_cl_rap_generator_on_prem IMPLEMENTATION.
 
             iv_service_version = 0001
             iv_root_entity_set = root_node->entityname
-            iv_transport       = CONV #( root_node->transport_request )
+            iv_transport       = CONV #( mo_transport )
 **********************************************************************
 ** Begin of deletion 2020
 **********************************************************************
@@ -2967,6 +3062,12 @@ CLASS zdmo_cl_rap_generator_on_prem IMPLEMENTATION.
 
           ENDLOOP.
         ENDIF.
+
+      CATCH cx_root INTO DATA(lx_root_exception).  "if nothing else has been catched so far
+
+        CLEAR framework_message.
+        framework_message-message = lx_root_exception->get_text( ).
+        APPEND framework_message TO framework_messages.
 
     ENDTRY.
 

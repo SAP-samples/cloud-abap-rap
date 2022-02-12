@@ -992,18 +992,15 @@ CLASS zdmo_cl_rap_generator IMPLEMENTATION.
 **********************************************************************
 
           method_exists_in_interface-interface_name = 'if_xco_gen_bdef_s_fo_b_auth'.
-          method_exists_in_interface-method_name    = 'SET_DEPENDENT_BY'.
-
+          method_exists_in_interface-method_name    = 'SET_MASTER_GLOBAL'.
+          "if root node can't be set as MASTER GLOBAL child nodes can't be set as dependent_by
           IF xco_api->method_exists_in_interface(
                      interface_name = method_exists_in_interface-interface_name
                      method_name    = method_exists_in_interface-method_name
                    ).
             DATA(item_authorization) = item_characteristics->authorization.
             DATA(authorization_association) =  |_{ lo_childnode->root_node->rap_node_objects-alias }|.
-
-            CALL METHOD item_authorization->(method_exists_in_interface-method_name)
-              EXPORTING
-                iv_association_name = CONV sxco_cds_association_name( authorization_association ).
+            item_authorization->set_dependent_by( CONV sxco_cds_association_name( authorization_association ) ).
             method_exists_in_interface-method_exists = abap_true.
           ELSE.
             method_exists_in_interface-method_exists = abap_false.
@@ -1056,16 +1053,15 @@ CLASS zdmo_cl_rap_generator IMPLEMENTATION.
 ** Begin of deletion 2108
 **********************************************************************
           method_exists_in_interface-interface_name = 'if_xco_gen_bdef_s_fo_b_auth'.
-          method_exists_in_interface-method_name    = 'SET_DEPENDENT_BY'.
+          method_exists_in_interface-method_name    = 'SET_MASTER_GLOBAL'.
+          "if root node can't be set as MASTER GLOBAL child nodes can't be set as dependent_by
           IF xco_api->method_exists_in_interface(
-                          interface_name = method_exists_in_interface-interface_name
-                          method_name    = method_exists_in_interface-method_name
-                        ).
+                     interface_name = method_exists_in_interface-interface_name
+                     method_name    = method_exists_in_interface-method_name
+                   ).
             item_authorization = item_characteristics->authorization.
-            authorization_association = |_{ lo_childnode->parent_node->rap_node_objects-alias }|.
-            CALL METHOD item_authorization->(method_exists_in_interface-method_name)
-              EXPORTING
-                iv_association_name = CONV sxco_cds_association_name( authorization_association ).
+            authorization_association =  |_{ lo_childnode->root_node->rap_node_objects-alias }|.
+            item_authorization->set_dependent_by( CONV sxco_cds_association_name( authorization_association ) ).
             method_exists_in_interface-method_exists = abap_true.
           ELSE.
             method_exists_in_interface-method_exists = abap_false.

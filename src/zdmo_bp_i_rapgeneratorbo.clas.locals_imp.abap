@@ -140,12 +140,12 @@ CLASS lhc_rapgeneratorbo IMPLEMENTATION.
         IF job_scheduling_error->bapimsg-id = cx_apj_rt=>cx_job_doesnt_exist-msgid AND
            job_scheduling_error->bapimsg-number = '015' .
 
-          DATA(rap_generator_setup) = NEW zdmo_cl_rap_generator_setup(  ).
-          DATA(application_log_object_name) = rap_generator_setup->create_application_log_entry(  ).
-          DATA(job_catalog_name) = rap_generator_setup->create_job_catalog_entry(  ).
-          DATA(job_template_name) = rap_generator_setup->create_job_template_entry(  ).
+*          DATA(rap_generator_setup) = NEW zdmo_cl_rap_generator_setup(  ).
+*          DATA(application_log_object_name) = rap_generator_setup->create_application_log_entry(  ).
+*          DATA(job_catalog_name) = rap_generator_setup->create_job_catalog_entry(  ).
+*          DATA(job_template_name) = rap_generator_setup->create_job_template_entry(  ).
 
-          ls_longtext = CONV #( |Job template { zdmo_cl_rap_node=>job_template_name } did not exist. Try again or run setup class.| ).
+          ls_longtext = CONV #( |Job template { zdmo_cl_rap_node=>job_template_name } does not exist. Run setup class.| ).
         ELSE.
           ls_longtext = job_scheduling_error->bapimsg-message .
         ENDIF.

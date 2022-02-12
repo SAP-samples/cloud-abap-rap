@@ -40,6 +40,7 @@ ENDCLASS.
 
 CLASS zdmo_cl_rap_generator_setup IMPLEMENTATION.
 
+
   METHOD main.
 
     TRY.
@@ -71,12 +72,11 @@ CLASS zdmo_cl_rap_generator_setup IMPLEMENTATION.
   ENDMETHOD.
 
 
-
   METHOD create_transport.
     "transport creation checks whether being on cloud or on prem
-
+    DATA longtext      TYPE t_longtext.
     DATA transport_request_description TYPE sxco_ar_short_description VALUE 'RAP Generator Application Job Catalog Entry and Job Template'.
-
+    DATA package_name_to_check TYPE sxco_package  .
     DATA xco_lib TYPE REF TO zdmo_cl_rap_xco_lib.
 
     IF xco_on_prem_library->on_premise_branch_is_used(  ) = abap_true.
@@ -87,13 +87,26 @@ CLASS zdmo_cl_rap_generator_setup IMPLEMENTATION.
 
     package_of_rap_generator = xco_lib->get_class( 'ZDMO_CL_RAP_NODE' )->if_xco_ar_object~get_package(  ).
 
-    DATA(transport_layer_name) = package_of_rap_generator->read(  )-property-transport_layer->value.
-    DATA(transport_target_name) = package_of_rap_generator->read(  )-property-transport_layer->get_transport_target( )->value.
-
-    r_transport_request = xco_cp_cts=>transports->workbench( transport_target_name )->create_request( transport_request_description )->value.
-
-
+    package_name_to_check = package_of_rap_generator->name.
+    TRY.
+        WHILE xco_lib->get_package( package_name_to_check )->read( )-property-transport_layer->value = '$SPL'.
+          package_name_to_check = xco_lib->get_package( package_name_to_check )->read( )-property-super_package->name.
+        ENDWHILE.
+        DATA(transport_target) = xco_lib->get_package( package_name_to_check
+          )->read( )-property-transport_layer->get_transport_target( ).
+        DATA(transport_target_name) = transport_target->value.
+        r_transport_request = xco_cp_cts=>transports->workbench( transport_target_name )->create_request( transport_request_description )->value.
+      CATCH cx_root INTO DATA(exc_getting_transport_target).
+        CLEAR r_transport_request.
+        longtext = exc_getting_transport_target->get_text( ).
+        RAISE EXCEPTION NEW zdmo_cx_rap_generator( textid     = zdmo_cx_rap_generator=>job_scheduling_error
+                                                   mv_value   = CONV #( longtext-msgv1 )
+                                                   mv_value_2 = CONV #( longtext-msgv2 )
+                                                   previous   = exc_getting_transport_target
+                                                   ).
+    ENDTRY.
   ENDMETHOD.
+
 
   METHOD create_job_catalog_entry.
 
@@ -137,6 +150,7 @@ CLASS zdmo_cl_rap_generator_setup IMPLEMENTATION.
     ENDTRY.
   ENDMETHOD.
 
+
   METHOD create_job_template_entry.
 
     " Create job template (corresponds to the former system selection variant) which is mandatory
@@ -175,6 +189,7 @@ CLASS zdmo_cl_rap_generator_setup IMPLEMENTATION.
         ENDIF.
     ENDTRY.
   ENDMETHOD.
+
 
   METHOD create_application_log_entry.
     DATA longtext      TYPE t_longtext.
@@ -226,6 +241,7 @@ CLASS zdmo_cl_rap_generator_setup IMPLEMENTATION.
     ENDIF.
   ENDMETHOD.
 
+
   METHOD constructor.
 
     super->constructor( ).
@@ -237,6 +253,7 @@ CLASS zdmo_cl_rap_generator_setup IMPLEMENTATION.
     package_name_of_rap_generator = package_of_rap_generator->name.
 
   ENDMETHOD.
+
 
   METHOD create_service_binding.
 
@@ -313,5 +330,4 @@ CLASS zdmo_cl_rap_generator_setup IMPLEMENTATION.
 
 
   ENDMETHOD.
-
 ENDCLASS.
