@@ -154,16 +154,16 @@ CLASS zdmo_cl_rap_generator_on_prem DEFINITION
 
 ********************************************************************************
     "cloud
-    DATA mo_environment TYPE REF TO if_xco_cp_gen_env_dev_system.
-    DATA mo_put_operation  TYPE REF TO if_xco_cp_gen_d_o_put .
-    DATA mo_draft_tabl_put_opertion TYPE REF TO if_xco_cp_gen_d_o_put .
-    DATA mo_srvb_put_operation    TYPE REF TO if_xco_cp_gen_d_o_put .
+*    DATA mo_environment TYPE REF TO if_xco_cp_gen_env_dev_system.
+*    DATA mo_put_operation  TYPE REF TO if_xco_cp_gen_d_o_put .
+*    DATA mo_draft_tabl_put_opertion TYPE REF TO if_xco_cp_gen_d_o_put .
+*    DATA mo_srvb_put_operation    TYPE REF TO if_xco_cp_gen_d_o_put .
 ********************************************************************************
     "onpremise
-*    DATA mo_environment           TYPE REF TO if_xco_gen_environment .
-*    DATA mo_put_operation         TYPE REF TO if_xco_gen_o_mass_put.
-*    DATA mo_draft_tabl_put_opertion TYPE REF TO if_xco_gen_o_mass_put.
-*    DATA mo_srvb_put_operation    TYPE REF TO if_xco_gen_o_mass_put.
+    DATA mo_environment           TYPE REF TO if_xco_gen_environment .
+    DATA mo_put_operation         TYPE REF TO if_xco_gen_o_mass_put.
+    DATA mo_draft_tabl_put_opertion TYPE REF TO if_xco_gen_o_mass_put.
+    DATA mo_srvb_put_operation    TYPE REF TO if_xco_gen_o_mass_put.
 ********************************************************************************
 
     DATA mo_transport TYPE    sxco_transport .
@@ -429,20 +429,20 @@ CLASS zdmo_cl_rap_generator_on_prem IMPLEMENTATION.
 
 **********************************************************************
     "cloud
-    mo_environment = xco_cp_generation=>environment->dev_system( mo_transport )  .
-    mo_put_operation = mo_environment->create_put_operation( ).
-    mo_draft_tabl_put_opertion = mo_environment->create_put_operation( ).
-    mo_srvb_put_operation = mo_environment->create_put_operation( ).
+*    mo_environment = xco_cp_generation=>environment->dev_system( mo_transport )  .
+*    mo_put_operation = mo_environment->create_put_operation( ).
+*    mo_draft_tabl_put_opertion = mo_environment->create_put_operation( ).
+*    mo_srvb_put_operation = mo_environment->create_put_operation( ).
 **********************************************************************
     "on premise
-*    If xco_api->get_package( root_node->package  )->read( )-property-record_object_changes = abap_true.
-*       mo_environment = xco_generation=>environment->transported( mo_transport ).
-*    Else.
-*      mo_environment = xco_generation=>environment->local.
-*    Endif.
-*    mo_draft_tabl_put_opertion = mo_environment->create_mass_put_operation( ).
-*    mo_put_operation = mo_environment->create_mass_put_operation( ).
-*    mo_srvb_put_operation = mo_environment->create_mass_put_operation( ).
+    IF xco_api->get_package( root_node->package  )->read( )-property-record_object_changes = abap_true.
+      mo_environment = xco_generation=>environment->transported( mo_transport ).
+    ELSE.
+      mo_environment = xco_generation=>environment->local.
+    ENDIF.
+    mo_draft_tabl_put_opertion = mo_environment->create_mass_put_operation( ).
+    mo_put_operation = mo_environment->create_mass_put_operation( ).
+    mo_srvb_put_operation = mo_environment->create_mass_put_operation( ).
 
 **********************************************************************
   ENDMETHOD.
@@ -1056,11 +1056,11 @@ CLASS zdmo_cl_rap_generator_on_prem IMPLEMENTATION.
           method_exists_in_interface-method_name    = 'SET_MASTER_GLOBAL'.
           "if root node can't be set as MASTER GLOBAL child nodes can't be set as dependent_by
           IF xco_api->method_exists_in_interface(
-                     interface_name = method_exists_in_interface-interface_name
-                     method_name    = method_exists_in_interface-method_name
-                   ).
+                          interface_name = method_exists_in_interface-interface_name
+                          method_name    = method_exists_in_interface-method_name
+                        ).
             item_authorization = item_characteristics->authorization.
-            authorization_association =  |_{ lo_childnode->root_node->rap_node_objects-alias }|.
+            authorization_association = |_{ lo_childnode->parent_node->rap_node_objects-alias }|.
             item_authorization->set_dependent_by( CONV sxco_cds_association_name( authorization_association ) ).
             method_exists_in_interface-method_exists = abap_true.
           ELSE.
@@ -2753,18 +2753,18 @@ CLASS zdmo_cl_rap_generator_on_prem IMPLEMENTATION.
 
 
 **********************************************************************
-** Begin of insertion 2020
+** Begin of deletion 2021
 **********************************************************************
-            lo_result = mo_draft_tabl_put_opertion->execute( VALUE #( ( xco_cp_generation=>put_operation_option->skip_activation ) ) ).
+*            lo_result = mo_draft_tabl_put_opertion->execute( VALUE #( ( xco_cp_generation=>put_operation_option->skip_activation ) ) ).
 **********************************************************************
-** End of deletion 2020
+** End of deletion 2021
 **********************************************************************
 **********************************************************************
-** Begin of insertion 2020
+** Begin of insertion 2021
 **********************************************************************
-*        lo_result = mo_draft_tabl_put_opertion->execute(  ).
+            lo_result = mo_draft_tabl_put_opertion->execute(  ).
 **********************************************************************
-** End of insertion 2020
+** End of insertion 2021
 **********************************************************************
           ELSE.
             lo_result = mo_draft_tabl_put_opertion->execute(  ).
@@ -2908,14 +2908,14 @@ CLASS zdmo_cl_rap_generator_on_prem IMPLEMENTATION.
 **********************************************************************
 ** Start of deletion 2020
 **********************************************************************
-          lo_result = mo_put_operation->execute( VALUE #( ( xco_cp_generation=>put_operation_option->skip_activation ) ) ).
+*          lo_result = mo_put_operation->execute( VALUE #( ( xco_cp_generation=>put_operation_option->skip_activation ) ) ).
 **********************************************************************
 ** End of deletion 2020
 **********************************************************************
 **********************************************************************
 ** End of insertion 2020
 **********************************************************************
-*      lo_result = mo_put_operation->execute(  ).
+          lo_result = mo_put_operation->execute(  ).
 **********************************************************************
 ** End of insertion 2020
 **********************************************************************
