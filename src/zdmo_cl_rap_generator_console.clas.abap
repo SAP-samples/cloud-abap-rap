@@ -20,8 +20,9 @@ CLASS zdmo_cl_rap_generator_console IMPLEMENTATION.
   METHOD main.
     TRY.
         DATA(json_string) = get_json_string(  ).
-        DATA(rap_generator) = ZDMO_cl_rap_generator=>create_for_cloud_development( json_string ).
-        "DATA(rap_generator) = ZDMO_cl_rap_generator=>create_for_on_prem_development( json_string ).
+        "DATA(rap_generator) = ZDMO_cl_rap_generator=>create_for_cloud_development( json_string ).
+        DATA(rap_generator) = ZDMO_cl_rap_generator_on_prem=>create_for_on_prem_development( json_string ).
+
         DATA(framework_messages) = rap_generator->generate_bo( ).
         IF rap_generator->exception_occured( ).
           out->write( |Caution: Exception occured | ) .
