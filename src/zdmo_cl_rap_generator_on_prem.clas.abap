@@ -300,7 +300,7 @@ ENDCLASS.
 
 
 
-CLASS zdmo_cl_rap_generator_on_prem IMPLEMENTATION.
+CLASS ZDMO_CL_RAP_GENERATOR_ON_PREM IMPLEMENTATION.
 
 
   METHOD assign_package.
@@ -435,11 +435,11 @@ CLASS zdmo_cl_rap_generator_on_prem IMPLEMENTATION.
     mo_srvb_put_operation = mo_environment->create_put_operation( ).
 **********************************************************************
     "on premise
-*    If xco_api->get_package( root_node->package  )->read( )-property-record_object_changes = abap_true.
-*       mo_environment = xco_generation=>environment->transported( mo_transport ).
-*    Else.
+*    IF xco_api->get_package( root_node->package  )->read( )-property-record_object_changes = abap_true.
+*      mo_environment = xco_generation=>environment->transported( mo_transport ).
+*    ELSE.
 *      mo_environment = xco_generation=>environment->local.
-*    Endif.
+*    ENDIF.
 *    mo_draft_tabl_put_opertion = mo_environment->create_mass_put_operation( ).
 *    mo_put_operation = mo_environment->create_mass_put_operation( ).
 *    mo_srvb_put_operation = mo_environment->create_mass_put_operation( ).
@@ -1056,11 +1056,11 @@ CLASS zdmo_cl_rap_generator_on_prem IMPLEMENTATION.
           method_exists_in_interface-method_name    = 'SET_MASTER_GLOBAL'.
           "if root node can't be set as MASTER GLOBAL child nodes can't be set as dependent_by
           IF xco_api->method_exists_in_interface(
-                     interface_name = method_exists_in_interface-interface_name
-                     method_name    = method_exists_in_interface-method_name
-                   ).
+                          interface_name = method_exists_in_interface-interface_name
+                          method_name    = method_exists_in_interface-method_name
+                        ).
             item_authorization = item_characteristics->authorization.
-            authorization_association =  |_{ lo_childnode->root_node->rap_node_objects-alias }|.
+            authorization_association = |_{ lo_childnode->parent_node->rap_node_objects-alias }|.
             item_authorization->set_dependent_by( CONV sxco_cds_association_name( authorization_association ) ).
             method_exists_in_interface-method_exists = abap_true.
           ELSE.
@@ -2753,18 +2753,18 @@ CLASS zdmo_cl_rap_generator_on_prem IMPLEMENTATION.
 
 
 **********************************************************************
-** Begin of insertion 2020
+** Begin of deletion 2021
 **********************************************************************
-            lo_result = mo_draft_tabl_put_opertion->execute( VALUE #( ( xco_cp_generation=>put_operation_option->skip_activation ) ) ).
+*            lo_result = mo_draft_tabl_put_opertion->execute( VALUE #( ( xco_cp_generation=>put_operation_option->skip_activation ) ) ).
 **********************************************************************
-** End of deletion 2020
+** End of deletion 2021
 **********************************************************************
 **********************************************************************
-** Begin of insertion 2020
+** Begin of insertion 2021
 **********************************************************************
-*        lo_result = mo_draft_tabl_put_opertion->execute(  ).
+            lo_result = mo_draft_tabl_put_opertion->execute(  ).
 **********************************************************************
-** End of insertion 2020
+** End of insertion 2021
 **********************************************************************
           ELSE.
             lo_result = mo_draft_tabl_put_opertion->execute(  ).
@@ -2908,14 +2908,14 @@ CLASS zdmo_cl_rap_generator_on_prem IMPLEMENTATION.
 **********************************************************************
 ** Start of deletion 2020
 **********************************************************************
-          lo_result = mo_put_operation->execute( VALUE #( ( xco_cp_generation=>put_operation_option->skip_activation ) ) ).
+*          lo_result = mo_put_operation->execute( VALUE #( ( xco_cp_generation=>put_operation_option->skip_activation ) ) ).
 **********************************************************************
 ** End of deletion 2020
 **********************************************************************
 **********************************************************************
 ** End of insertion 2020
 **********************************************************************
-*      lo_result = mo_put_operation->execute(  ).
+          lo_result = mo_put_operation->execute(  ).
 **********************************************************************
 ** End of insertion 2020
 **********************************************************************
@@ -3073,6 +3073,7 @@ CLASS zdmo_cl_rap_generator_on_prem IMPLEMENTATION.
 
 
   ENDMETHOD.
+
 
   METHOD create_custom_entity.
 **********************************************************************
@@ -3340,6 +3341,7 @@ CLASS zdmo_cl_rap_generator_on_prem IMPLEMENTATION.
 **********************************************************************
   ENDMETHOD.
 
+
   METHOD create_custom_query.
 
 
@@ -3393,6 +3395,7 @@ CLASS zdmo_cl_rap_generator_on_prem IMPLEMENTATION.
 
   ENDMETHOD.
 
+
   METHOD add_anno_ui_hidden.
 
     IF ls_header_fields-is_hidden = abap_true.
@@ -3400,6 +3403,7 @@ CLASS zdmo_cl_rap_generator_on_prem IMPLEMENTATION.
     ENDIF.
 
   ENDMETHOD.
+
 
   METHOD add_anno_ui_identification.
 
@@ -3431,6 +3435,7 @@ CLASS zdmo_cl_rap_generator_on_prem IMPLEMENTATION.
 
   ENDMETHOD.
 
+
   METHOD add_anno_ui_lineitem.
 
     IF ls_header_fields-is_currencycode = abap_true OR ls_header_fields-is_unitofmeasure = abap_true.
@@ -3451,6 +3456,7 @@ CLASS zdmo_cl_rap_generator_on_prem IMPLEMENTATION.
     ENDIF.
     lo_valuebuilder->end_record( )->end_array( ).
   ENDMETHOD.
+
 
   METHOD add_annotation_ui_selectionfld.
 
@@ -3492,9 +3498,6 @@ CLASS zdmo_cl_rap_generator_on_prem IMPLEMENTATION.
     ENDIF.
 
   ENDMETHOD.
-
-
-
 
 
   METHOD add_annotation_ui_header.
@@ -3549,7 +3552,6 @@ CLASS zdmo_cl_rap_generator_on_prem IMPLEMENTATION.
          ).
     ENDIF.
   ENDMETHOD.
-
 
 
   METHOD add_annotation_ui_facets.
@@ -3672,20 +3674,24 @@ CLASS zdmo_cl_rap_generator_on_prem IMPLEMENTATION.
                     xco_lib = NEW ZDMO_cl_rap_xco_cloud_lib(  ) ).
   ENDMETHOD.
 
+
   METHOD create_for_on_prem_development.
     result = NEW #( json_string = json_string
                     xco_lib = NEW ZDMO_cl_rap_xco_on_prem_lib(  ) ).
   ENDMETHOD.
 
+
   METHOD create_with_rap_node_object.
     result = NEW #( io_root_node = rap_node ).
   ENDMETHOD.
+
 
   METHOD get_rap_bo_name.
     IF root_node->is_consistent( ).
       rap_bo_name = root_node->rap_root_node_objects-behavior_definition_i.
     ENDIF.
   ENDMETHOD.
+
 
   METHOD get_transport_layer.
 
@@ -3701,14 +3707,13 @@ CLASS zdmo_cl_rap_generator_on_prem IMPLEMENTATION.
     ENDDO.
   ENDMETHOD.
 
+
   METHOD exception_occured.
     rv_exception_occured = put_exception_occured.
   ENDMETHOD.
 
+
   METHOD get_generated_repo_objects.
     r_generated_repository_objects = generated_repository_objects.
   ENDMETHOD.
-
-
-
 ENDCLASS.

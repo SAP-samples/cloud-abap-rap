@@ -916,7 +916,7 @@ ENDCLASS.
 
 
 
-CLASS zdmo_cl_rap_node IMPLEMENTATION.
+CLASS ZDMO_CL_RAP_NODE IMPLEMENTATION.
 
 
   METHOD set_data_source_type.
@@ -943,6 +943,7 @@ CLASS zdmo_cl_rap_node IMPLEMENTATION.
     ENDCASE.
 
   ENDMETHOD.
+
 
   METHOD get_valid_mbc_identifier.
 
@@ -1149,6 +1150,7 @@ CLASS zdmo_cl_rap_node IMPLEMENTATION.
 
     rv_ddic_i_view_name = lv_name.
   ENDMETHOD.
+
 
   METHOD get_valid_draft_table_name.
 
@@ -1774,6 +1776,11 @@ CLASS zdmo_cl_rap_node IMPLEMENTATION.
       namespace = iv_namespace.
 
     ELSEIF package IS NOT INITIAL.
+
+      IF package = '$TMP'.
+        namespace = 'Z'.
+        EXIT.
+      ENDIF.
 
       FIND ALL OCCURRENCES OF '/'
          IN package
@@ -2998,13 +3005,16 @@ CLASS zdmo_cl_rap_node IMPLEMENTATION.
     transactional_behavior = iv_value.
   ENDMETHOD.
 
+
   METHOD set_generate_only_node_hierach.
     generate_only_node_hierachy = iv_value.
   ENDMETHOD.
 
+
   METHOD add_multi_edit.
     multi_edit = iv_value.
   ENDMETHOD.
+
 
   METHOD add_valuehelp.
 
@@ -3459,7 +3469,6 @@ CLASS zdmo_cl_rap_node IMPLEMENTATION.
   ENDMETHOD.
 
 
-
   METHOD field_name_exists_in_db_table.
     "safety measure if field name in JSON is not upper case
     DATA(lv_field_name_upper) = to_upper( iv_field_name ).
@@ -3812,6 +3821,7 @@ CLASS zdmo_cl_rap_node IMPLEMENTATION.
     rv_is_virtual_root = is_virtual_root_node.
   ENDMETHOD.
 
+
   METHOD get_structure_components.
 
     DATA table_fields  TYPE ts_field  .
@@ -3892,6 +3902,7 @@ CLASS zdmo_cl_rap_node IMPLEMENTATION.
 
 
   ENDMETHOD.
+
 
   METHOD get_database_table_fields.
 
@@ -4122,6 +4133,7 @@ CLASS zdmo_cl_rap_node IMPLEMENTATION.
 
   ENDMETHOD.
 
+
   METHOD set_name_custom_query_impl.
     IF iv_name IS INITIAL.
       DATA(lv_name) = |{ namespace }CL_CE_{ prefix }{ entityname }{ suffix }|.
@@ -4138,6 +4150,7 @@ CLASS zdmo_cl_rap_node IMPLEMENTATION.
     rap_node_objects-custom_query_impl_class = lv_name.
     rv_custom_query_impl_class = lv_name.
   ENDMETHOD.
+
 
   METHOD set_name_behavior_impl.
 
@@ -4173,6 +4186,7 @@ CLASS zdmo_cl_rap_node IMPLEMENTATION.
     ENDIF.
   ENDMETHOD.
 
+
   METHOD set_abap_type.
 
     abap_type_name = to_upper( iv_abap_type ) .
@@ -4191,6 +4205,7 @@ CLASS zdmo_cl_rap_node IMPLEMENTATION.
     get_fields(  ).
 
   ENDMETHOD.
+
 
   METHOD set_structure.
 
@@ -4234,6 +4249,7 @@ CLASS zdmo_cl_rap_node IMPLEMENTATION.
 
 
   ENDMETHOD.
+
 
   METHOD set_cds_view.
 
@@ -4327,6 +4343,7 @@ CLASS zdmo_cl_rap_node IMPLEMENTATION.
 
   ENDMETHOD.
 
+
   METHOD set_name_cds_i_view.
 
     IF iv_name IS INITIAL.
@@ -4346,6 +4363,7 @@ CLASS zdmo_cl_rap_node IMPLEMENTATION.
     rv_cds_i_view_name = lv_name.
 
   ENDMETHOD.
+
 
   METHOD set_name_custom_entity.
 
@@ -4436,6 +4454,7 @@ CLASS zdmo_cl_rap_node IMPLEMENTATION.
     ENDIF.
   ENDMETHOD.
 
+
   METHOD add_virtual_root_node.
 
     ro_virtual_root_node = NEW zdmo_cl_rap_node( ).
@@ -4495,6 +4514,7 @@ CLASS zdmo_cl_rap_node IMPLEMENTATION.
 
   ENDMETHOD.
 
+
   METHOD add_child_node_hierarchy.
     "todo
     "delete root node flag from child_node
@@ -4520,6 +4540,7 @@ CLASS zdmo_cl_rap_node IMPLEMENTATION.
     ENDIF.
 
   ENDMETHOD.
+
 
   METHOD set_is_virtual_root_node.
 
@@ -4637,6 +4658,7 @@ CLASS zdmo_cl_rap_node IMPLEMENTATION.
 
   ENDMETHOD.
 
+
   METHOD get_field.
     "search fields from data source
     READ TABLE lt_fields INTO rs_field WITH KEY name = to_upper( name ).
@@ -4646,6 +4668,7 @@ CLASS zdmo_cl_rap_node IMPLEMENTATION.
 
 
   ENDMETHOD.
+
 
   METHOD admin_fields_exist.
 
@@ -4662,6 +4685,7 @@ CLASS zdmo_cl_rap_node IMPLEMENTATION.
 
   ENDMETHOD.
 
+
   METHOD add_additional_fields.
     LOOP AT it_additional_fields INTO DATA(additonal_field).
       APPEND  additonal_field  TO lt_additional_fields.
@@ -4673,6 +4697,7 @@ CLASS zdmo_cl_rap_node IMPLEMENTATION.
 *      APPEND all_fields_line TO lt_all_fields.
 *    ENDLOOP.
   ENDMETHOD.
+
 
   METHOD get_abap_type_components.
 
@@ -4716,6 +4741,7 @@ CLASS zdmo_cl_rap_node IMPLEMENTATION.
 
   ENDMETHOD.
 
+
   METHOD split_and_check_abap_type_name.
 
     DATA abap_class_name TYPE sxco_ao_object_name .
@@ -4751,6 +4777,7 @@ CLASS zdmo_cl_rap_node IMPLEMENTATION.
 
   ENDMETHOD.
 
+
   METHOD set_field_name_client.
     check_parameter(
           EXPORTING
@@ -4760,6 +4787,7 @@ CLASS zdmo_cl_rap_node IMPLEMENTATION.
     field_name-client = to_upper( iv_string ).
   ENDMETHOD.
 
+
   METHOD set_field_name_language.
     check_parameter(
               EXPORTING
@@ -4768,6 +4796,7 @@ CLASS zdmo_cl_rap_node IMPLEMENTATION.
             ).
     field_name-language = to_upper( iv_string ).
   ENDMETHOD.
+
 
   METHOD generate_bil.
 
@@ -4811,6 +4840,7 @@ CLASS zdmo_cl_rap_node IMPLEMENTATION.
 
   ENDMETHOD.
 
+
   METHOD add_additonal_to_all_fields.
     DATA all_fields_line LIKE LINE OF lt_all_fields.
     LOOP AT lt_additional_fields INTO DATA(additional_field).
@@ -4819,10 +4849,12 @@ CLASS zdmo_cl_rap_node IMPLEMENTATION.
     ENDLOOP.
   ENDMETHOD.
 
+
   METHOD add_fields_to_all_fields.
     CLEAR lt_all_fields.
     INSERT LINES OF lt_fields INTO TABLE lt_all_fields.
   ENDMETHOD.
+
 
   METHOD get_fields_cds_view.
     TYPES:
@@ -5101,14 +5133,15 @@ CLASS zdmo_cl_rap_node IMPLEMENTATION.
   ENDMETHOD.
 
 
-
   METHOD is_abstract_or_custom_entity.
     rv_is_abstract_or_cust_entity =  is_abstract_or_cust_entity.
   ENDMETHOD.
 
+
   METHOD set_is_abstract_or_cust_entity.
     is_abstract_or_cust_entity = iv_value.
   ENDMETHOD.
+
 
   METHOD generate_custom_entity.
 
@@ -5125,6 +5158,7 @@ CLASS zdmo_cl_rap_node IMPLEMENTATION.
     ENDIF.
 
   ENDMETHOD.
+
 
   METHOD set_fields.
 
@@ -5146,12 +5180,13 @@ CLASS zdmo_cl_rap_node IMPLEMENTATION.
 
   ENDMETHOD.
 
+
   METHOD todo.
     APPEND todo TO todos.
   ENDMETHOD.
 
+
   METHOD set_create_table.
     create_table = iv_create_table.
   ENDMETHOD.
-
 ENDCLASS.

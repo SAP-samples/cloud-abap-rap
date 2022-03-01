@@ -13,6 +13,7 @@ ENDCLASS.
 
 CLASS zdmo_cl_rap_gen_get_job_status IMPLEMENTATION.
 
+
   METHOD if_sadl_exit_calc_element_read~get_calculation_info.
 
 
@@ -53,6 +54,7 @@ CLASS zdmo_cl_rap_gen_get_job_status IMPLEMENTATION.
     ENDLOOP.
 
   ENDMETHOD.
+
 
   METHOD if_sadl_exit_calc_element_read~calculate.
 
@@ -100,12 +102,19 @@ CLASS zdmo_cl_rap_gen_get_job_status IMPLEMENTATION.
 
 
 
-        CATCH cx_root INTO DATA(exception).
+        CATCH cx_apj_rt INTO DATA(exception).
 
           DATA(exception_message) = cl_message_helper=>get_latest_t100_exception( exception )->if_message~get_longtext( ).
+
+          <fs_original_data>-JobStatus = ''.
+          <fs_original_data>-JobStatusText = exception->get_text(  ).
+          <fs_original_data>-JobStatusCriticality = 0.
+
+        CATCH cx_root INTO DATA(root_exception).
+
           RAISE EXCEPTION TYPE ZDMO_cx_rap_generator
             EXPORTING
-              previous = exception.
+              previous = root_exception.
 
       ENDTRY.
 

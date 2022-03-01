@@ -587,7 +587,7 @@ ENDCLASS.
 
 
 
-CLASS zdmo_cx_rap_generator IMPLEMENTATION.
+CLASS ZDMO_CX_RAP_GENERATOR IMPLEMENTATION.
 
 
   METHOD class_constructor.

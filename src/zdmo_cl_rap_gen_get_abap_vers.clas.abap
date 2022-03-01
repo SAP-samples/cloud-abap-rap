@@ -11,7 +11,9 @@ ENDCLASS.
 
 
 
-CLASS zdmo_cl_rap_gen_get_abap_vers IMPLEMENTATION.
+CLASS ZDMO_CL_RAP_GEN_GET_ABAP_VERS IMPLEMENTATION.
+
+
   METHOD if_rap_query_provider~select.
     DATA business_data TYPE TABLE OF ZDMO_i_rap_generator_abap_vers .
     DATA business_data_line TYPE ZDMO_i_rap_generator_abap_Vers .

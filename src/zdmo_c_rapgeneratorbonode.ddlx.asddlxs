@@ -108,7 +108,6 @@ annotate view ZDMO_C_RAPGENERATORBONODE with
   HeaderUUID;
 
 
-
   @UI.lineItem: [ {
     position: 5 ,
     importance: #HIGH,
@@ -137,7 +136,7 @@ annotate view ZDMO_C_RAPGENERATORBONODE with
   HierarchyDistanceFromRoot;
 
   @UI.lineItem: [ {
-    position: 05 ,
+    position: 07 ,
     importance: #HIGH,
     label: 'Root'
   } ]
@@ -309,6 +308,7 @@ annotate view ZDMO_C_RAPGENERATORBONODE with
                       position: 70 ,
                       label: 'Draft table'} ] }
   DraftTableName;
+
 
   @UI.hidden: true
   LocalLastChangedAt;

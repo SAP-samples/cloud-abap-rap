@@ -21,7 +21,8 @@ ENDCLASS.
 
 
 
-CLASS zdmo_cl_rap_gen_in_background IMPLEMENTATION.
+CLASS ZDMO_CL_RAP_GEN_IN_BACKGROUND IMPLEMENTATION.
+
 
   METHOD create_transport.
 
@@ -58,6 +59,7 @@ CLASS zdmo_cl_rap_gen_in_background IMPLEMENTATION.
     lo_transport = lo_transport_request->value.
 
   ENDMETHOD.
+
 
   METHOD if_apj_rt_exec_object~execute.
 
@@ -175,6 +177,7 @@ CLASS zdmo_cl_rap_gen_in_background IMPLEMENTATION.
 
   ENDMETHOD.
 
+
   METHOD if_apj_dt_exec_object~get_parameters.
     " Return the supported selection parameters here
     et_parameter_def = VALUE #(
@@ -187,6 +190,7 @@ CLASS zdmo_cl_rap_gen_in_background IMPLEMENTATION.
     ).
 
   ENDMETHOD.
+
 
   METHOD create_job_template.
 
@@ -272,6 +276,7 @@ CLASS zdmo_cl_rap_gen_in_background IMPLEMENTATION.
 
   ENDMETHOD.
 
+
   METHOD if_oo_adt_classrun~main.
 
     "test run of application job
@@ -291,5 +296,4 @@ CLASS zdmo_cl_rap_gen_in_background IMPLEMENTATION.
     ENDTRY.
 
   ENDMETHOD.
-
 ENDCLASS.

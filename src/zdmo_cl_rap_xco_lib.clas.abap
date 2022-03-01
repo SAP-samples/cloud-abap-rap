@@ -70,7 +70,7 @@ ENDCLASS.
 
 
 
-CLASS zdmo_cl_rap_xco_lib IMPLEMENTATION.
+CLASS ZDMO_CL_RAP_XCO_LIB IMPLEMENTATION.
 
 
   METHOD get_aggregated_annotations.
@@ -112,6 +112,7 @@ CLASS zdmo_cl_rap_xco_lib IMPLEMENTATION.
 
   ENDMETHOD.
 
+
   METHOD get_service_binding.
 
   ENDMETHOD.
@@ -136,13 +137,16 @@ CLASS zdmo_cl_rap_xco_lib IMPLEMENTATION.
 
   ENDMETHOD.
 
+
   METHOD add_draft_include.
 
   ENDMETHOD.
 
+
   METHOD get_abstract_entity.
 
   ENDMETHOD.
+
 
   METHOD method_exists_in_interface.
     method_exists = abap_false.
@@ -152,6 +156,7 @@ CLASS zdmo_cl_rap_xco_lib IMPLEMENTATION.
     ENDIF.
   ENDMETHOD.
 
+
   METHOD method_exists_in_class.
     method_exists = abap_false.
     DATA(descr_ref_class) = CAST cl_abap_classdescr( cl_abap_typedescr=>describe_by_name( class_name ) ).
@@ -160,9 +165,11 @@ CLASS zdmo_cl_rap_xco_lib IMPLEMENTATION.
     ENDIF.
   ENDMETHOD.
 
+
   METHOD todo.
     APPEND todo TO todos.
   ENDMETHOD.
+
 
   METHOD attribute_exists_in_class.
     attribute_exists = abap_false.
@@ -172,6 +179,7 @@ CLASS zdmo_cl_rap_xco_lib IMPLEMENTATION.
     ENDIF.
   ENDMETHOD.
 
+
   METHOD attribute_exists_in_interface.
     attribute_exists = abap_false.
     DATA(descr_ref_intf) = CAST cl_abap_intfdescr( cl_abap_typedescr=>describe_by_name( interface_name ) ).
@@ -180,28 +188,33 @@ CLASS zdmo_cl_rap_xco_lib IMPLEMENTATION.
     ENDIF.
   ENDMETHOD.
 
+
   METHOD get_structures.
 
   ENDMETHOD.
+
 
   METHOD get_tables.
 
   ENDMETHOD.
 
+
   METHOD get_views.
 
   ENDMETHOD.
+
 
   METHOD get_packages.
 
   ENDMETHOD.
 
+
   METHOD on_premise_branch_is_used.
    r_value = abap_false.
   ENDMETHOD.
 
+
   METHOD get_abap_language_version.
    r_abap_language_version = ZDMO_cl_rap_node=>package_abap_language_version-abap_for_sap_cloud_platform. "abap_language_version-abap_for_cloud_development.
   ENDMETHOD.
-
 ENDCLASS.

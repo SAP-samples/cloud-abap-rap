@@ -15,7 +15,8 @@ ENDCLASS.
 
 
 
-CLASS zdmo_cl_rap_generator_console IMPLEMENTATION.
+CLASS ZDMO_CL_RAP_GENERATOR_CONSOLE IMPLEMENTATION.
+
 
   METHOD main.
     TRY.
@@ -39,8 +40,8 @@ CLASS zdmo_cl_rap_generator_console IMPLEMENTATION.
     ENDTRY.
   ENDMETHOD.
 
+
   METHOD get_json_string.
     json_string = '{ "Info" : "to be replaced with your JSON string" }' .
   ENDMETHOD.
-
 ENDCLASS.

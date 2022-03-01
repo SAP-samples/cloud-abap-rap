@@ -29,7 +29,7 @@ ENDCLASS.
 
 
 
-CLASS zdmo_cl_rap_xco_cloud_lib IMPLEMENTATION.
+CLASS ZDMO_CL_RAP_XCO_CLOUD_LIB IMPLEMENTATION.
 
 
   METHOD  get_aggregated_annotations.
@@ -96,9 +96,11 @@ CLASS zdmo_cl_rap_xco_cloud_lib IMPLEMENTATION.
     ro_view_entity = xco_cp_cds=>view_entity( iv_name ).
   ENDMETHOD.
 
+
   METHOD get_abstract_entity.
     ro_abstract_entity = xco_cp_cds=>abstract_entity( iv_name ).
   ENDMETHOD.
+
 
   METHOD get_structures.
     IF it_filters IS NOT INITIAL.
@@ -111,6 +113,7 @@ CLASS zdmo_cl_rap_xco_cloud_lib IMPLEMENTATION.
       rt_structures = xco_cp_abap_repository=>objects->tabl->structures->all->in( xco_cp_abap=>repository )->get( ).
     ENDIF.
   ENDMETHOD.
+
 
   METHOD get_tables.
     IF it_filters IS NOT INITIAL.
@@ -125,6 +128,7 @@ CLASS zdmo_cl_rap_xco_cloud_lib IMPLEMENTATION.
     ENDIF.
   ENDMETHOD.
 
+
   METHOD get_views.
     IF it_filters IS NOT INITIAL.
       rt_data_definitions =  xco_cp_abap_repository=>objects->ddls->where( it_filters
@@ -137,6 +141,7 @@ CLASS zdmo_cl_rap_xco_cloud_lib IMPLEMENTATION.
     ENDIF.
   ENDMETHOD.
 
+
   METHOD get_packages.
     IF it_filters IS NOT INITIAL.
       rt_packages =  xco_cp_abap_repository=>objects->devc->where( it_Filters
@@ -148,5 +153,4 @@ CLASS zdmo_cl_rap_xco_cloud_lib IMPLEMENTATION.
       rt_packages = xco_cp_abap_repository=>objects->devc->all->in( xco_cp_abap=>repository )->get( ).
     ENDIF.
   ENDMETHOD.
-
 ENDCLASS.

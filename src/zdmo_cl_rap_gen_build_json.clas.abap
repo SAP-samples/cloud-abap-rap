@@ -63,7 +63,8 @@ ENDCLASS.
 
 
 
-CLASS zdmo_cl_rap_gen_build_json IMPLEMENTATION.
+CLASS ZDMO_CL_RAP_GEN_BUILD_JSON IMPLEMENTATION.
+
 
   METHOD main.
 
@@ -72,7 +73,6 @@ CLASS zdmo_cl_rap_gen_build_json IMPLEMENTATION.
     out->write( json_string ).
 
   ENDMETHOD.
-
 
 
   METHOD get_child_entity_keys.
@@ -88,6 +88,7 @@ CLASS zdmo_cl_rap_gen_build_json IMPLEMENTATION.
                  INTO TABLE @child_csn_entities.
 
   ENDMETHOD.
+
 
   METHOD create_json.
 
@@ -155,6 +156,7 @@ CLASS zdmo_cl_rap_gen_build_json IMPLEMENTATION.
     ENDIF.
 
   ENDMETHOD.
+
 
   METHOD in_order.
     DATA child_entities  TYPE TABLE OF ZDMO_i_rapgeneratorbonode.
@@ -241,6 +243,7 @@ CLASS zdmo_cl_rap_gen_build_json IMPLEMENTATION.
 
   ENDMETHOD.
 
+
   METHOD get_formatted_json_string.
 
     "cloud
@@ -274,5 +277,4 @@ CLASS zdmo_cl_rap_gen_build_json IMPLEMENTATION.
     rapgen_bo = it_rapgen_bo.
     rapgen_node = it_rapgen_node.
   ENDMETHOD.
-
 ENDCLASS.

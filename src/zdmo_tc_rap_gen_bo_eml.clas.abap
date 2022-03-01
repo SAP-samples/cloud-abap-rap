@@ -56,8 +56,7 @@ ENDCLASS.
 
 
 
-CLASS zdmo_tc_rap_gen_bo_eml IMPLEMENTATION.
-
+CLASS ZDMO_TC_RAP_GEN_BO_EML IMPLEMENTATION.
 
 
   METHOD class_setup.
@@ -85,6 +84,7 @@ CLASS zdmo_tc_rap_gen_bo_eml IMPLEMENTATION.
 
   ENDMETHOD.
 
+
   METHOD class_teardown.
     IF running_in_test_mode = abap_false.
       EXIT.
@@ -93,7 +93,6 @@ CLASS zdmo_tc_rap_gen_bo_eml IMPLEMENTATION.
     cds_test_environment->destroy(  ).
     sql_test_environment->destroy(  ).
   ENDMETHOD.
-
 
 
   METHOD setup.
@@ -109,6 +108,7 @@ CLASS zdmo_tc_rap_gen_bo_eml IMPLEMENTATION.
 
   ENDMETHOD.
 
+
   METHOD teardown.
     IF running_in_test_mode = abap_false.
       EXIT.
@@ -116,6 +116,7 @@ CLASS zdmo_tc_rap_gen_bo_eml IMPLEMENTATION.
     " clean up any involved entity
     ROLLBACK ENTITIES.
   ENDMETHOD.
+
 
   METHOD create_managed_semantic.
 
@@ -280,6 +281,7 @@ CLASS zdmo_tc_rap_gen_bo_eml IMPLEMENTATION.
 
 
   ENDMETHOD.
+
 
   METHOD create_managed_uuid.
 
@@ -481,9 +483,11 @@ CLASS zdmo_tc_rap_gen_bo_eml IMPLEMENTATION.
 
   ENDMETHOD.
 
+
   METHOD create_unmanaged_abstract.
 
   ENDMETHOD.
+
 
   METHOD create_unmanaged_semantic.
 
@@ -647,7 +651,6 @@ CLASS zdmo_tc_rap_gen_bo_eml IMPLEMENTATION.
 
 
   ENDMETHOD.
-
 
 
   METHOD create_business_configuration.
@@ -818,5 +821,4 @@ CLASS zdmo_tc_rap_gen_bo_eml IMPLEMENTATION.
 
 
   ENDMETHOD.
-
 ENDCLASS.

@@ -300,7 +300,7 @@ ENDCLASS.
 
 
 
-CLASS zdmo_cl_rap_generator IMPLEMENTATION.
+CLASS ZDMO_CL_RAP_GENERATOR IMPLEMENTATION.
 
 
   METHOD assign_package.
@@ -3074,6 +3074,7 @@ CLASS zdmo_cl_rap_generator IMPLEMENTATION.
 
   ENDMETHOD.
 
+
   METHOD create_custom_entity.
 **********************************************************************
 ** Begin of deletion 2020
@@ -3340,6 +3341,7 @@ CLASS zdmo_cl_rap_generator IMPLEMENTATION.
 **********************************************************************
   ENDMETHOD.
 
+
   METHOD create_custom_query.
 
 
@@ -3393,6 +3395,7 @@ CLASS zdmo_cl_rap_generator IMPLEMENTATION.
 
   ENDMETHOD.
 
+
   METHOD add_anno_ui_hidden.
 
     IF ls_header_fields-is_hidden = abap_true.
@@ -3400,6 +3403,7 @@ CLASS zdmo_cl_rap_generator IMPLEMENTATION.
     ENDIF.
 
   ENDMETHOD.
+
 
   METHOD add_anno_ui_identification.
 
@@ -3431,6 +3435,7 @@ CLASS zdmo_cl_rap_generator IMPLEMENTATION.
 
   ENDMETHOD.
 
+
   METHOD add_anno_ui_lineitem.
 
     IF ls_header_fields-is_currencycode = abap_true OR ls_header_fields-is_unitofmeasure = abap_true.
@@ -3451,6 +3456,7 @@ CLASS zdmo_cl_rap_generator IMPLEMENTATION.
     ENDIF.
     lo_valuebuilder->end_record( )->end_array( ).
   ENDMETHOD.
+
 
   METHOD add_annotation_ui_selectionfld.
 
@@ -3492,9 +3498,6 @@ CLASS zdmo_cl_rap_generator IMPLEMENTATION.
     ENDIF.
 
   ENDMETHOD.
-
-
-
 
 
   METHOD add_annotation_ui_header.
@@ -3549,7 +3552,6 @@ CLASS zdmo_cl_rap_generator IMPLEMENTATION.
          ).
     ENDIF.
   ENDMETHOD.
-
 
 
   METHOD add_annotation_ui_facets.
@@ -3672,20 +3674,24 @@ CLASS zdmo_cl_rap_generator IMPLEMENTATION.
                     xco_lib = NEW ZDMO_cl_rap_xco_cloud_lib(  ) ).
   ENDMETHOD.
 
+
   METHOD create_for_on_prem_development.
     result = NEW #( json_string = json_string
                     xco_lib = NEW ZDMO_cl_rap_xco_on_prem_lib(  ) ).
   ENDMETHOD.
 
+
   METHOD create_with_rap_node_object.
     result = NEW #( io_root_node = rap_node ).
   ENDMETHOD.
+
 
   METHOD get_rap_bo_name.
     IF root_node->is_consistent( ).
       rap_bo_name = root_node->rap_root_node_objects-behavior_definition_i.
     ENDIF.
   ENDMETHOD.
+
 
   METHOD get_transport_layer.
 
@@ -3701,14 +3707,13 @@ CLASS zdmo_cl_rap_generator IMPLEMENTATION.
     ENDDO.
   ENDMETHOD.
 
+
   METHOD exception_occured.
     rv_exception_occured = put_exception_occured.
   ENDMETHOD.
 
+
   METHOD get_generated_repo_objects.
     r_generated_repository_objects = generated_repository_objects.
   ENDMETHOD.
-
-
-
 ENDCLASS.

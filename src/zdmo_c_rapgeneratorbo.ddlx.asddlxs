@@ -59,7 +59,7 @@ annotate view ZDMO_C_RAPGENERATORBO with
 
   {
     id: 'idLineitem',
-    parentId: 'idCollection',
+ //   parentId: 'idCollection',
     type: #LINEITEM_REFERENCE,
     label: 'Entities',
     position: 50 ,

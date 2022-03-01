@@ -11,7 +11,9 @@ ENDCLASS.
 
 
 
-CLASS zdmo_cl_rap_gen_get_bind_type IMPLEMENTATION.
+CLASS ZDMO_CL_RAP_GEN_GET_BIND_TYPE IMPLEMENTATION.
+
+
   METHOD if_rap_query_provider~select.
     DATA business_data TYPE TABLE OF ZDMO_i_rap_generator_impl_type .
     DATA business_data_line TYPE ZDMO_i_rap_generator_impl_type .

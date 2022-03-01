@@ -32,7 +32,7 @@ ENDCLASS.
 
 
 
-CLASS zdmo_cl_rap_xco_on_prem_lib IMPLEMENTATION.
+CLASS ZDMO_CL_RAP_XCO_ON_PREM_LIB IMPLEMENTATION.
 
 
   METHOD  get_aggregated_annotations.
@@ -99,6 +99,7 @@ CLASS zdmo_cl_rap_xco_on_prem_lib IMPLEMENTATION.
 *    ro_view_entity = xco_cds=>view_entity( iv_name ).
   ENDMETHOD.
 
+
   METHOD get_abstract_entity.
 *    IF method_exists_in_class(
 *         class_name  = 'xco_cds'
@@ -111,6 +112,7 @@ CLASS zdmo_cl_rap_xco_on_prem_lib IMPLEMENTATION.
 *          ro_abstract_entity = ro_abstract_entity.
 *    ENDIF.
   ENDMETHOD.
+
 
   METHOD add_draft_include.
 *    DATA:
@@ -259,6 +261,7 @@ CLASS zdmo_cl_rap_xco_on_prem_lib IMPLEMENTATION.
 
   ENDMETHOD.
 
+
   METHOD get_structures.
 **    IF io_filter IS NOT INITIAL.
 **      rt_structures =  xco_abap_repository=>objects->tabl->structures->where( VALUE #(
@@ -269,6 +272,7 @@ CLASS zdmo_cl_rap_xco_on_prem_lib IMPLEMENTATION.
 **    ENDIF.
   ENDMETHOD.
 
+
   METHOD get_tables.
 *    IF it_filters IS NOT INITIAL.
 *      rt_tables = xco_abap_repository=>objects->tabl->database_tables->where( it_filters )->in( xco_abap=>repository )->get( ).
@@ -278,6 +282,7 @@ CLASS zdmo_cl_rap_xco_on_prem_lib IMPLEMENTATION.
 *    ENDIF.
   ENDMETHOD.
 
+
   METHOD get_views.
 *    IF it_filters IS NOT INITIAL.
 *      rt_data_definitions =  xco_abap_repository=>objects->ddls->where( it_filters )->in( xco_abap=>repository )->get( ).
@@ -285,6 +290,7 @@ CLASS zdmo_cl_rap_xco_on_prem_lib IMPLEMENTATION.
 *      rt_data_definitions = xco_abap_repository=>objects->ddls->all->in( xco_abap=>repository )->get( ).
 *    ENDIF.
   ENDMETHOD.
+
 
   METHOD get_packages.
 *    IF it_filters IS NOT INITIAL.
@@ -294,14 +300,15 @@ CLASS zdmo_cl_rap_xco_on_prem_lib IMPLEMENTATION.
 *    ENDIF.
   ENDMETHOD.
 
+
   METHOD on_premise_branch_is_used.
     "get default value abap_false
     super->on_premise_branch_is_used(  ).
 *    r_value = abap_true.
   ENDMETHOD.
 
+
   METHOD get_abap_language_version.
 *    r_abap_language_version = xco_abap_language_version=>object_type->devc->get_object_language_version( CONV #( iv_name ) )->get_value(  ).
   ENDMETHOD.
-
 ENDCLASS.

@@ -11,7 +11,9 @@ ENDCLASS.
 
 
 
-CLASS zdmo_cl_rap_gen_get_package IMPLEMENTATION.
+CLASS ZDMO_CL_RAP_GEN_GET_PACKAGE IMPLEMENTATION.
+
+
   METHOD if_rap_query_provider~select.
     DATA business_data TYPE TABLE OF ZDMO_i_rap_generator_data_src .
     DATA business_data_line TYPE ZDMO_i_rap_generator_data_src .
@@ -25,8 +27,7 @@ CLASS zdmo_cl_rap_gen_get_package IMPLEMENTATION.
 
     DATA(xco_on_prem_library) = NEW ZDMO_cl_rap_xco_on_prem_lib(  ).
 
-    TRY.
-        DATA(filter_condition_string) = io_request->get_filter( )->get_as_sql_string( ).
+    TRY.        DATA(filter_condition_string) = io_request->get_filter( )->get_as_sql_string( ).
         DATA(filter_condition_ranges) = io_request->get_filter( )->get_as_ranges(  ).
         DATA(search_string) = io_request->get_search_expression( ).
 
