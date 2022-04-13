@@ -133,7 +133,31 @@ You will see a new entry in the list of entities. Select the newly created entit
 
 ![Implementation types](images/230_result_for_child.png)  
 
-After having selected the table **/DMO/A_BOOKING_D** as a data source and after having pressed **return** to start the determination of most fields and after having specified **BOOKING_ID** as the semantic key.  
+After having selected the table **/DMO/A_BOOKING_D** as a data source and after having pressed **return** to start the determination of most fields and after having specified **BOOKING_ID** as the semantic key.  Press **Apply** to return to the (header) rap bo object page.
+
+![Implementation types](200_press_create.png)
+
+You can now press the **Create** button.  
+
+![Implementation types](images/240_generate_objects.png)
+
+After having pressed the **Create** button the project is created and the json file that is used as an input for the RAP Generator has been created. And you will notice that a button **Generate repository objects** on the top of your page is now visible. 
+
+![Implementation types](images/250_job_is_scheduled.png)
+
+After having pressed the button to start the generation of repository objects you will see that the generation status changes to **Scheduled**. (Since RAP does not support to perform commit work statements in the interaction phase nor in the save sequence the RAP Generator is started technically in the background by running an application job).  
+
+![Implementation types](images/260_job_in_progress.png)
+
+For the same reason (no commits allowed) it might take a while (up to several seconds) before the status changes to **in progress**.  
+
+![Implementation types](images/270_job_finished.png)
+
+Finally you should see that the job has finished successfully. If this is the case you will also see an ADT link. 
+
+![Implementation types](images/290_generated_objects.png)
+
+When clicking on the same you will navigate back to ADT thereby opening the root CDS view that has just been generated. 
 
 ## How to install the RAP Generator 
 
