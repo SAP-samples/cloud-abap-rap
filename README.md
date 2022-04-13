@@ -60,7 +60,7 @@ Working with the RAP Genertor now works (in short) as follows:
   1. Select the entity **RAPGeneratorProjects**  
   2. Press the **Preview** button  
   
-### Crate a new RAP Generator project  
+### Create a new RAP Generator project  
 
 ![Create new project I](images/110_New_rap_generator_project.png)
 ![Create new project II](images/120_Set_root_entity_name_and_package.png)
