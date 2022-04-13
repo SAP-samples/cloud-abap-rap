@@ -51,6 +51,10 @@ Since the Fiori Elements Preview is used there is no need to deploy an app.
 
 (work in progress)
 
+#Start Fiori Elements Preview#
+
+![Fiori Elements Preview](images/100_Start_Fiori_Elements_Preview.png)
+
 **Package**
 
 
