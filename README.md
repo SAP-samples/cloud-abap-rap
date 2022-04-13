@@ -103,7 +103,7 @@ As a third data source there is now support for **abstract entities**. Through t
 
 ### Maintain details for the root entity
 
-![Implementation types](images/170_select_data_source.png
+![Implementation types](images/170_select_data_source.png)
 
 You first have to select the data source that shall be used by the root entity.
 
@@ -113,13 +113,27 @@ After you have selected the data source press **Return** to initiate a side effe
 
 ![Implementation types](images/190_select_object_id.png)
 
-What can not be determined automatically is which field shall be used as the semantic key. 
+What can not be determined automatically is which field shall be used as the **semantic key**. 
 
-
+Press **Apply** to return to the header object page.
 
 ### (optional) add one or more child or grand child entities)
 
+![Implementation types](images/200_create_child.png)
 
+On the object page of our RAP business object we select the root entity Travel from the list of entities and used the action **Add Child**.  
+
+![Implementation types](images/210_set_child_entity_name.png)  
+
+In the popup you have to enter the **entity name of the child entity** (here Booking).
+
+![Implementation types](images/220_navigate_to_child_object_page.png)  
+
+You will see a new entry in the list of entities. Select the newly created entity **Booking** to navigate to the object page for the RAP BO nodes.  
+
+![Implementation types](images/230_result_for_child.png)  
+
+After having selected the table **/DMO/A_BOOKING_D** as a data source and after having pressed **return** to start the determination of most fields and after having specified **BOOKING_ID** as the semantic key.  
 
 ## How to install the RAP Generator 
 
