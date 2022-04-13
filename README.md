@@ -4,27 +4,16 @@
 
 This repository contains sample code that helps you to create boiler plate coding for the ABAP RESTful Application Programming Model (RAP) in SAP BTP, ABAP environment, SAP S/4HANA 2021 and SAP S/4HANA 2020.  
 
-## What's new with 2202
+## What's new 
 
 - Move from namespace /DMO/ to "namespace" ZDMO_
 - The RAP Generator now comes with a RAP Business object ZDMO_I_RAPGENERATORBO (RAP generates RAP :-))
 - The RAP Generator can be used using the Fiori Elements UI preview
 - Downport to SAP S/4HANA 2020
-
-## What's new with 2108
-
-- There are now JSON schemas available that simplyfy the creation of the JSON files that are used as input by the RAP Generator
 - Draft tables are now automatically generated without having to specify the table names upfront    
 - Support for unmanaged RAP BO's with custom entities for the following data source types  
-   - Abstract entities which are for example being generated when a Service Consumption Model is created   
+- Abstract entities which are for example being generated when a Service Consumption Model is created   
 - Support for Multi-Inline-Edit (see [Blog Post - Generating SAP Fiori table maintenance dialogs using the RAP Generator](https://blogs.sap.com/2021/08/23/generating-sap-fiori-table-maintenance-dialogs-using-the-rap-generator/).
-- calling the RAP Generator as an API was made more simple using a static method to accomodate on prem and cloud scenarios. 
-  It simply boils down to three lines of code  
-  <pre>
-     DATA(json_string) = '<your json string>'.
-     DATA(rap_generator) = /dmo/cl_rap_generator=>create_for_cloud_development( json_string ).
-     DATA(framework_messages) = rap_generator->generate_bo( ).
-  </pre>
  
 ## Motivation
 
