@@ -55,10 +55,22 @@ Working with the RAP Genertor now works (in short) as follows:
 
 ![Fiori Elements Preview](images/100_Start_Fiori_Elements_Preview.png)
 
-- Press Ctrl+Shift+A to start the Open ABAP Development Object dialogue.
-- Search for the service binding `ZDMO_UI_RAPGENERATOR_O2
-
+- Press Ctrl+Shift+A to start the Open ABAP Development Object dialogue  
+- Open the service binding `ZDMO_UI_RAPGENERATOR_O2  
+  1. Select the entity **RAPGeneratorProjects**  
+  2. Press the **Preview** button  
+  
 ### Crate a new RAP Generator project  
+
+![Create new project I](images/110_New_rap_generator_project.png)
+![Create new project II](images/120_Set_root_entity_name_and_package.png)
+
+- Press the **Create Project** button
+- Enter the following
+  1. The **name** of your root entity
+  2. Select the **package** where your RAP business object will be generated. Please note that type ahead support is present.
+  
+  
 
 **Package**
 
