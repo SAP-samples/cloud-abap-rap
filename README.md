@@ -70,28 +70,40 @@ Working with the RAP Genertor now works (in short) as follows:
   1. The **name** of your root entity
   2. Select the **package** where your RAP business object will be generated. Please note that type ahead support is present.
   
-  
+### Maintain header data for your RAP Generator project
 
-**Package**
+![Maintain RAP Generator project header data](images/130_Enter_project_header_data.png)
 
+On the object page we see that the generator has selected **ZR_Travel04TP** a proposal for a unique name of our new RAP business object which follows the naming conventions of SAP S/4HANA. It basically uses the name of the root entity **Travel**, takes the namespace **Z**, uses the prefix **R_** for so called reuse views, uses the suffix **TP** for transactional processing and adds **04** to the root bo name since I already created several objects with the root entity name Travel.   
 
+As a default the generator suggest to create a RAP business object that uses tables as data source that have **UUID based key fields** and that uses a **managed implementation**. For this in the drop down box **Implementation Type** the value **managed_uuid** is pre selected.   
+In addition **table** is pre-selected as the **Datasource Type** and **odata_v4_ui** as the **Binding Type** and the check box **Draft enabled** is marked.  
 
 **Datasources**
 
-The first data source which is supported are **tables**. When creating new tables for green field scenarios the use of tables with uuid based keys is recommended, so that a managed scenario can be used where no code needs to be implemented for the CRUD operations and earyl numbering can be used. 
-The only thing that is left for the developer is to implement determinations, validations and actions. 
+As datasources the RAP generator supports **table**, **cds_view** and **abstract_entity**.
 
-For brownfield scenarios where existing business logic does exist to create, update and delete business data an unmanaged scenario can be generated.
+![Datasource types](images/150_data_source_types.png)
 
-As a second data source the RAP generator supports **CDS views**. This way it will be possible to create RAP business objects based on existing CDS views. 
+As Implementation type the following values can be set **managed_uuid**, **managed_semantic** or **unmanaged_semantic**.
 
-In addition the generator supports **abstract CDS views** as a third data source. This way you can now easily leverage the abstract entities that are generated when creating a *Service Consumption Model*. In the JSON configuration file both types of CDS views are denoted as **"datasource" : "cds_view"**.  The generator automatically detects which entity type is used and will use the appropriate XCO API.
+![Implementation types](images/140_implementation_types.png)  
 
-As a third data source there is now support for **abstract entities**. Through the support of abstract entities you can generate a RAP BO based on the abstract entities that are generated when a service consumption model is created.  
+For the binding type you can select one of the following values **odata_v4_ui**,  **odata_v2_ui**, **odata_v4_web_api** or  **odata_v2_web_api**.
 
-To make the use of the tool as easy as possible the input that is needed by the generator can now be run via a SAP Fiori Elements UI.
+![Implementation types](images/160_binding_types.png)
 
-This can also be used just to generate a **JSON file**. This JSON file is based on a schema so that there is a input help and validity check when a JSON Editor such as Visual Studio Code is used.  
+For **green field scenarios** a developer usually will choose the implementation type managed_uuid. That means tables will be used as a data source that have uuid based keys, so that a managed scenario can be used where no code needs to be implemented for the CRUD operations and earyl numbering can be used. The only thing that is left for the developer is to implement determinations, validations and actions. 
+
+For **brownfield scenarios** where existing business logic does exist to create, update and delete business data the implementation type **unmanaged_semantic** can be used. This generates an unmanaged scenario that uses tables with semantic keys.
+
+As a second data source the RAP generator supports **CDS views**. This way it is possible to create RAP business objects based on existing CDS views. 
+
+As a third data source there is now support for **abstract entities**. Through the support of abstract entities you can generate a RAP BO based on the abstract entities that are generated when a service consumption model is created. Here the implementation type  **unmanaged_semantic** has to be used. 
+
+### Maintain details for the root entity
+
+### (optional) add one or more child or grand child entities
 
 ## How to install the RAP Generator 
 
