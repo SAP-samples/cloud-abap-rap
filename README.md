@@ -34,6 +34,12 @@ As an input the RAP Generator uses a JSON file which also reflects the tree stru
 
 Since it turned out that maintaining the JSON file is quite complex now a SAP Fiori Elements UI based on a RAP business object was added that provides value helps for the data that has to be entered, so the RAP Generator works now similar like the well known key user tools. 
 
+Since the Fiori Elements Preview is used there is no need to deploy an app.
+
+## How to use the RAP Generator  
+
+(work in progress)
+
 Working with the RAP Genertor now works (in short) as follows:
 
 1. Open the service binding `ZDMO_UI_RAPGENERATOR_O2` and double-click on the entity **RAPGeneratorProjects** to start the Fiori Elements preview 
@@ -45,15 +51,14 @@ Working with the RAP Genertor now works (in short) as follows:
    b. Specifiy which fields of your data source are used as the semantic key or as the total etag
 6. To add child nodes select the parent node and press the button **Add Child** and do what has been described in step 5.
 
-Since the Fiori Elements Preview is used there is no need to deploy an app.
-
-## How to use the RAP Generator  
-
-(work in progress)
-
-#Start Fiori Elements Preview#
+### Start Fiori Elements Preview
 
 ![Fiori Elements Preview](images/100_Start_Fiori_Elements_Preview.png)
+
+- Press Ctrl+Shift+A to start the Open ABAP Development Object dialogue.
+- Search for the service binding `ZDMO_UI_RAPGENERATOR_O2
+
+### Crate a new RAP Generator project  
 
 **Package**
 
