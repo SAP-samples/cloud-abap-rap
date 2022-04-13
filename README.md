@@ -2,13 +2,14 @@
 
 # Description
 
-This repository contains sample code that helps you to create boiler plate coding for the ABAP RESTful Application Programming Model (RAP) in SAP BTP, ABAP environment.  
+This repository contains sample code that helps you to create boiler plate coding for the ABAP RESTful Application Programming Model (RAP) in SAP BTP, ABAP environment, SAP S/4HANA 2021 and SAP S/4HANA 2020.  
 
 ## What's new with 2202
 
 - Move from namespace /DMO/ to "namespace" ZDMO_
-- SAP RAP Business object ZDMO_I_RAPGENERATORBO 
-- RAP Generator can be used using the Fiori Elements UI preview
+- The RAP Generator now comes with a RAP Business object ZDMO_I_RAPGENERATORBO (RAP generates RAP :-))
+- The RAP Generator can be used using the Fiori Elements UI preview
+- Downport to SAP S/4HANA 2020
 
 ## What's new with 2108
 
@@ -29,7 +30,30 @@ This repository contains sample code that helps you to create boiler plate codin
 
 The basic idea behind the *RAP Generator* is to make it easier for the developer to create the complete stack of objects that are needed to implement a RAP business object. The goal is to generate most of the boiler plate coding so that the developer can start more quickly to implement the business logic.  
 
-As an input for the RAP Generator a JSON file is used which als reflects the tree structure of a RAP business object. This way all necessary input data can be entered upfront and can be reused to create similar RAP business objects, for example for testing or training purposes.  
+As an input the RAP Generator uses a JSON file which also reflects the tree structure of a RAP business object. This way all necessary input data is entered upfront and can be reused to create similar RAP business objects, for example for testing or training purposes. 
+
+Since it turned out that maintaining the JSON file is quite complex now a SAP Fiori Elements UI based on a RAP business object was added that provides value helps for the data that has to be entered, so the RAP Generator works now similar like the well known key user tools. 
+
+Working with the RAP Genertor now works (in short) as follows:
+
+1. Open the service binding `ZDMO_UI_RAPGENERATOR_O2` and double-click on the entity **RAPGeneratorProjects** to start the Fiori Elements preview 
+2. Press the button **New Project**
+3. Select a **name** for the root entity and a **package** where the repository objects will be generated
+4. Select the header data for your project such as whether we are dealing with a managed scenario with uuid based key fields and what kind of data source is used (tables, cds views or abstract entities)
+5. Start to build the composition tree of your RAP BO
+   a. Enter a data source for your root entity
+   b. Specifiy which fields of your data source are used as the semantic key or as the total etag
+6. To add child nodes select the parent node and press the button **Add Child** and do what has been described in step 5.
+
+Since the Fiori Elements Preview is used there is no need to deploy an app.
+
+## How to use the RAP Generator  
+
+(work in progress)
+
+**Package**
+
+
 
 **Datasources**
 
@@ -58,8 +82,8 @@ This can also be used just to generate a **JSON file**. This JSON file is based 
    - Application job catalog entry - ZDMO_RAP_GEN_CATATALOG_ENTRY 
    - Application job template - ZDMO_RAP_GEN_JOB_TEMPLATE
    - Application log object - ZDMO_RAP_GEN_APPLLOG
-   - Service binding - ZDMO_UI_RAP_GENERATOR_O4
-6. Activate the service binding ZDMO_UI_RAP_GENERATOR_O4
+   - Service binding - ZDMO_UI_RAP_GENERATOR_O2
+6. Activate the service binding ZDMO_UI_RAP_GENERATOR_O2
 
 **SAP Fiori Elements UI (Preview)**
 
