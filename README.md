@@ -103,7 +103,23 @@ As a third data source there is now support for **abstract entities**. Through t
 
 ### Maintain details for the root entity
 
-### (optional) add one or more child or grand child entities
+![Implementation types](images/170_select_data_source.png
+
+You first have to select the data source that shall be used by the root entity.
+
+![Implementation types](images/180_Press_return.png)
+
+After you have selected the data source press **Return** to initiate a side effect. (This works for the SAP Fiori Elements OData V2 preview but not for the V4 preview. This is why I chose to use the V2 preview). As a result the generator will try to determine the names of the fields that perform certain roles such as the UUID based key field, the field used as the total etag, etc.
+
+![Implementation types](images/190_select_object_id.png)
+
+What can not be determined automatically is which field shall be used as the semantic key. 
+
+
+
+### (optional) add one or more child or grand child entities)
+
+
 
 ## How to install the RAP Generator 
 
