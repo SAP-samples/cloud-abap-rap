@@ -32,8 +32,8 @@ CLASS zdmo_tc_rap_gen_bo_eml DEFINITION
       " stop test doubles
       class_teardown.
 
-    TYPES : t_bo_data   TYPE STANDARD TABLE OF ZDMO_i_rapgeneratorbo,
-            t_node_data TYPE STANDARD TABLE OF ZDMO_i_rapgeneratorbonode.
+    TYPES : t_bo_data   TYPE STANDARD TABLE OF ZDMO_r_rapgeneratorbo,
+            t_node_data TYPE STANDARD TABLE OF ZDMO_r_rapgeneratorbonode.
 
     METHODS:
       " reset test doubles
@@ -145,7 +145,7 @@ CLASS ZDMO_TC_RAP_GEN_BO_EML IMPLEMENTATION.
                        ).
 
     "create BO and root node
-    MODIFY ENTITIES OF ZDMO_i_rapgeneratorbo
+    MODIFY ENTITIES OF ZDMO_r_rapgeneratorbo
       ENTITY rapgeneratorbo
         EXECUTE createBOandRootNode
           FROM VALUE #( (
@@ -174,7 +174,7 @@ CLASS ZDMO_TC_RAP_GEN_BO_EML IMPLEMENTATION.
     DATA(my_rootnodeuuid) = mapped-rapgeneratorbonode[ 1 ]-NodeUUID.
 
     "add suffix and set datasource for root node
-    MODIFY ENTITIES OF ZDMO_i_rapgeneratorbo
+    MODIFY ENTITIES OF ZDMO_r_rapgeneratorbo
       ENTITY RAPGeneratorBO
     UPDATE SET FIELDS WITH
               VALUE #( (
@@ -198,7 +198,7 @@ CLASS ZDMO_TC_RAP_GEN_BO_EML IMPLEMENTATION.
     cl_abap_unit_assert=>assert_initial( msg = 'reported' act = reported ).
 
     "add child node Holiday Text
-    MODIFY ENTITIES OF ZDMO_i_rapgeneratorbo
+    MODIFY ENTITIES OF ZDMO_r_rapgeneratorbo
       ENTITY rapgeneratorbonode
         EXECUTE addChild2
           FROM VALUE #( (
@@ -219,7 +219,7 @@ CLASS ZDMO_TC_RAP_GEN_BO_EML IMPLEMENTATION.
     DATA(my_childnodeuuid) = mapped-rapgeneratorbonode[ 1 ]-NodeUUID.
 
     "Set data source for child node
-    MODIFY ENTITIES OF ZDMO_i_rapgeneratorbo
+    MODIFY ENTITIES OF ZDMO_r_rapgeneratorbo
            ENTITY RAPGeneratorBONode
                  UPDATE SET FIELDS WITH
                   VALUE #( (
@@ -236,7 +236,7 @@ CLASS ZDMO_TC_RAP_GEN_BO_EML IMPLEMENTATION.
 
 
 
-*    READ ENTITIES OF ZDMO_i_rapgeneratorbo
+*    READ ENTITIES OF ZDMO_r_rapgeneratorbo
 *    ENTITY rapgeneratorbo
 *    ALL FIELDS WITH  VALUE #( ( RapNodeUUID = my_rapnodeuuid %is_draft = if_abap_behv=>mk-on ) )
 *    RESULT DATA(rapbos)
@@ -244,7 +244,7 @@ CLASS ZDMO_TC_RAP_GEN_BO_EML IMPLEMENTATION.
 *      REPORTED DATA(reported_read).
 
     "activate instance
-    MODIFY ENTITY ZDMO_i_rapgeneratorbo
+    MODIFY ENTITY ZDMO_r_rapgeneratorbo
         EXECUTE
             Activate FROM VALUE #( ( %key-RapNodeUUID = my_rapnodeuuid ) )
         MAPPED DATA(mapped_active)
@@ -264,12 +264,12 @@ CLASS ZDMO_TC_RAP_GEN_BO_EML IMPLEMENTATION.
     cl_abap_unit_assert=>assert_initial( msg = 'commit_failed'   act = commit_failed ).
     cl_abap_unit_assert=>assert_initial( msg = 'commit_reported' act = commit_reported ).
 
-    SELECT SINGLE * FROM ZDMO_i_rapgeneratorbo WHERE RapNodeUUID = @my_rapnodeuuid INTO @DATA(rapbo).
+    SELECT SINGLE * FROM ZDMO_r_rapgeneratorbo WHERE RapNodeUUID = @my_rapnodeuuid INTO @DATA(rapbo).
 
     cl_abap_unit_assert=>assert_not_initial( msg = 'No RAP BO found' act = rapbo ).
 
 
-    SELECT * FROM ZDMO_i_rapgeneratorbonode  WHERE HeaderUUID = @rapbo-RapNodeUUID INTO TABLE @DATA(rapbonodes).
+    SELECT * FROM ZDMO_r_rapgeneratorbonode  WHERE HeaderUUID = @rapbo-RapNodeUUID INTO TABLE @DATA(rapbonodes).
 
     DATA(number_of_entities) = lines( rapbonodes ).
     DATA(expected_number_of_entities) = lines( node_data ).
@@ -319,7 +319,7 @@ CLASS ZDMO_TC_RAP_GEN_BO_EML IMPLEMENTATION.
     DATA(add_child) = abap_false.
 
     "create BO and root node
-    MODIFY ENTITIES OF ZDMO_i_rapgeneratorbo
+    MODIFY ENTITIES OF ZDMO_r_rapgeneratorbo
       ENTITY rapgeneratorbo
         EXECUTE createBOandRootNode
           FROM VALUE #( (
@@ -348,7 +348,7 @@ CLASS ZDMO_TC_RAP_GEN_BO_EML IMPLEMENTATION.
     DATA(my_rootnodeuuid) = mapped-rapgeneratorbonode[ 1 ]-NodeUUID.
 
     "add suffix and set datasource for root node
-    MODIFY ENTITIES OF ZDMO_i_rapgeneratorbo
+    MODIFY ENTITIES OF ZDMO_r_rapgeneratorbo
       ENTITY RAPGeneratorBO
     UPDATE SET FIELDS WITH
               VALUE #( (
@@ -371,7 +371,7 @@ CLASS ZDMO_TC_RAP_GEN_BO_EML IMPLEMENTATION.
     cl_abap_unit_assert=>assert_initial( msg = 'reported' act = reported ).
 
     "add semantic key for root node
-    MODIFY ENTITIES OF ZDMO_i_rapgeneratorbo
+    MODIFY ENTITIES OF ZDMO_r_rapgeneratorbo
            ENTITY RAPGeneratorBONode
                  UPDATE SET FIELDS WITH
                   VALUE #( (
@@ -386,7 +386,7 @@ CLASS ZDMO_TC_RAP_GEN_BO_EML IMPLEMENTATION.
     cl_abap_unit_assert=>assert_initial( msg = 'reported' act = reported ).
 
     "add child node Booking
-    MODIFY ENTITIES OF ZDMO_i_rapgeneratorbo
+    MODIFY ENTITIES OF ZDMO_r_rapgeneratorbo
       ENTITY rapgeneratorbonode
         EXECUTE addChild2
           FROM VALUE #( (
@@ -407,7 +407,7 @@ CLASS ZDMO_TC_RAP_GEN_BO_EML IMPLEMENTATION.
     DATA(my_childnodeuuid) = mapped-rapgeneratorbonode[ 1 ]-NodeUUID.
 
     "Set data source for child node
-    MODIFY ENTITIES OF ZDMO_i_rapgeneratorbo
+    MODIFY ENTITIES OF ZDMO_r_rapgeneratorbo
            ENTITY RAPGeneratorBONode
                  UPDATE SET FIELDS WITH
                   VALUE #( (
@@ -424,7 +424,7 @@ CLASS ZDMO_TC_RAP_GEN_BO_EML IMPLEMENTATION.
 
 
     "set semantic key for child node
-    MODIFY ENTITIES OF ZDMO_i_rapgeneratorbo
+    MODIFY ENTITIES OF ZDMO_r_rapgeneratorbo
               ENTITY RAPGeneratorBONode
                     UPDATE SET FIELDS WITH
                      VALUE #( (
@@ -439,7 +439,7 @@ CLASS ZDMO_TC_RAP_GEN_BO_EML IMPLEMENTATION.
     cl_abap_unit_assert=>assert_initial( msg = 'reported - set semantic key for child node' act = reported ).
 
 
-    READ ENTITIES OF ZDMO_i_rapgeneratorbo
+    READ ENTITIES OF ZDMO_r_rapgeneratorbo
     ENTITY rapgeneratorbo
     ALL FIELDS WITH  VALUE #( ( RapNodeUUID = my_rapnodeuuid %is_draft = if_abap_behv=>mk-on ) )
     RESULT DATA(rapbos)
@@ -447,7 +447,7 @@ CLASS ZDMO_TC_RAP_GEN_BO_EML IMPLEMENTATION.
       REPORTED DATA(reported_read).
 
     "activate instance
-    MODIFY ENTITY ZDMO_i_rapgeneratorbo
+    MODIFY ENTITY ZDMO_r_rapgeneratorbo
         EXECUTE
             Activate FROM VALUE #( ( %key-RapNodeUUID = my_rapnodeuuid ) )
         MAPPED DATA(mapped_active)
@@ -468,11 +468,11 @@ CLASS ZDMO_TC_RAP_GEN_BO_EML IMPLEMENTATION.
     cl_abap_unit_assert=>assert_initial( msg = 'commit_failed'   act = commit_failed ).
     cl_abap_unit_assert=>assert_initial( msg = 'commit_reported' act = commit_reported ).
 
-    SELECT SINGLE * FROM ZDMO_i_rapgeneratorbo WHERE RapNodeUUID = @my_rapnodeuuid INTO @DATA(rapbo).
+    SELECT SINGLE * FROM ZDMO_r_rapgeneratorbo WHERE RapNodeUUID = @my_rapnodeuuid INTO @DATA(rapbo).
 
     cl_abap_unit_assert=>assert_not_initial( msg = 'No RAP BO found' act = rapbo ).
 
-    SELECT * FROM ZDMO_i_rapgeneratorbonode  WHERE HeaderUUID = @rapbo-RapNodeUUID INTO TABLE @DATA(rapbonodes).
+    SELECT * FROM ZDMO_r_rapgeneratorbonode  WHERE HeaderUUID = @rapbo-RapNodeUUID INTO TABLE @DATA(rapbonodes).
 
     DATA(number_of_entities) = lines( rapbonodes ).
     DATA(expected_number_of_entities) = lines( node_data ).
@@ -516,7 +516,7 @@ CLASS ZDMO_TC_RAP_GEN_BO_EML IMPLEMENTATION.
                        ).
 
     "create BO and root node
-    MODIFY ENTITIES OF ZDMO_i_rapgeneratorbo
+    MODIFY ENTITIES OF ZDMO_r_rapgeneratorbo
       ENTITY rapgeneratorbo
         EXECUTE createBOandRootNode
           FROM VALUE #( (
@@ -545,7 +545,7 @@ CLASS ZDMO_TC_RAP_GEN_BO_EML IMPLEMENTATION.
     DATA(my_rootnodeuuid) = mapped-rapgeneratorbonode[ 1 ]-NodeUUID.
 
     "add suffix and set datasource for root node
-    MODIFY ENTITIES OF ZDMO_i_rapgeneratorbo
+    MODIFY ENTITIES OF ZDMO_r_rapgeneratorbo
       ENTITY RAPGeneratorBO
     UPDATE SET FIELDS WITH
               VALUE #( (
@@ -569,7 +569,7 @@ CLASS ZDMO_TC_RAP_GEN_BO_EML IMPLEMENTATION.
     cl_abap_unit_assert=>assert_initial( msg = 'reported' act = reported ).
 
     "add child node Holiday Text
-    MODIFY ENTITIES OF ZDMO_i_rapgeneratorbo
+    MODIFY ENTITIES OF ZDMO_r_rapgeneratorbo
       ENTITY rapgeneratorbonode
         EXECUTE addChild2
           FROM VALUE #( (
@@ -590,7 +590,7 @@ CLASS ZDMO_TC_RAP_GEN_BO_EML IMPLEMENTATION.
     DATA(my_childnodeuuid) = mapped-rapgeneratorbonode[ 1 ]-NodeUUID.
 
     "Set data source for child node
-    MODIFY ENTITIES OF ZDMO_i_rapgeneratorbo
+    MODIFY ENTITIES OF ZDMO_r_rapgeneratorbo
            ENTITY RAPGeneratorBONode
                  UPDATE SET FIELDS WITH
                   VALUE #( (
@@ -607,7 +607,7 @@ CLASS ZDMO_TC_RAP_GEN_BO_EML IMPLEMENTATION.
 
 
 
-*    READ ENTITIES OF ZDMO_i_rapgeneratorbo
+*    READ ENTITIES OF ZDMO_r_rapgeneratorbo
 *    ENTITY rapgeneratorbo
 *    ALL FIELDS WITH  VALUE #( ( RapNodeUUID = my_rapnodeuuid %is_draft = if_abap_behv=>mk-on ) )
 *    RESULT DATA(rapbos)
@@ -615,7 +615,7 @@ CLASS ZDMO_TC_RAP_GEN_BO_EML IMPLEMENTATION.
 *      REPORTED DATA(reported_read).
 
     "activate instance
-    MODIFY ENTITY ZDMO_i_rapgeneratorbo
+    MODIFY ENTITY ZDMO_r_rapgeneratorbo
         EXECUTE
             Activate FROM VALUE #( ( %key-RapNodeUUID = my_rapnodeuuid ) )
         MAPPED DATA(mapped_active)
@@ -636,11 +636,11 @@ CLASS ZDMO_TC_RAP_GEN_BO_EML IMPLEMENTATION.
     cl_abap_unit_assert=>assert_initial( msg = 'commit_failed'   act = commit_failed ).
     cl_abap_unit_assert=>assert_initial( msg = 'commit_reported' act = commit_reported ).
 
-    SELECT SINGLE * FROM ZDMO_i_rapgeneratorbo WHERE RapNodeUUID = @my_rapnodeuuid INTO @DATA(rapbo).
+    SELECT SINGLE * FROM ZDMO_r_rapgeneratorbo WHERE RapNodeUUID = @my_rapnodeuuid INTO @DATA(rapbo).
 
     cl_abap_unit_assert=>assert_not_initial( msg = 'No RAP BO found' act = rapbo ).
 
-    SELECT * FROM ZDMO_i_rapgeneratorbonode  WHERE HeaderUUID = @rapbo-RapNodeUUID INTO TABLE @DATA(rapbonodes).
+    SELECT * FROM ZDMO_r_rapgeneratorbonode  WHERE HeaderUUID = @rapbo-RapNodeUUID INTO TABLE @DATA(rapbonodes).
 
 
     DATA(number_of_entities) = lines( rapbonodes ).
@@ -684,7 +684,7 @@ CLASS ZDMO_TC_RAP_GEN_BO_EML IMPLEMENTATION.
                        ).
 
     "create BO and root node
-    MODIFY ENTITIES OF ZDMO_i_rapgeneratorbo
+    MODIFY ENTITIES OF ZDMO_r_rapgeneratorbo
       ENTITY rapgeneratorbo
         EXECUTE createBOandRootNode
           FROM VALUE #( (
@@ -713,7 +713,7 @@ CLASS ZDMO_TC_RAP_GEN_BO_EML IMPLEMENTATION.
     DATA(my_rootnodeuuid) = mapped-rapgeneratorbonode[ 1 ]-NodeUUID.
 
     "add suffix and set datasource for root node
-    MODIFY ENTITIES OF ZDMO_i_rapgeneratorbo
+    MODIFY ENTITIES OF ZDMO_r_rapgeneratorbo
       ENTITY RAPGeneratorBO
     UPDATE SET FIELDS WITH
               VALUE #( (
@@ -740,7 +740,7 @@ CLASS ZDMO_TC_RAP_GEN_BO_EML IMPLEMENTATION.
     cl_abap_unit_assert=>assert_initial( msg = 'reported' act = reported ).
 
     "add child node Holiday Text
-    MODIFY ENTITIES OF ZDMO_i_rapgeneratorbo
+    MODIFY ENTITIES OF ZDMO_r_rapgeneratorbo
       ENTITY rapgeneratorbonode
         EXECUTE addChild2
           FROM VALUE #( (
@@ -761,7 +761,7 @@ CLASS ZDMO_TC_RAP_GEN_BO_EML IMPLEMENTATION.
     DATA(my_childnodeuuid) = mapped-rapgeneratorbonode[ 1 ]-NodeUUID.
 
     "Set data source for child node
-    MODIFY ENTITIES OF ZDMO_i_rapgeneratorbo
+    MODIFY ENTITIES OF ZDMO_r_rapgeneratorbo
            ENTITY RAPGeneratorBONode
                  UPDATE SET FIELDS WITH
                   VALUE #( (
@@ -778,7 +778,7 @@ CLASS ZDMO_TC_RAP_GEN_BO_EML IMPLEMENTATION.
 
 
 
-*    READ ENTITIES OF ZDMO_i_rapgeneratorbo
+*    READ ENTITIES OF ZDMO_r_rapgeneratorbo
 *    ENTITY rapgeneratorbo
 *    ALL FIELDS WITH  VALUE #( ( RapNodeUUID = my_rapnodeuuid %is_draft = if_abap_behv=>mk-on ) )
 *    RESULT DATA(rapbos)
@@ -786,7 +786,7 @@ CLASS ZDMO_TC_RAP_GEN_BO_EML IMPLEMENTATION.
 *      REPORTED DATA(reported_read).
 
     "activate instance
-    MODIFY ENTITY ZDMO_i_rapgeneratorbo
+    MODIFY ENTITY ZDMO_r_rapgeneratorbo
         EXECUTE
             Activate FROM VALUE #( ( %key-RapNodeUUID = my_rapnodeuuid ) )
         MAPPED DATA(mapped_active)
@@ -806,12 +806,12 @@ CLASS ZDMO_TC_RAP_GEN_BO_EML IMPLEMENTATION.
     cl_abap_unit_assert=>assert_initial( msg = 'commit_failed'   act = commit_failed ).
     cl_abap_unit_assert=>assert_initial( msg = 'commit_reported' act = commit_reported ).
 
-    SELECT SINGLE * FROM ZDMO_i_rapgeneratorbo WHERE RapNodeUUID = @my_rapnodeuuid INTO @DATA(rapbo).
+    SELECT SINGLE * FROM ZDMO_r_rapgeneratorbo WHERE RapNodeUUID = @my_rapnodeuuid INTO @DATA(rapbo).
 
     cl_abap_unit_assert=>assert_not_initial( msg = 'No RAP BO found' act = rapbo ).
 
 
-    SELECT * FROM ZDMO_i_rapgeneratorbonode  WHERE HeaderUUID = @rapbo-RapNodeUUID INTO TABLE @DATA(rapbonodes).
+    SELECT * FROM ZDMO_r_rapgeneratorbonode  WHERE HeaderUUID = @rapbo-RapNodeUUID INTO TABLE @DATA(rapbonodes).
 
     DATA(number_of_entities) = lines( rapbonodes ).
     DATA(expected_number_of_entities) = lines( node_data ).
