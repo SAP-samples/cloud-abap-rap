@@ -30,10 +30,10 @@ authorization master ( global )
   draft action Resume;
   draft determine action Prepare
   {
-    validation mandatory_fields_check;
-    validation RAPGeneratorBONode ~ mandatory_fields_check;
-    validation allowed_combinations;
-    determination createJSONString; }
+    validation (always) mandatory_fields_check;
+    validation (always) RAPGeneratorBONode ~ mandatory_fields_check;
+    validation (always) allowed_combinations;
+    determination (always) createJSONString; }
 
   mapping for ZDMO_RAPGEN_BO
   {
