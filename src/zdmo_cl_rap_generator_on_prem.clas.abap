@@ -1,18 +1,7 @@
 CLASS zdmo_cl_rap_generator_on_prem DEFINITION
  PUBLIC
   FINAL
-  CREATE PRIVATE
-*  GLOBAL FRIENDS
-*  ZDMO_cl_fe_travel_generator
-*  ZDMO_cl_gen_dev260_artifacts
-*  ZDMO_cl_gen_dev260_teched_2021
-*  ZDMO_cl_gen_dev268_artifacts
-*  ZDMO_cl_gen_rap400_artifacts
-*  zcl_mb_rap_from_cap_csn
-*  zcl_AF_rap_from_cap_csn
-
-  .
-
+  CREATE PRIVATE.
   PUBLIC SECTION.
 
     TYPES:
@@ -72,10 +61,6 @@ CLASS zdmo_cl_rap_generator_on_prem DEFINITION
 
     TYPES: tt_table_fields TYPE STANDARD TABLE OF t_table_fields WITH KEY field.
 
-
-*    DATA rap_bo_name TYPE sxco_cds_object_name READ-ONLY.
-*    DATA rap_bo_service_binding TYPE sxco_ao_object_name READ-ONLY.
-
     METHODS get_rap_bo_name RETURNING VALUE(rap_bo_name) TYPE sxco_cds_object_name.
 
     METHODS get_generated_repo_objects RETURNING VALUE(r_generated_repository_objects) TYPE t_generated_repository_objects.
@@ -85,8 +70,6 @@ CLASS zdmo_cl_rap_generator_on_prem DEFINITION
     METHODS generate_bo RETURNING VALUE(framework_messages) TYPE tt_framework_message_fields
                         RAISING   cx_xco_gen_put_exception
                                   ZDMO_cx_rap_generator.
-
-
 
     CLASS-METHODS create_for_cloud_development
       IMPORTING
@@ -191,13 +174,18 @@ CLASS zdmo_cl_rap_generator_on_prem DEFINITION
       IMPORTING
         VALUE(io_rap_bo_node) TYPE REF TO ZDMO_cl_rap_node.
 
-    METHODS create_i_cds_view
+    METHODS create_r_cds_view
       IMPORTING
         VALUE(io_rap_bo_node) TYPE REF TO ZDMO_cl_rap_node.
 
     METHODS create_p_cds_view
       IMPORTING
         VALUE(io_rap_bo_node) TYPE REF TO ZDMO_cl_rap_node.
+
+    METHODS create_i_cds_view
+      IMPORTING
+        VALUE(io_rap_bo_node) TYPE REF TO ZDMO_cl_rap_node.
+
 
     METHODS create_mde_view
       IMPORTING
@@ -246,10 +234,6 @@ CLASS zdmo_cl_rap_generator_on_prem DEFINITION
                 VALUE(io_rap_bo_node) TYPE REF TO ZDMO_cl_rap_node
       RAISING   ZDMO_cx_rap_generator.
 
-    "hide_field(lo_field)
-    "add_lineitem_annoation(lo_field)
-    "add_identification_annoation(lo_field)
-    "add_select_option_annotation(lo_field)
     METHODS add_anno_ui_hidden
       IMPORTING
         io_field         TYPE REF TO if_xco_gen_cds_s_fo_ann_target
@@ -278,13 +262,6 @@ CLASS zdmo_cl_rap_generator_on_prem DEFINITION
         ls_header_fields TYPE ZDMO_cl_rap_node=>ts_field
         position         TYPE i.
 
-    "add_root_facet_has_childs( lo_field )
-    "add_root_facet_has_no_childs( lo_field )
-    "add_child_facet_has_childs( lo_field )
-    "add_child_facet_has_no_childs(lo_field)
-
-
-
     METHODS add_annotation_ui_header
       IMPORTING
         io_specification TYPE REF TO if_xco_gen_cds_s_fo_ann_target
@@ -300,7 +277,7 @@ ENDCLASS.
 
 
 
-CLASS ZDMO_CL_RAP_GENERATOR_ON_PREM IMPLEMENTATION.
+CLASS zdmo_cl_rap_generator_on_prem IMPLEMENTATION.
 
 
   METHOD assign_package.
@@ -393,40 +370,6 @@ CLASS ZDMO_CL_RAP_GENERATOR_ON_PREM IMPLEMENTATION.
     mo_transport = root_node->transport_request.
 
 
-*    DATA(lo_package) = root_node->xco_lib->get_package( mo_package ).
-*
-*    IF NOT lo_package->exists( ).
-*
-*      RAISE EXCEPTION TYPE ZDMO_cx_rap_generator
-*        EXPORTING
-*          textid   = ZDMO_cx_rap_generator=>package_does_not_exist
-*          mv_value = CONV #( mo_package ).
-*
-*    ENDIF.
-
-
-
-*    "Get software component for package
-*    DATA(lv_package_software_component) = lo_package->read( )-property-software_component->name.
-*
-*    "DATA(lo_transport_layer) = lo_package->read(  )-property-transport_layer.
-*
-*    DATA(lo_transport_layer) = get_transport_layer( lo_package ).
-*
-*    DATA(lo_transport_target) = lo_transport_layer->get_transport_target( ).
-*    DATA(lv_transport_target) = lo_transport_target->value.
-*
-*    IF root_node->transport_request IS NOT INITIAL.
-*      mo_transport = root_node->transport_request.
-*    ELSE.
-*      DATA(lo_transport_request) = xco_cp_cts=>transports->workbench( lo_transport_target->value  )->create_request( |RAP Business object: { root_node->rap_node_objects-cds_view_i } | ) ##no_text.
-*      DATA(lv_transport) = lo_transport_request->value.
-*      mo_transport = lv_transport.
-*    ENDIF.
-
-
-
-
 **********************************************************************
     "cloud
     mo_environment = xco_cp_generation=>environment->dev_system( mo_transport )  .
@@ -435,11 +378,11 @@ CLASS ZDMO_CL_RAP_GENERATOR_ON_PREM IMPLEMENTATION.
     mo_srvb_put_operation = mo_environment->create_put_operation( ).
 **********************************************************************
     "on premise
-*    IF xco_api->get_package( root_node->package  )->read( )-property-record_object_changes = abap_true.
-*      mo_environment = xco_generation=>environment->transported( mo_transport ).
-*    ELSE.
+*    If xco_api->get_package( root_node->package  )->read( )-property-record_object_changes = abap_true.
+*       mo_environment = xco_generation=>environment->transported( mo_transport ).
+*    Else.
 *      mo_environment = xco_generation=>environment->local.
-*    ENDIF.
+*    Endif.
 *    mo_draft_tabl_put_opertion = mo_environment->create_mass_put_operation( ).
 *    mo_put_operation = mo_environment->create_mass_put_operation( ).
 *    mo_srvb_put_operation = mo_environment->create_mass_put_operation( ).
@@ -469,17 +412,17 @@ CLASS ZDMO_CL_RAP_GENERATOR_ON_PREM IMPLEMENTATION.
 
     lt_mapping_header = io_rap_bo_node->lt_mapping.
 
-    DATA(lo_specification) = mo_put_operation->for-bdef->add_object( io_rap_bo_node->rap_root_node_objects-behavior_definition_i "mo_i_bdef_header
+    DATA(lo_specification) = mo_put_operation->for-bdef->add_object( io_rap_bo_node->rap_root_node_objects-behavior_definition_r "mo_i_bdef_header
         )->set_package( mo_package
         )->create_form_specification( ).
 
     "add object name and type to list of generated repository objects
     CLEAR generated_repository_object.
-    generated_repository_object-object_name = io_rap_bo_node->rap_root_node_objects-behavior_definition_i.
+    generated_repository_object-object_name = io_rap_bo_node->rap_root_node_objects-behavior_definition_r.
     generated_repository_object-object_type = 'BDEF'.
     APPEND generated_repository_object TO generated_repository_objects.
 
-    lo_specification->set_short_description( |Behavior for { io_rap_bo_node->rap_node_objects-cds_view_i }| ) ##no_text.
+    lo_specification->set_short_description( |Behavior for { io_rap_bo_node->rap_node_objects-cds_view_r }| ) ##no_text.
 
     "set implementation type
     CASE io_rap_bo_node->get_implementation_type(  ).
@@ -497,7 +440,7 @@ CLASS ZDMO_CL_RAP_GENERATOR_ON_PREM IMPLEMENTATION.
 
 
     "define behavior for root entity
-    DATA(lo_header_behavior) = lo_specification->add_behavior( io_rap_bo_node->rap_node_objects-cds_view_i ).
+    DATA(lo_header_behavior) = lo_specification->add_behavior( io_rap_bo_node->rap_node_objects-cds_view_r ).
 
     " Characteristics.
     DATA(characteristics) = lo_header_behavior->characteristics.
@@ -512,10 +455,6 @@ CLASS ZDMO_CL_RAP_GENERATOR_ON_PREM IMPLEMENTATION.
       io_rap_bo_node->is_virtual_root(  ) = abap_false.
       characteristics->set_with_additional_save( ).
     ENDIF.
-
-**********************************************************************
-** Begin of deletion 2105 and 2020
-**********************************************************************
 
     IF io_rap_bo_node->is_virtual_root(  ) .
       method_exists_in_interface-interface_name = 'if_xco_gen_bdef_s_fo_b_chara'.
@@ -532,29 +471,6 @@ CLASS ZDMO_CL_RAP_GENERATOR_ON_PREM IMPLEMENTATION.
       APPEND method_exists_in_interface TO method_exists_in_interfaces.
     ENDIF.
 
-**********************************************************************
-** End of deletion 2105 and 2020
-**********************************************************************
-
-**********************************************************************
-** Begin of deletion 2108
-**********************************************************************
-*
-*    "@todo add again once setting of
-*    "authorization master(global)
-*    "is allowed
-
-*    IF xco_api->method_exists_in_interface(
-*               interface_name = 'if_xco_gen_bdef_s_fo_b_auth'
-*               method_name    = 'SET_MASTER_GLOBAL'
-*             ).
-*      DATA(authorization) = characteristics->authorization.
-*      CALL METHOD authorization->('SET_MASTER_GLOBAL').
-*      "if_xco_gen_bdef_s_fo_b_auth~set_master_global
-*      "    call method authorization->( 'if_xco_gen_bdef_s_fo_b_auth~set_master_global' ).
-*      "authorization->set_master_global( ).
-*    ENDIF.
-
     method_exists_in_interface-interface_name = 'if_xco_gen_bdef_s_fo_b_auth'.
     method_exists_in_interface-method_name    = 'SET_MASTER_GLOBAL'.
     IF xco_api->method_exists_in_interface(
@@ -569,18 +485,9 @@ CLASS ZDMO_CL_RAP_GENERATOR_ON_PREM IMPLEMENTATION.
     ENDIF.
     APPEND method_exists_in_interface TO method_exists_in_interfaces.
 
-
-**********************************************************************
-** End of deletion 2108
-**********************************************************************
-
-
     IF io_rap_bo_node->draft_enabled = abap_false.
       characteristics->lock->set_master( ).
     ENDIF.
-
-
-
 
     "add the draft table
     IF io_rap_bo_node->draft_enabled = abap_true.
@@ -609,22 +516,9 @@ CLASS ZDMO_CL_RAP_GENERATOR_ON_PREM IMPLEMENTATION.
 
     IF io_rap_bo_node->draft_enabled = abap_true.
       characteristics->etag->set_master(  etag_master  ).
-**********************************************************************
-** Begin of deletion 2020
-**********************************************************************
+
       " lock type ref to if_xco_gen_bdef_s_fo_b_lock
       DATA(lock) = characteristics->lock.
-
-*      IF xco_api->method_exists_in_interface(
-*                    interface_name = 'if_xco_gen_bdef_s_fo_b_lock'
-*                    method_name    = 'SET_MASTER_TOTAL_ETAG'
-*                  ).
-*        "lock->set_master_total_etag(  total_etag  ).
-*        CALL METHOD lock->('SET_MASTER_TOTAL_ETAG')
-*          EXPORTING
-*            iv_master_total_etag = total_etag.
-*        APPEND 'SET_MASTER_TOTAL_ETAG' TO call_method_succeeded_list.
-*      ENDIF.
 
       method_exists_in_interface-interface_name = 'if_xco_gen_bdef_s_fo_b_lock'.
       method_exists_in_interface-method_name    = 'SET_MASTER_TOTAL_ETAG'.
@@ -642,11 +536,6 @@ CLASS ZDMO_CL_RAP_GENERATOR_ON_PREM IMPLEMENTATION.
       ENDIF.
       APPEND method_exists_in_interface TO method_exists_in_interfaces.
 
-
-
-**********************************************************************
-** End of deletion 2020
-**********************************************************************
     ELSE.
       characteristics->etag->set_master(  etag_master ).
       characteristics->lock->set_master( ).
@@ -683,11 +572,15 @@ CLASS ZDMO_CL_RAP_GENERATOR_ON_PREM IMPLEMENTATION.
 
       "lo_action_edit type ref to if_xco_gen_bdef_s_fo_b_action
 
+      " add standard operations
       DATA(lo_action_edit) =   lo_header_behavior->add_action( 'Edit'  )." ##no_text.
       DATA(lo_action_activate) = lo_header_behavior->add_action( 'Activate'  ) ##no_text.
       DATA(lo_action_discard) = lo_header_behavior->add_action( 'Discard'  ) ##no_text.
       DATA(lo_action_resume) = lo_header_behavior->add_action( 'Resume'  ) ##no_text.
       DATA(lo_action_prepare) = lo_header_behavior->add_action( 'Prepare'  ) ##no_text.
+
+
+      "add the key word draft, if possible. for example: draft action Activate;
 
       method_exists_in_interface-interface_name = 'if_xco_gen_bdef_s_fo_b_action'.
       method_exists_in_interface-method_name    = 'SET_DRAFT'.
@@ -723,14 +616,6 @@ CLASS ZDMO_CL_RAP_GENERATOR_ON_PREM IMPLEMENTATION.
       APPEND method_exists_in_interface TO method_exists_in_interfaces.
 
     ENDIF.
-
-
-**********************************************************************
-** End of deletion 2020
-**********************************************************************
-
-
-
 
     " add standard operations for root node
 
@@ -905,7 +790,7 @@ CLASS ZDMO_CL_RAP_GENERATOR_ON_PREM IMPLEMENTATION.
 
         lt_mapping_item = lo_childnode->lt_mapping.
 
-        DATA(lo_item_behavior) = lo_specification->add_behavior( lo_childnode->rap_node_objects-cds_view_i ).
+        DATA(lo_item_behavior) = lo_specification->add_behavior( lo_childnode->rap_node_objects-cds_view_r ).
 
         " Characteristics.
         DATA(item_characteristics) = lo_item_behavior->characteristics.
@@ -939,42 +824,11 @@ CLASS ZDMO_CL_RAP_GENERATOR_ON_PREM IMPLEMENTATION.
           etag_master = lo_childnode->lt_additional_fields[ name = lo_childnode->field_name-etag_master ]-cds_view_field.
         ENDIF.
 
-*        IF io_rap_bo_node->draft_enabled = abap_true.
-*          IF local_instance_last_changed_at IS NOT INITIAL.
-*            item_characteristics->etag->set_master( CONV sxco_cds_field_name( local_instance_last_changed_at ) ).
-*          ELSE.
-*            item_characteristics->etag->set_dependent_by( '_' && lo_childnode->root_node->rap_node_objects-alias  ).
-*          ENDIF.
-*        ELSE.
-*          IF last_changed_at IS NOT INITIAL.
-*            item_characteristics->etag->set_master( CONV sxco_cds_field_name( last_changed_at ) ).
-*          ELSE.
-*            item_characteristics->etag->set_dependent_by( '_' && lo_childnode->root_node->rap_node_objects-alias  ).
-*          ENDIF.
-*        ENDIF.
-
         IF etag_master IS NOT INITIAL.
           item_characteristics->etag->set_master(  etag_master ).
         ELSE.
           item_characteristics->etag->set_dependent_by( '_' && lo_childnode->root_node->rap_node_objects-alias  ).
         ENDIF.
-
-* changed because key fields are set to readonly : update
-
-*        "set key fields of parent entity in child entity as read only
-*        "because they are set via create by association
-*
-*        CASE lo_childnode->get_implementation_type(  ).
-*          WHEN ZDMO_cl_rap_node=>implementation_type-managed_semantic.
-*            LOOP AT lo_childnode->lt_fields INTO DATA(ls_key_field_child) WHERE key_indicator = abap_true
-*                                                                            AND name <> io_rap_bo_node->field_name-client.
-*              LOOP AT io_rap_bo_node->lt_fields INTO DATA(ls_key_field) WHERE key_indicator = abap_true
-*                                                                          AND name = ls_key_field_child-name.
-*                lo_item_behavior->add_field( ls_key_field-cds_view_field
-*                                             )->set_read_only( ).
-*              ENDLOOP.
-*            ENDLOOP.
-*        ENDCASE.
 
         " Characteristics.
         IF lo_childnode->is_grand_child_or_deeper(  ).
@@ -1056,11 +910,11 @@ CLASS ZDMO_CL_RAP_GENERATOR_ON_PREM IMPLEMENTATION.
           method_exists_in_interface-method_name    = 'SET_MASTER_GLOBAL'.
           "if root node can't be set as MASTER GLOBAL child nodes can't be set as dependent_by
           IF xco_api->method_exists_in_interface(
-                          interface_name = method_exists_in_interface-interface_name
-                          method_name    = method_exists_in_interface-method_name
-                        ).
+                     interface_name = method_exists_in_interface-interface_name
+                     method_name    = method_exists_in_interface-method_name
+                   ).
             item_authorization = item_characteristics->authorization.
-            authorization_association = |_{ lo_childnode->parent_node->rap_node_objects-alias }|.
+            authorization_association =  |_{ lo_childnode->root_node->rap_node_objects-alias }|.
             item_authorization->set_dependent_by( CONV sxco_cds_association_name( authorization_association ) ).
             method_exists_in_interface-method_exists = abap_true.
           ELSE.
@@ -1431,7 +1285,7 @@ CLASS ZDMO_CL_RAP_GENERATOR_ON_PREM IMPLEMENTATION.
     "behavior has to be defined for the root node in all BIL classes
     "to_upper( ) as workaround for 2011 and 2020, fix will be available with 2102
     lo_specification->definition->set_abstract(
-      )->set_for_behavior_of( to_upper( io_rap_bo_node->root_node->rap_node_objects-cds_view_i ) ).
+      )->set_for_behavior_of( to_upper( io_rap_bo_node->root_node->rap_node_objects-cds_view_r ) ).
 
 *    DATA(lo_handler) = lo_specification->add_local_class( 'LCL_HANDLER' ).
 *    lo_handler->definition->set_superclass( 'CL_ABAP_BEHAVIOR_HANDLER' ).
@@ -1493,7 +1347,7 @@ CLASS ZDMO_CL_RAP_GENERATOR_ON_PREM IMPLEMENTATION.
       lo_handler->implementation->add_method( method_get_instance_features ).
 
       CLEAR  source_method_get_inst_feat.
-      APPEND |READ ENTITIES OF { io_rap_bo_node->rap_root_node_objects-behavior_definition_i } IN LOCAL MODE| TO  source_method_get_inst_feat ##no_text.
+      APPEND |READ ENTITIES OF { io_rap_bo_node->rap_root_node_objects-behavior_definition_r } IN LOCAL MODE| TO  source_method_get_inst_feat ##no_text.
       APPEND |ENTITY { io_rap_bo_node->entityname }| TO  source_method_get_inst_feat ##no_text.
       APPEND |ALL FIELDS WITH CORRESPONDING #( keys )| TO  source_method_get_inst_feat  ##no_text.
       APPEND |RESULT DATA(all).| TO  source_method_get_inst_feat  ##no_text.
@@ -1521,7 +1375,7 @@ CLASS ZDMO_CL_RAP_GENERATOR_ON_PREM IMPLEMENTATION.
       lo_transport->behavior_implementation->set_result( iv_result = 'result' ).
 
 
-      APPEND    |MODIFY ENTITIES OF { io_rap_bo_node->rap_root_node_objects-behavior_definition_i } IN LOCAL MODE| TO source_action_set_transport  ##no_text.
+      APPEND    |MODIFY ENTITIES OF { io_rap_bo_node->rap_root_node_objects-behavior_definition_r } IN LOCAL MODE| TO source_action_set_transport  ##no_text.
       APPEND    |ENTITY { io_rap_bo_node->entityname }| TO source_action_set_transport ##no_text.
       APPEND    |UPDATE FIELDS ( request hidetransport )| TO source_action_set_transport ##no_text.
       APPEND    |WITH VALUE #( FOR key IN keys| TO source_action_set_transport ##no_text.
@@ -1532,7 +1386,7 @@ CLASS ZDMO_CL_RAP_GENERATOR_ON_PREM IMPLEMENTATION.
       APPEND    |    REPORTED reported.| TO source_action_set_transport ##no_text.
       APPEND    | | TO source_action_set_transport ##no_text.
       APPEND    | | TO source_action_set_transport ##no_text.
-      APPEND    |    READ ENTITIES OF { io_rap_bo_node->rap_root_node_objects-behavior_definition_i }  IN LOCAL MODE| TO source_action_set_transport ##no_text.
+      APPEND    |    READ ENTITIES OF { io_rap_bo_node->rap_root_node_objects-behavior_definition_r }  IN LOCAL MODE| TO source_action_set_transport ##no_text.
       APPEND    |      ENTITY { io_rap_bo_node->entityname }| TO source_action_set_transport ##no_text.
       APPEND    |        ALL FIELDS WITH CORRESPONDING #( keys )| TO source_action_set_transport ##no_text.
       APPEND    |      RESULT DATA(singletons).| TO source_action_set_transport ##no_text.
@@ -1565,7 +1419,7 @@ CLASS ZDMO_CL_RAP_GENERATOR_ON_PREM IMPLEMENTATION.
       CLEAR source_method_validation.
       "      APPEND |CHECK lines( keys ) > 0.| TO source_method_validation.
 
-      APPEND |DATA change TYPE REQUEST FOR CHANGE { io_rap_bo_node->root_node->rap_root_node_objects-behavior_definition_i }.| TO source_method_validation ##no_text.
+      APPEND |DATA change TYPE REQUEST FOR CHANGE { io_rap_bo_node->root_node->rap_root_node_objects-behavior_definition_r }.| TO source_method_validation ##no_text.
       APPEND |SELECT SINGLE request FROM { io_rap_bo_node->root_node->draft_table_name } INTO @DATA(request).| TO source_method_validation ##no_text.
       APPEND |DATA(rap_transport_api) = mbc_cp_api=>rap_table_cts( table_entity_relations = VALUE #(| TO source_method_validation ##no_text.
       LOOP AT io_rap_bo_node->root_node->all_childnodes INTO DATA(childnode).
@@ -1716,7 +1570,7 @@ CLASS ZDMO_CL_RAP_GENERATOR_ON_PREM IMPLEMENTATION.
         ENDLOOP.
 
         IF io_rap_bo_node->is_root(  ).
-          lo_saver = lo_specification->add_local_class( |LCL_{ io_rap_bo_node->rap_root_node_objects-behavior_definition_i }| ).
+          lo_saver = lo_specification->add_local_class( |LCL_{ io_rap_bo_node->rap_root_node_objects-behavior_definition_r }| ).
           lo_saver->definition->set_superclass( 'CL_ABAP_BEHAVIOR_SAVER' ).
 
           lo_saver->definition->section-protected->add_method( method_finalize )->set_redefinition( ).
@@ -1809,10 +1663,10 @@ CLASS ZDMO_CL_RAP_GENERATOR_ON_PREM IMPLEMENTATION.
 
     IF is_draft_table = abap_true.
       generated_repository_object-object_name = name_of_generated_table.
-      lo_specification->set_short_description( | Draft table for entity { io_rap_bo_node->rap_node_objects-cds_view_i } | ) ##no_text.
+      lo_specification->set_short_description( | Draft table for entity { io_rap_bo_node->rap_node_objects-cds_view_r } | ) ##no_text.
     ELSE.
       generated_repository_object-object_name = name_of_generated_table.
-      lo_specification->set_short_description( | Table for entity { io_rap_bo_node->rap_node_objects-cds_view_i } | ) ##no_text.
+      lo_specification->set_short_description( | Table for entity { io_rap_bo_node->rap_node_objects-cds_view_r } | ) ##no_text.
     ENDIF.
     generated_repository_object-object_type = 'TABL'.
     APPEND generated_repository_object TO generated_repository_objects.
@@ -1980,19 +1834,19 @@ CLASS ZDMO_CL_RAP_GENERATOR_ON_PREM IMPLEMENTATION.
   ENDMETHOD.
 
 
-  METHOD create_i_cds_view.
+  METHOD create_r_cds_view.
 
     DATA ls_condition_components TYPE ts_condition_components.
     DATA lt_condition_components TYPE tt_condition_components.
     DATA lo_field TYPE REF TO if_xco_gen_ddls_s_fo_field .
 
-    DATA(lo_specification) = mo_put_operation->for-ddls->add_object( io_rap_bo_node->rap_node_objects-cds_view_i
+    DATA(lo_specification) = mo_put_operation->for-ddls->add_object( io_rap_bo_node->rap_node_objects-cds_view_r
      )->set_package( mo_package
      )->create_form_specification( ).
 
     "add object name and type to list of generated repository objects
     CLEAR generated_repository_object.
-    generated_repository_object-object_name = io_rap_bo_node->rap_node_objects-cds_view_i.
+    generated_repository_object-object_name = io_rap_bo_node->rap_node_objects-cds_view_r.
     generated_repository_object-object_type = 'DDLS'.
     APPEND generated_repository_object TO generated_repository_objects.
 
@@ -2051,7 +1905,7 @@ CLASS ZDMO_CL_RAP_GENERATOR_ON_PREM IMPLEMENTATION.
       "@todo - raise an exception when being initial
       IF lo_condition IS NOT INITIAL.
 
-        lo_view->add_association( io_rap_bo_node->parent_node->rap_node_objects-cds_view_i )->set_to_parent(
+        lo_view->add_association( io_rap_bo_node->parent_node->rap_node_objects-cds_view_r )->set_to_parent(
     )->set_alias( '_' && io_rap_bo_node->parent_node->rap_node_objects-alias
     )->set_condition( lo_condition ).
 
@@ -2087,7 +1941,7 @@ CLASS ZDMO_CL_RAP_GENERATOR_ON_PREM IMPLEMENTATION.
         ENDCASE.
 
         IF lo_condition IS NOT INITIAL.
-          lo_view->add_association( io_rap_bo_node->root_node->rap_node_objects-cds_view_i
+          lo_view->add_association( io_rap_bo_node->root_node->rap_node_objects-cds_view_r
             )->set_alias( '_' && io_rap_bo_node->root_node->rap_node_objects-alias
             )->set_cardinality(  xco_cp_cds=>cardinality->one
             )->set_condition( lo_condition ).
@@ -2136,7 +1990,7 @@ CLASS ZDMO_CL_RAP_GENERATOR_ON_PREM IMPLEMENTATION.
       "change to a new property "childnodes" which only contains the direct childs
       LOOP AT io_rap_bo_node->childnodes INTO DATA(lo_childnode).
 
-        lo_view->add_composition( lo_childnode->rap_node_objects-cds_view_i "  mo_i_cds_item
+        lo_view->add_composition( lo_childnode->rap_node_objects-cds_view_r "  mo_i_cds_item
           )->set_cardinality( xco_cp_cds=>cardinality->zero_to_n
           )->set_alias( '_' && lo_childnode->rap_node_objects-alias ). " mo_alias_item ).
 
@@ -2253,7 +2107,7 @@ CLASS ZDMO_CL_RAP_GENERATOR_ON_PREM IMPLEMENTATION.
 
     ENDLOOP.
 
-    LOOP AT       io_rap_bo_node->lt_additional_fields INTO DATA(additional_fields) WHERE cds_interface_view = abap_true.
+    LOOP AT       io_rap_bo_node->lt_additional_fields INTO DATA(additional_fields) WHERE cds_restricted_reuse_view = abap_true.
 
       lo_field = lo_view->add_field( xco_cp_ddl=>expression->for( additional_fields-name )  ).
       IF additional_fields-cds_view_field IS NOT INITIAL.
@@ -2389,7 +2243,7 @@ CLASS ZDMO_CL_RAP_GENERATOR_ON_PREM IMPLEMENTATION.
     ENDIF.
 
     " Data source.
-    lo_view->data_source->set_view_entity( iv_view_entity = io_rap_bo_node->rap_node_objects-cds_view_i ).
+    lo_view->data_source->set_view_entity( iv_view_entity = io_rap_bo_node->rap_node_objects-cds_view_r ).
 
 
     "Client field does not need to be specified in client-specific CDS view
@@ -2606,7 +2460,7 @@ CLASS ZDMO_CL_RAP_GENERATOR_ON_PREM IMPLEMENTATION.
     "add exposure for root node
 
     IF root_node->generate_custom_entity(  ).
-      lo_specification_header->add_exposure( root_node->rap_node_objects-cds_view_i )->set_alias( root_node->rap_node_objects-alias ).
+      lo_specification_header->add_exposure( root_node->rap_node_objects-cds_view_r )->set_alias( root_node->rap_node_objects-alias ).
     ELSE.
       lo_specification_header->add_exposure( root_node->rap_node_objects-cds_view_p )->set_alias( root_node->rap_node_objects-alias ).
     ENDIF.
@@ -2616,13 +2470,13 @@ CLASS ZDMO_CL_RAP_GENERATOR_ON_PREM IMPLEMENTATION.
 *        lo_specification_header->add_exposure( root_node->rap_node_objects-cds_view_p )->set_alias( root_node->rap_node_objects-alias ).
 *
 *      WHEN root_node->data_source_types-structure OR root_node->data_source_types-abap_type.
-*        lo_specification_header->add_exposure( root_node->rap_node_objects-cds_view_i )->set_alias( root_node->rap_node_objects-alias ).
+*        lo_specification_header->add_exposure( root_node->rap_node_objects-cds_view_r )->set_alias( root_node->rap_node_objects-alias ).
 *    ENDCASE.
     "add exposure for all child nodes
     LOOP AT root_node->all_childnodes INTO DATA(lo_childnode).
       "add all nodes to the service definition
       IF lo_childnode->generate_custom_entity(  ).
-        lo_specification_header->add_exposure( lo_childnode->rap_node_objects-cds_view_i )->set_alias( lo_childnode->rap_node_objects-alias ).
+        lo_specification_header->add_exposure( lo_childnode->rap_node_objects-cds_view_r )->set_alias( lo_childnode->rap_node_objects-alias ).
       ELSE.
         lo_specification_header->add_exposure( lo_childnode->rap_node_objects-cds_view_p )->set_alias( lo_childnode->rap_node_objects-alias ).
       ENDIF.
@@ -2630,7 +2484,7 @@ CLASS ZDMO_CL_RAP_GENERATOR_ON_PREM IMPLEMENTATION.
 *        WHEN lo_childnode->data_source_types-table OR lo_childnode->data_source_types-cds_view.
 *          lo_specification_header->add_exposure( lo_childnode->rap_node_objects-cds_view_p )->set_alias( lo_childnode->rap_node_objects-alias ).
 *        WHEN lo_childnode->data_source_types-abap_type OR lo_childnode->data_source_types-structure.
-*          lo_specification_header->add_exposure( lo_childnode->rap_node_objects-cds_view_i )->set_alias( lo_childnode->rap_node_objects-alias ).
+*          lo_specification_header->add_exposure( lo_childnode->rap_node_objects-cds_view_r )->set_alias( lo_childnode->rap_node_objects-alias ).
 *      ENDCASE.
 
       "create a list of all CDS views used in associations to the service definition
@@ -2753,18 +2607,18 @@ CLASS ZDMO_CL_RAP_GENERATOR_ON_PREM IMPLEMENTATION.
 
 
 **********************************************************************
-** Begin of deletion 2021
+** Begin of insertion 2020
 **********************************************************************
-*            lo_result = mo_draft_tabl_put_opertion->execute( VALUE #( ( xco_cp_generation=>put_operation_option->skip_activation ) ) ).
+            lo_result = mo_draft_tabl_put_opertion->execute( VALUE #( ( xco_cp_generation=>put_operation_option->skip_activation ) ) ).
 **********************************************************************
-** End of deletion 2021
+** End of deletion 2020
 **********************************************************************
 **********************************************************************
-** Begin of insertion 2021
+** Begin of insertion 2020
 **********************************************************************
-            lo_result = mo_draft_tabl_put_opertion->execute(  ).
+*        lo_result = mo_draft_tabl_put_opertion->execute(  ).
 **********************************************************************
-** End of insertion 2021
+** End of insertion 2020
 **********************************************************************
           ELSE.
             lo_result = mo_draft_tabl_put_opertion->execute(  ).
@@ -2793,37 +2647,16 @@ CLASS ZDMO_CL_RAP_GENERATOR_ON_PREM IMPLEMENTATION.
 
         ENDIF.
 
-
-
         IF root_node->generate_custom_entity(  ).
-
-          create_custom_entity(
-                EXPORTING
-                  io_rap_bo_node   = root_node
-              ).
-
-          create_custom_query(
-                EXPORTING
-                  io_rap_bo_node   = root_node
-              ).
-
+          create_custom_entity( root_node ).
+          create_custom_query( root_node ).
         ELSE.
-
-          create_i_cds_view(
-            EXPORTING
-              io_rap_bo_node   = root_node
-          ).
-
-          create_p_cds_view(
-            EXPORTING
-              io_rap_bo_node   = root_node
-          ).
-
-          create_mde_view(
-                EXPORTING
-                  io_rap_bo_node   = root_node
-              ).
-
+          create_r_cds_view( root_node ).
+          IF root_node->is_virtual_root(  ) = abap_false.
+            create_i_cds_view( root_node ).
+          ENDIF.
+          create_p_cds_view( root_node ).
+          create_mde_view( root_node ).
         ENDIF.
 
         IF root_node->transactional_behavior = abap_true.
@@ -2843,63 +2676,33 @@ CLASS ZDMO_CL_RAP_GENERATOR_ON_PREM IMPLEMENTATION.
         LOOP AT root_node->all_childnodes INTO DATA(lo_bo_node).
 
           IF lo_bo_node->generate_custom_entity(  ).
-
-            create_custom_entity(
-                  EXPORTING
-                    io_rap_bo_node   = lo_bo_node
-                ).
-
-            create_custom_query(
-                  EXPORTING
-                    io_rap_bo_node   = lo_bo_node
-                ).
-
+            create_custom_entity( lo_bo_node ).
+            create_custom_query( lo_bo_node ).
           ELSE.
-
-            create_i_cds_view(
-              EXPORTING
-                io_rap_bo_node   = lo_bo_node
-            ).
-
-            create_p_cds_view(
-                 EXPORTING
-                   io_rap_bo_node   = lo_bo_node
-               ).
-
-            create_mde_view(
-            EXPORTING
-              io_rap_bo_node   = lo_bo_node
-          ).
-
+            create_r_cds_view( lo_bo_node ).
+            IF lo_bo_node->root_node->is_virtual_root(  ) = abap_false.
+              create_i_cds_view( lo_bo_node ).
+            ENDIF.
+            create_p_cds_view( lo_bo_node ).
+            create_mde_view( lo_bo_node ).
           ENDIF.
 
           IF lo_bo_node->get_implementation_type( ) = lo_bo_node->implementation_type-unmanaged_semantic.
-            create_control_structure(
-                EXPORTING
-                            io_rap_bo_node   = lo_bo_node
-                        ).
+            create_control_structure( lo_bo_node ).
           ENDIF.
 
           IF lo_bo_node->generate_bil(  ).
             create_bil( lo_bo_node ).
           ENDIF.
 
-
-
         ENDLOOP.
 
         IF root_node->get_implementation_type( ) = root_node->implementation_type-unmanaged_semantic.
-          create_control_structure(
-         EXPORTING
-           io_rap_bo_node   = root_node
-       ).
+          create_control_structure( root_node ).
         ENDIF.
 
         IF root_node->publish_service = abap_true.
-          create_service_definition(
-            EXPORTING
-              io_rap_bo_node   = root_node
-          ).
+          create_service_definition( root_node ).
         ENDIF.
 
         "start to create all objects beside service binding
@@ -2908,14 +2711,14 @@ CLASS ZDMO_CL_RAP_GENERATOR_ON_PREM IMPLEMENTATION.
 **********************************************************************
 ** Start of deletion 2020
 **********************************************************************
-*          lo_result = mo_put_operation->execute( VALUE #( ( xco_cp_generation=>put_operation_option->skip_activation ) ) ).
+          lo_result = mo_put_operation->execute( VALUE #( ( xco_cp_generation=>put_operation_option->skip_activation ) ) ).
 **********************************************************************
 ** End of deletion 2020
 **********************************************************************
 **********************************************************************
 ** End of insertion 2020
 **********************************************************************
-          lo_result = mo_put_operation->execute(  ).
+*      lo_result = mo_put_operation->execute(  ).
 **********************************************************************
 ** End of insertion 2020
 **********************************************************************
@@ -2946,10 +2749,7 @@ CLASS ZDMO_CL_RAP_GENERATOR_ON_PREM IMPLEMENTATION.
         "it is hence not possible to generate a service binding on top
         IF root_node->publish_service = abap_true AND root_node->skip_activation = abap_false.
 
-          create_service_binding(
-            EXPORTING
-              io_rap_bo_node   = root_node
-          ).
+          create_service_binding( root_node ).
 
           "service binding needs a separate put operation
           lo_result = mo_srvb_put_operation->execute(  ).
@@ -3309,7 +3109,7 @@ CLASS ZDMO_CL_RAP_GENERATOR_ON_PREM IMPLEMENTATION.
 
       lo_field = lo_view->add_field( xco_cp_ddl=>field( ls_assocation-name ) ).
 
-      DATA(lo_association) = lo_field->create_association( io_rap_bo_node->parent_node->rap_node_objects-cds_view_i
+      DATA(lo_association) = lo_field->create_association( io_rap_bo_node->parent_node->rap_node_objects-cds_view_r
        " )->set_cardinality( xco_cp_cds=>cardinality->one_to_n
         )->set_condition( lo_condition ).
 
@@ -3330,7 +3130,7 @@ CLASS ZDMO_CL_RAP_GENERATOR_ON_PREM IMPLEMENTATION.
 
     ENDLOOP.
 
-    LOOP AT       io_rap_bo_node->lt_additional_fields INTO DATA(additional_fields) WHERE cds_interface_view = abap_true.
+    LOOP AT       io_rap_bo_node->lt_additional_fields INTO DATA(additional_fields) WHERE cds_restricted_reuse_view = abap_true.
       lo_field = lo_view->add_field( xco_cp_ddl=>expression->for( additional_fields-name )  ).
       IF additional_fields-cds_view_field IS NOT INITIAL.
         lo_Field->set_alias( additional_fields-cds_view_field ).
@@ -3688,7 +3488,7 @@ CLASS ZDMO_CL_RAP_GENERATOR_ON_PREM IMPLEMENTATION.
 
   METHOD get_rap_bo_name.
     IF root_node->is_consistent( ).
-      rap_bo_name = root_node->rap_root_node_objects-behavior_definition_i.
+      rap_bo_name = root_node->rap_root_node_objects-behavior_definition_r.
     ENDIF.
   ENDMETHOD.
 
@@ -3716,4 +3516,73 @@ CLASS ZDMO_CL_RAP_GENERATOR_ON_PREM IMPLEMENTATION.
   METHOD get_generated_repo_objects.
     r_generated_repository_objects = generated_repository_objects.
   ENDMETHOD.
+
+  METHOD create_i_cds_view.
+
+    DATA(lo_specification) = mo_put_operation->for-ddls->add_object( io_rap_bo_node->rap_node_objects-cds_view_i
+     )->set_package( mo_package
+     )->create_form_specification( ).
+
+    "add object name and type to list of generated repository objects
+    CLEAR generated_repository_object.
+    generated_repository_object-object_name = io_rap_bo_node->rap_node_objects-cds_view_i.
+    generated_repository_object-object_type = 'DDLS'.
+    APPEND generated_repository_object TO generated_repository_objects.
+
+    DATA(lo_view) = lo_specification->set_short_description( |Interface Projection View for { io_rap_bo_node->rap_node_objects-alias }|
+      )->add_projection_view( )
+       ##no_text.
+
+    " Annotations.
+    lo_view->add_annotation( 'AccessControl.authorizationCheck' )->value->build( )->add_enum( 'CHECK' ).
+    lo_view->add_annotation( 'EndUserText.label' )->value->build( )->add_string( 'Projection View for ' && io_rap_bo_node->rap_node_objects-alias ) ##no_text.
+
+    IF io_rap_bo_node->is_root( ).
+      lo_view->set_root( ).
+    ENDIF.
+
+    " set data source.
+    lo_view->data_source->set_view_entity( iv_view_entity = io_rap_bo_node->rap_node_objects-cds_view_r ).
+
+
+    "Client field does not need to be specified in client-specific CDS view
+    LOOP AT io_rap_bo_node->lt_fields INTO  DATA(ls_header_fields) WHERE name  <> io_rap_bo_node->field_name-client.
+      DATA(lo_field) = lo_view->add_field( xco_cp_ddl=>field( ls_header_fields-cds_view_field ) ).
+      IF ls_header_fields-key_indicator = abap_true  .
+        lo_field->set_key(  ).
+      ENDIF.
+    ENDLOOP.
+
+    "add compositions to child nodes
+    IF io_rap_bo_node->has_childs(  ).
+      LOOP AT io_rap_bo_node->childnodes INTO DATA(lo_childnode).
+        lo_view->add_field( xco_cp_ddl=>field( '_' && lo_childnode->rap_node_objects-alias ) )->set_redirected_to_compos_child( lo_childnode->rap_node_objects-cds_view_i ).
+      ENDLOOP.
+    ENDIF.
+
+    "publish association to parent
+    IF io_rap_bo_node->is_root(  ) = abap_false.
+      lo_view->add_field( xco_cp_ddl=>field( '_' && io_rap_bo_node->parent_node->rap_node_objects-alias ) )->set_redirected_to_parent( io_rap_bo_node->parent_node->rap_node_objects-cds_view_i ).
+    ENDIF.
+
+    "for grand-child nodes we have to add an association to the root node
+    IF io_rap_bo_node->is_grand_child_or_deeper(  ).
+      lo_view->add_field( xco_cp_ddl=>field( '_' && io_rap_bo_node->root_node->rap_node_objects-alias ) )->set_redirected_to( io_rap_bo_node->root_node->rap_node_objects-cds_view_i ).
+    ENDIF.
+
+    "publish associations
+    LOOP AT io_rap_bo_node->lt_association INTO DATA(ls_assocation).
+      lo_view->add_field( xco_cp_ddl=>field( ls_assocation-name ) ).
+    ENDLOOP.
+
+    "add additional fields
+    LOOP AT       io_rap_bo_node->lt_additional_fields INTO DATA(additional_fields) WHERE cds_interface_view = abap_true.
+      lo_field = lo_view->add_field( xco_cp_ddl=>expression->for( CONV #( additional_fields-cds_view_field ) )  ).
+      IF additional_fields-localized = abap_true.
+        lo_Field->set_localized( abap_true ).
+      ENDIF.
+    ENDLOOP.
+
+  ENDMETHOD.
+
 ENDCLASS.

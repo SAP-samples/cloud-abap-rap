@@ -222,44 +222,54 @@ CLASS lhc_rapgeneratorbonode IMPLEMENTATION.
 
   METHOD get_instance_features.
 
+   "read all child instances
+    READ ENTITIES OF zdmo_r_rapgeneratorbo IN LOCAL MODE
+      ENTITY rapgeneratorbonode
+        FIELDS (  entityname isrootnode viewtypevalue hierarchydistancefromroot )
+        WITH CORRESPONDING #( keys )
+      RESULT DATA(rapbo_nodes).
+
+    "read all links from child instances to the corresponding parent entity
+    READ ENTITIES OF zdmo_r_rapgeneratorbo IN LOCAL MODE
+      ENTITY rapgeneratorbonode BY \_rapgeneratorbo
+        FROM CORRESPONDING #( rapbo_nodes )
+      LINK DATA(rapbo_nodes_links).
+
+    "read all parent entities of the child entities
     READ ENTITIES OF zdmo_r_rapgeneratorbo IN LOCAL MODE
     ENTITY rapgeneratorbonode BY \_rapgeneratorbo
       FIELDS (  implementationtype datasourcetype
                namespace prefix suffix draftenabled )
       WITH CORRESPONDING #( keys )
       RESULT DATA(rapbos).
-*
-    LOOP AT rapbos INTO DATA(rapbo).
-      " read a dummy field
-      READ ENTITIES OF zdmo_r_rapgeneratorbo IN LOCAL MODE
-        ENTITY rapgeneratorbo BY \_rapgeneratorbonode
-          FIELDS ( entityname isrootnode viewtypevalue hierarchydistancefromroot )
-        WITH VALUE #( ( %tky = rapbo-%tky ) )
-        RESULT DATA(rapbo_nodes).
 
-      result = VALUE #( FOR rapbo_node IN rapbo_nodes
-                            ( %tky                   = rapbo_node-%tky
+    LOOP AT rapbo_nodes INTO DATA(rapbo_node).
+
+      "use link data to retrieve the data of the parent entity of the currently selected child entity
+      DATA(rapbo) = rapbos[  rapnodeuuid = rapbo_nodes_links[ source-nodeuuid = rapbo_node-nodeuuid ]-target-rapnodeuuid ].
+
+      APPEND VALUE #(     %tky                   = rapbo_node-%tky
 
                               %action-addchild2      = COND #( WHEN rapbo-%is_draft = if_abap_behv=>mk-on
                                                                THEN if_abap_behv=>fc-o-enabled
                                                                ELSE if_abap_behv=>fc-o-disabled )
 
 
-                              %field-fieldnameuuid         = COND #( WHEN rapbo-implementationtype = ZDMO_cl_rap_node=>implementation_type-managed_uuid
+                              %field-fieldnameuuid         = COND #( WHEN rapbo-implementationtype = zdmo_cl_rap_node=>implementation_type-managed_uuid
                                                                THEN if_abap_behv=>fc-f-mandatory
                                                                ELSE if_abap_behv=>fc-f-read_only )
 
-                              %field-fieldnamerootuuid     = COND #( WHEN ( rapbo-implementationtype = ZDMO_cl_rap_node=>implementation_type-managed_uuid
+                              %field-fieldnamerootuuid     = COND #( WHEN ( rapbo-implementationtype = zdmo_cl_rap_node=>implementation_type-managed_uuid
                                                                       AND rapbo_node-hierarchydistancefromroot > 1 )
                                                                THEN if_abap_behv=>fc-f-mandatory
                                                                ELSE if_abap_behv=>fc-f-read_only )
 
-                             %field-fieldnameparentuuid    = COND #( WHEN ( rapbo-implementationtype = ZDMO_cl_rap_node=>implementation_type-managed_uuid
+                             %field-fieldnameparentuuid    = COND #( WHEN ( rapbo-implementationtype = zdmo_cl_rap_node=>implementation_type-managed_uuid
                                                                       AND  rapbo_node-hierarchydistancefromroot > 0 )
                                                                THEN if_abap_behv=>fc-f-mandatory
                                                                ELSE if_abap_behv=>fc-f-read_only )
 
-                             %field-controlstructure       = COND #( WHEN rapbo-implementationtype = ZDMO_cl_rap_node=>implementation_type-unmanaged_semantic
+                             %field-controlstructure       = COND #( WHEN rapbo-implementationtype = zdmo_cl_rap_node=>implementation_type-unmanaged_semantic
                                                                THEN if_abap_behv=>fc-f-mandatory
                                                                ELSE if_abap_behv=>fc-f-read_only )
 
@@ -306,10 +316,7 @@ CLASS lhc_rapgeneratorbonode IMPLEMENTATION.
                                                                THEN if_abap_behv=>fc-f-unrestricted
                                                                ELSE if_abap_behv=>fc-f-read_only )
 
-                            ) ).
-
-
-
+                            ) TO result.
     ENDLOOP.
 
 
