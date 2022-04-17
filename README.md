@@ -7,12 +7,11 @@ This repository contains sample code that helps you to create boiler plate codin
 ## What's new 
 
 - Move from namespace /DMO/ to "namespace" ZDMO_
-- The RAP Generator now comes with a RAP Business object ZDMO_I_RAPGENERATORBO (RAP generates RAP :-))
+- The RAP Generator now comes with a RAP Business object ZDMO_R_RAPGENERATORBO (RAP generates RAP :-))
 - The RAP Generator can be used using the Fiori Elements UI preview
 - Downport to SAP S/4HANA 2020
-- Draft tables are now automatically generated without having to specify the table names upfront    
-- Support for unmanaged RAP BO's with custom entities for the following data source types  
-- Abstract entities which are for example being generated when a Service Consumption Model is created   
+- Unique names for repository objects to be generated will be now automatically suggested by the RAP Generator for all objects, not only for draft tables
+- Abstract entities which are for example being generated when a Service Consumption Model is created (not supported for on-premise-2020)   
 - Support for Multi-Inline-Edit (see [Blog Post - Generating SAP Fiori table maintenance dialogs using the RAP Generator](https://blogs.sap.com/2021/08/23/generating-sap-fiori-table-maintenance-dialogs-using-the-rap-generator/).
  
 ## Motivation
