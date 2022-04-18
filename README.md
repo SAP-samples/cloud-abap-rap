@@ -39,7 +39,7 @@ Working with the RAP Genertor now works (in short) as follows:
 5. Start to build the composition tree of your RAP BO  
    a. Enter a data source for your root entity  
    b. Specifiy which fields of your data source are used as the semantic key or as the total etag  
-6. To add child nodes select the parent node and press the button **Add Child** and do what has been described in step 5.
+6. To add child nodes select the parent node and press the button **Add Child** and do what has been described in step 5 for the newly added child entity.
 
 ### Start Fiori Elements Preview
 
