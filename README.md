@@ -36,9 +36,9 @@ Working with the RAP Genertor now works (in short) as follows:
 2. Press the button **New Project**
 3. Select a **name** for the root entity and a **package** where the repository objects will be generated
 4. Select the header data for your project such as whether we are dealing with a managed scenario with uuid based key fields and what kind of data source is used (tables, cds views or abstract entities)
-5. Start to build the composition tree of your RAP BO
-   a. Enter a data source for your root entity
-   b. Specifiy which fields of your data source are used as the semantic key or as the total etag
+5. Start to build the composition tree of your RAP BO  
+   a. Enter a data source for your root entity  
+   b. Specifiy which fields of your data source are used as the semantic key or as the total etag  
 6. To add child nodes select the parent node and press the button **Add Child** and do what has been described in step 5.
 
 ### Start Fiori Elements Preview
