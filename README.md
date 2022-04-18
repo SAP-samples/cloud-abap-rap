@@ -6,7 +6,7 @@ This repository contains sample code that helps you to create boiler plate codin
 
 ## What's new 
 
-- Move from namespace /DMO/ to "namespace" ZDMO_
+- Move from namespace `/DMO/` to "namespace" `ZDMO_`  
 - The RAP Generator now comes with a RAP Business object ZDMO_R_RAPGENERATORBO (RAP generates RAP :-))
 - The RAP Generator can be used using the Fiori Elements UI preview
 - Downport to SAP S/4HANA 2020
