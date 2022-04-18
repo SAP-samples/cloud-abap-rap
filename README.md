@@ -16,17 +16,19 @@ This repository contains sample code that helps you to create boiler plate codin
  
 ## Motivation
 
-The basic idea behind the *RAP Generator* is to make it easier for the developer to create the complete stack of objects that are needed to implement a RAP business object. The goal is to generate most of the boiler plate coding so that the developer can start more quickly to implement the business logic.  
+The basic idea behind the *RAP Generator* is to ease the life of the developer such that the generator helps to create the complete stack of objects that are needed to implement a RAP business object. The goal is to generate most of the boiler plate coding so that the developer can start more quickly to implement the business logic.  
 
-As an input the RAP Generator uses a JSON file which also reflects the tree structure of a RAP business object. This way all necessary input data is entered upfront and can be reused to create similar RAP business objects, for example for testing or training purposes. 
+As an input the RAP Generator `zdmo_cl_rap_generator` uses a JSON file which also reflects the tree structure of a RAP business object. This way all necessary input data is entered upfront and can be reused to create similar RAP business objects, for example for testing or training purposes. 
 
-Since it turned out that maintaining the JSON file is quite complex now a SAP Fiori Elements UI based on a RAP business object was added that provides value helps for the data that has to be entered, so the RAP Generator works now similar like the well known key user tools. 
+Since it turned out that maintaining the JSON file is quite complex I thought how to add UI to the RAP Generator. Since building Eclipse plugins is a quite complex task I decided to build a RAP business object so that it is possible to use the FIori Elements preview to use the UI wihtout having to deploy any additional components.  
 
-Since the Fiori Elements Preview is used there is no need to deploy an app.
+The Fiori Elements preview based UI provides value helps for the data that has to be entered, so the RAP Generator works now similar like the well known key user tools. Once the repository objects are generated the UI offers an ADT link that lets you conveniently navigate back into ADT to continue to work on your objects.
+
+For on premise releases an on premise version of the RAP Generator available `zdmo_cl_rap_generator_on_prem` has to be used if objects in the ABAP language version standard have to be used. 
+
+Here the new UI comes handy since it hides this complexity from the developer. This is because when using one of the branches **on-premise-2020** or **on-premise-2021** the new UI will use the correct version of the RAP Generator based on the language version of the selected ABAP package where the repository objects of your RAP BO shall be generated. 
 
 ## How to use the RAP Generator  
-
-(work in progress)
 
 Working with the RAP Genertor now works (in short) as follows:
 
