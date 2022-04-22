@@ -176,10 +176,10 @@ When clicking on the same you will navigate back to ADT thereby opening the root
    - Application job template - ZDMO_RAP_GEN_JOB_TEMPLATE
    - Application log object - ZDMO_RAP_GEN_APPLLOG     
 8. Create an OData V2 UI service binding **ZDMO_UI_RAP_GENERATOR_O2** 
-   a. Right click on the service definition **ZDMO_RAP_GENERATOR** 
-   b. Choose **Create service binding**
-   c. Enter the name **ZDMO_UI_RAP_GENERATOR_O2** and activate the service binding 
-   d. Publish the service binding
+   - Right click on the service definition **ZDMO_RAP_GENERATOR** 
+   - Choose **Create service binding**
+   - Enter the name **ZDMO_UI_RAP_GENERATOR_O2** and activate the service binding 
+   - Publish the service binding
 
 # Requirements
 
