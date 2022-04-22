@@ -182,6 +182,8 @@ When clicking on the same you will navigate back to ADT thereby opening the root
    - Activate the service binding 
    - Publish the service binding locally
 
+     ![Service binding](images/295_create_service_binding.png)
+
 # Requirements
 
 This sample code does currently only work in 
