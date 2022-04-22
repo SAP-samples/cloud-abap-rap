@@ -151,6 +151,8 @@ When clicking on the same you will navigate back to ADT thereby opening the root
 
 ## How to install the RAP Generator 
 
+### SAP BTP ABAP Environment and SAP S/4HANA Cloud ABAP Environment
+
 1. Create a package **'ZDMO_RAP_GENERATOR'**
 2. Link this package with the URL of the RAP Generator repo
 3. Pull changes
@@ -160,7 +162,24 @@ When clicking on the same you will navigate back to ADT thereby opening the root
    - Application job template - ZDMO_RAP_GEN_JOB_TEMPLATE
    - Application log object - ZDMO_RAP_GEN_APPLLOG
    - Service binding - ZDMO_UI_RAP_GENERATOR_O2
-6. Activate the service binding ZDMO_UI_RAP_GENERATOR_O2
+6. Publish the service binding ZDMO_UI_RAP_GENERATOR_O2
+
+### SAP S/4HANA 2020 or 2021
+
+1. Create a package **'ZDMO_RAP_GENERATOR'**
+2. Start the report ZABAPGIT or ZABAPGIT_STANDALONE depending on what you have installed in your system
+3. Create an offline repository or an online repository with the package and with the URL of the RAP Generator repo
+5. Pull changes
+6. Use mass activation to activate the objects that have been imported in step 3
+7. Run the class `zdmo_cl_rap_generator_setup`. This class generates the following objects
+   - Application job catalog entry - ZDMO_RAP_GEN_CATATALOG_ENTRY 
+   - Application job template - ZDMO_RAP_GEN_JOB_TEMPLATE
+   - Application log object - ZDMO_RAP_GEN_APPLLOG     
+8. Create an OData V2 UI service binding **ZDMO_UI_RAP_GENERATOR_O2** 
+   a. Right click on the service definition **ZDMO_RAP_GENERATOR** 
+   b. Choose **Create service binding**
+   c. Enter the name **ZDMO_UI_RAP_GENERATOR_O2** and activate the service binding 
+   d. Publish the service binding
 
 # Requirements
 
