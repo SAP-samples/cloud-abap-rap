@@ -178,8 +178,9 @@ When clicking on the same you will navigate back to ADT thereby opening the root
 8. Create an OData V2 UI service binding **ZDMO_UI_RAP_GENERATOR_O2** 
    - Right click on the service definition **ZDMO_RAP_GENERATOR** 
    - Choose **Create service binding**
-   - Enter the name **ZDMO_UI_RAP_GENERATOR_O2** and activate the service binding 
-   - Publish the service binding
+   - Enter the name **ZDMO_UI_RAP_GENERATOR_O2** and choose the binding type OData V2 - UI (NOT V4)
+   - Activate the service binding 
+   - Publish the service binding locally
 
 # Requirements
 
