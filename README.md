@@ -2,7 +2,7 @@
 
 # Description
 
-This repository contains sample code that helps you to create boiler plate coding for the ABAP RESTful Application Programming Model (RAP) in SAP BTP, ABAP environment, SAP S/4HANA 2021 and SAP S/4HANA 2020.  
+This repository contains sample code of the *RAP Generator* that helps you to create boiler plate coding for the ABAP RESTful Application Programming Model (RAP) in SAP BTP, ABAP environment, SAP S/4HANA 2021 and SAP S/4HANA 2020.  
 
 ## What's new 
 
@@ -17,6 +17,8 @@ This repository contains sample code that helps you to create boiler plate codin
 ## Motivation
 
 The basic idea behind the *RAP Generator* is to ease the life of the developer such that the generator helps to create the complete stack of objects that are needed to implement a RAP business object. The goal is to generate most of the boiler plate coding so that the developer can start more quickly to implement the business logic.  
+
+Though there is an ADT based generator available for SAP BTP ABAP Environment (planned for on premise with the next upcoming on premise release) this generator offers some additional features and it especially supports multiple nodes whereas the ADT based generator only supports 1 table.
 
 As an input the RAP Generator `zdmo_cl_rap_generator` uses a JSON file which also reflects the tree structure of a RAP business object. This way all necessary input data is entered upfront and can be reused to create similar RAP business objects, for example for testing or training purposes. 
 
