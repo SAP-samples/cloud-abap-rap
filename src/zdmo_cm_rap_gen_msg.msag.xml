@@ -1,0 +1,476 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<abapGit version="v1.0.0" serializer="LCL_OBJECT_MSAG" serializer_version="v1.0.0">
+ <asx:abap xmlns:asx="http://www.sap.com/abapxml" version="1.0">
+  <asx:values>
+   <T100A>
+    <ARBGB>ZDMO_CM_RAP_GEN_MSG</ARBGB>
+    <MASTERLANG>E</MASTERLANG>
+    <STEXT>Message class for the RAP Generator</STEXT>
+   </T100A>
+   <T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZDMO_CM_RAP_GEN_MSG</ARBGB>
+     <MSGNR>001</MSGNR>
+     <TEXT>&amp;1 is neither a child node nor a grand child node of the root entity &amp;2.</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZDMO_CM_RAP_GEN_MSG</ARBGB>
+     <MSGNR>002</MSGNR>
+     <TEXT>&amp;1 contains non alpha numeric characters.</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZDMO_CM_RAP_GEN_MSG</ARBGB>
+     <MSGNR>003</MSGNR>
+     <TEXT>&amp;1 contains spaces.</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZDMO_CM_RAP_GEN_MSG</ARBGB>
+     <MSGNR>004</MSGNR>
+     <TEXT>&amp;1 is too long. (&amp;2 characters max).</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZDMO_CM_RAP_GEN_MSG</ARBGB>
+     <MSGNR>005</MSGNR>
+     <TEXT>Node &amp;1 is not consistent</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZDMO_CM_RAP_GEN_MSG</ARBGB>
+     <MSGNR>006</MSGNR>
+     <TEXT>&amp;1 is not a supported implementation type.</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZDMO_CM_RAP_GEN_MSG</ARBGB>
+     <MSGNR>007</MSGNR>
+     <TEXT>No namespace has been set for the root node.</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZDMO_CM_RAP_GEN_MSG</ARBGB>
+     <MSGNR>008</MSGNR>
+     <TEXT>Node &amp;1 is not finalized.</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZDMO_CM_RAP_GEN_MSG</ARBGB>
+     <MSGNR>009</MSGNR>
+     <TEXT>Node &amp;1 is not a root node.</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZDMO_CM_RAP_GEN_MSG</ARBGB>
+     <MSGNR>010</MSGNR>
+     <TEXT>The specified semantic key field &amp;1 is not a field of table &amp;2</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZDMO_CM_RAP_GEN_MSG</ARBGB>
+     <MSGNR>011</MSGNR>
+     <TEXT>Repository object &amp;1 already exists</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZDMO_CM_RAP_GEN_MSG</ARBGB>
+     <MSGNR>012</MSGNR>
+     <TEXT>Cannot check object type &amp;1</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZDMO_CM_RAP_GEN_MSG</ARBGB>
+     <MSGNR>013</MSGNR>
+     <TEXT>Parameter &amp;1 is initial.</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZDMO_CM_RAP_GEN_MSG</ARBGB>
+     <MSGNR>014</MSGNR>
+     <TEXT>Package &amp;1 does not exist</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZDMO_CM_RAP_GEN_MSG</ARBGB>
+     <MSGNR>015</MSGNR>
+     <TEXT>Table &amp;1 does not exist.</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZDMO_CM_RAP_GEN_MSG</ARBGB>
+     <MSGNR>016</MSGNR>
+     <TEXT>&amp;1 &amp;2 &amp;3 &amp;4</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZDMO_CM_RAP_GEN_MSG</ARBGB>
+     <MSGNR>017</MSGNR>
+     <TEXT>Table contains no key field &amp;1</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZDMO_CM_RAP_GEN_MSG</ARBGB>
+     <MSGNR>018</MSGNR>
+     <TEXT>Table contains no field &amp;1 for parent uuid</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZDMO_CM_RAP_GEN_MSG</ARBGB>
+     <MSGNR>019</MSGNR>
+     <TEXT>Table contains no field &amp;1 for root uuid</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZDMO_CM_RAP_GEN_MSG</ARBGB>
+     <MSGNR>020</MSGNR>
+     <TEXT>No table name set</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZDMO_CM_RAP_GEN_MSG</ARBGB>
+     <MSGNR>021</MSGNR>
+     <TEXT>No semantic key set</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZDMO_CM_RAP_GEN_MSG</ARBGB>
+     <MSGNR>022</MSGNR>
+     <TEXT>Object name &amp;1 is not unique within BO</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZDMO_CM_RAP_GEN_MSG</ARBGB>
+     <MSGNR>023</MSGNR>
+     <TEXT>Table &amp;1 and package &amp;2 are not in the same software component</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZDMO_CM_RAP_GEN_MSG</ARBGB>
+     <MSGNR>024</MSGNR>
+     <TEXT>CDS view &amp;1 does not exist</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZDMO_CM_RAP_GEN_MSG</ARBGB>
+     <MSGNR>025</MSGNR>
+     <TEXT>Association name must start with an underscore &apos;_&apos;.</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZDMO_CM_RAP_GEN_MSG</ARBGB>
+     <MSGNR>026</MSGNR>
+     <TEXT>Wrong cardinality. Use one, one_to_n, zero_to_n or zero_to_one.</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZDMO_CM_RAP_GEN_MSG</ARBGB>
+     <MSGNR>027</MSGNR>
+     <TEXT>&amp;1 is not a field name in cds view of entity &amp;2.</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZDMO_CM_RAP_GEN_MSG</ARBGB>
+     <MSGNR>028</MSGNR>
+     <TEXT>Wrong usage &amp;1. Use FILTER, FILTER_AND_RESULT or RESULT.</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZDMO_CM_RAP_GEN_MSG</ARBGB>
+     <MSGNR>029</MSGNR>
+     <TEXT>Invalid json array name &amp;1</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZDMO_CM_RAP_GEN_MSG</ARBGB>
+     <MSGNR>030</MSGNR>
+     <TEXT>Invalid json object name &amp;1</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZDMO_CM_RAP_GEN_MSG</ARBGB>
+     <MSGNR>031</MSGNR>
+     <TEXT>Invalid json property name &amp;1</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZDMO_CM_RAP_GEN_MSG</ARBGB>
+     <MSGNR>032</MSGNR>
+     <TEXT>Field &amp;1 is not in data source &amp;2</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZDMO_CM_RAP_GEN_MSG</ARBGB>
+     <MSGNR>033</MSGNR>
+     <TEXT>Field &amp;1 is not in cds view &amp;2</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZDMO_CM_RAP_GEN_MSG</ARBGB>
+     <MSGNR>034</MSGNR>
+     <TEXT>No objectId set in &amp;1</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZDMO_CM_RAP_GEN_MSG</ARBGB>
+     <MSGNR>035</MSGNR>
+     <TEXT>Invalid data source type &amp;1</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZDMO_CM_RAP_GEN_MSG</ARBGB>
+     <MSGNR>036</MSGNR>
+     <TEXT>No data source set for entity &amp;1</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZDMO_CM_RAP_GEN_MSG</ARBGB>
+     <MSGNR>037</MSGNR>
+     <TEXT>Value of namespace &amp;1 is not valid. Use Y..., Z... or /.../.</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZDMO_CM_RAP_GEN_MSG</ARBGB>
+     <MSGNR>038</MSGNR>
+     <TEXT>&amp;1 is not the key field of &amp;2.</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZDMO_CM_RAP_GEN_MSG</ARBGB>
+     <MSGNR>039</MSGNR>
+     <TEXT>Type of &amp;1 is not UUID in 16 Bytes (Raw Format)</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZDMO_CM_RAP_GEN_MSG</ARBGB>
+     <MSGNR>040</MSGNR>
+     <TEXT>Entity &amp;1 has too many key fields &amp;2. Only one of type UUID is allowed.</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZDMO_CM_RAP_GEN_MSG</ARBGB>
+     <MSGNR>041</MSGNR>
+     <TEXT>Entity &amp;1 has no key field.</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZDMO_CM_RAP_GEN_MSG</ARBGB>
+     <MSGNR>042</MSGNR>
+     <TEXT>Invalid binding type &amp;1. Use &amp;2 instead.</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZDMO_CM_RAP_GEN_MSG</ARBGB>
+     <MSGNR>043</MSGNR>
+     <TEXT>Invalid transport request &amp;1</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZDMO_CM_RAP_GEN_MSG</ARBGB>
+     <MSGNR>044</MSGNR>
+     <TEXT>No draft table specified for entity &amp;1 in draft enabled BO &amp;2.</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZDMO_CM_RAP_GEN_MSG</ARBGB>
+     <MSGNR>045</MSGNR>
+     <TEXT>Table &amp;1 is inactive.</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZDMO_CM_RAP_GEN_MSG</ARBGB>
+     <MSGNR>046</MSGNR>
+     <TEXT>Cannot add additional fields to object type &amp;1.</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZDMO_CM_RAP_GEN_MSG</ARBGB>
+     <MSGNR>047</MSGNR>
+     <TEXT>&amp;1 not implemented. Additional info &amp;2.</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZDMO_CM_RAP_GEN_MSG</ARBGB>
+     <MSGNR>048</MSGNR>
+     <TEXT>&amp;1 not draft enabled</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZDMO_CM_RAP_GEN_MSG</ARBGB>
+     <MSGNR>049</MSGNR>
+     <TEXT>&amp;1 has no UI V4 service binding</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZDMO_CM_RAP_GEN_MSG</ARBGB>
+     <MSGNR>050</MSGNR>
+     <TEXT>Admin field &amp;1 is missing in table &amp;2</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZDMO_CM_RAP_GEN_MSG</ARBGB>
+     <MSGNR>051</MSGNR>
+     <TEXT>Tranport request &amp;1 does not exist</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZDMO_CM_RAP_GEN_MSG</ARBGB>
+     <MSGNR>052</MSGNR>
+     <TEXT>Underscore not permitted at 2nd or 3rd position in table &amp;1</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZDMO_CM_RAP_GEN_MSG</ARBGB>
+     <MSGNR>053</MSGNR>
+     <TEXT>publish_service = abap_true and skip_activation = abap_true not possible</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZDMO_CM_RAP_GEN_MSG</ARBGB>
+     <MSGNR>054</MSGNR>
+     <TEXT>&amp;1 Grandchild nodes are not supported for &amp;2 = &amp;3.</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZDMO_CM_RAP_GEN_MSG</ARBGB>
+     <MSGNR>055</MSGNR>
+     <TEXT>No total etag field found in &amp;2.  lastChangedAt mapped as &amp;1.</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZDMO_CM_RAP_GEN_MSG</ARBGB>
+     <MSGNR>056</MSGNR>
+     <TEXT>No etag master field found in &amp;2. Etag master mapped as &amp;1.</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZDMO_CM_RAP_GEN_MSG</ARBGB>
+     <MSGNR>057</MSGNR>
+     <TEXT>ABAP type &amp;1 specified for &amp;2 is not valid: &amp;3.</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZDMO_CM_RAP_GEN_MSG</ARBGB>
+     <MSGNR>058</MSGNR>
+     <TEXT>For multi-edit BO &amp;1 must be draft enabled and must use OData V4</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZDMO_CM_RAP_GEN_MSG</ARBGB>
+     <MSGNR>059</MSGNR>
+     <TEXT>For customizing BO &amp;1 must be draft enabled and must use OData V4</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZDMO_CM_RAP_GEN_MSG</ARBGB>
+     <MSGNR>060</MSGNR>
+     <TEXT>Customizing table &amp;1 must use delivery class &apos;C&apos; not &apos;&amp;2&apos;.</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZDMO_CM_RAP_GEN_MSG</ARBGB>
+     <MSGNR>061</MSGNR>
+     <TEXT>&amp;1: view type &amp;2 not supported</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZDMO_CM_RAP_GEN_MSG</ARBGB>
+     <MSGNR>062</MSGNR>
+     <TEXT>Entity &amp;1 does not contain any fields.</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZDMO_CM_RAP_GEN_MSG</ARBGB>
+     <MSGNR>063</MSGNR>
+     <TEXT>&amp;1: No draft support for custom entities.</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZDMO_CM_RAP_GEN_MSG</ARBGB>
+     <MSGNR>064</MSGNR>
+     <TEXT>Job scheduling error &amp;1 &amp;2</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZDMO_CM_RAP_GEN_MSG</ARBGB>
+     <MSGNR>065</MSGNR>
+     <TEXT>&amp;1: Invalid package type &amp;2</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZDMO_CM_RAP_GEN_MSG</ARBGB>
+     <MSGNR>066</MSGNR>
+     <TEXT>&amp;1: Set Etag master in custom child entities.</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZDMO_CM_RAP_GEN_MSG</ARBGB>
+     <MSGNR>067</MSGNR>
+     <TEXT>For multi-edit and cust. only use datasource type &apos;table&apos; not &amp;1</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZDMO_CM_RAP_GEN_MSG</ARBGB>
+     <MSGNR>068</MSGNR>
+     <TEXT>For multi-edit and cust. only use imp. type &apos;managed_semantic&apos; not &amp;1</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZDMO_CM_RAP_GEN_MSG</ARBGB>
+     <MSGNR>069</MSGNR>
+     <TEXT>Services registered in Maintain Business Conf. App can only have 2 Levels</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZDMO_CM_RAP_GEN_MSG</ARBGB>
+     <MSGNR>070</MSGNR>
+     <TEXT>Mandatory field &amp;1 for entity &amp;2 is initial</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZDMO_CM_RAP_GEN_MSG</ARBGB>
+     <MSGNR>071</MSGNR>
+     <TEXT>Mandatory field &amp;1 for rap generator project &amp;2 is initial</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZDMO_CM_RAP_GEN_MSG</ARBGB>
+     <MSGNR>072</MSGNR>
+     <TEXT>&amp;1: No OData V4 support for custom entities.</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZDMO_CM_RAP_GEN_MSG</ARBGB>
+     <MSGNR>073</MSGNR>
+     <TEXT>Service Binding &amp;1 is still published. Unpulish it and close tab in ADT.</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZDMO_CM_RAP_GEN_MSG</ARBGB>
+     <MSGNR>074</MSGNR>
+     <TEXT>Service binding - publishing error &amp;1</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZDMO_CM_RAP_GEN_MSG</ARBGB>
+     <MSGNR>075</MSGNR>
+     <TEXT>Service binding - un-publishing error &amp;1</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZDMO_CM_RAP_GEN_MSG</ARBGB>
+     <MSGNR>076</MSGNR>
+     <TEXT>Method not implemented &amp;1</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZDMO_CM_RAP_GEN_MSG</ARBGB>
+     <MSGNR>077</MSGNR>
+     <TEXT>Generated repository objects still exist for rap bo &amp;1</TEXT>
+    </T100>
+   </T100>
+  </asx:values>
+ </asx:abap>
+</abapGit>

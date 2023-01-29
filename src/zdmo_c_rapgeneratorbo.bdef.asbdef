@@ -1,0 +1,31 @@
+projection;
+use draft;
+
+define behavior for ZDMO_C_RAPGENERATORBO alias RAPGeneratorBO
+use etag
+{
+
+  use update;
+  use delete;
+
+  use action Edit;
+  use action Activate;
+  use action Discard;
+  use action Resume;
+  use action Prepare;
+
+  use action createBOandRootNode;
+  use action copyProject;
+  use action deleteBO;
+  use action createBO;
+  use association _RAPGeneratorBONode { with draft; }
+}
+
+define behavior for ZDMO_C_RAPGENERATORBONODE alias RAPGeneratorBONode
+use etag
+{
+  use update;
+  use delete;
+  use action addChild2;
+  use association _RAPGeneratorBO { with draft; }
+}

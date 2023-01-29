@@ -1,0 +1,424 @@
+@Metadata.layer: #CUSTOMER
+@UI: {
+  headerInfo: {
+    typeName: 'RAP Generator Project',
+    typeNamePlural: 'RAP Generator Projects',
+    title: {
+      type: #STANDARD,
+      label: 'RAP Business Object',
+      value: 'BoName'
+    },
+    description:
+    {
+    label: 'Package Name',
+    value: 'PackageName'
+    }
+
+  },
+  presentationVariant: [ {
+    sortOrder: [ {
+      by: 'LastChangedAt',
+      direction: #DESC
+    } ],
+    visualizations: [ {
+      type: #AS_LINEITEM
+    } ],
+    maxItems: 50
+  } ],
+  selectionVariant: [
+  {
+    qualifier: 'svariant',
+    text: 'Press the Go button',
+    filter: 'ImplementationType NE '' '
+  }
+]
+}
+annotate view ZDMO_C_RAPGENERATORBO with
+{
+
+
+
+  @UI.facet: [
+
+
+
+
+  //  { purpose: #HEADER,
+  //    id:'idJobStatus',
+  //    type:  #DATAPOINT_REFERENCE,
+  //    position: 40,
+  //    targetQualifier: 'JobStatusText'
+  //  },
+  {
+    purpose: #HEADER,
+    type: #FIELDGROUP_REFERENCE,
+    position: 50,
+    targetQualifier: 'Fieldgroup1'
+  },
+
+
+  //   { purpose: #HEADER,
+  //    id:'idJobStatus',
+  //    type:  #FIELDGROUP_REFERENCE,
+  //    position: 40,
+  //    targetQualifier: 'FieldGroup1',
+  //    targetElement: 'JobStatusText'
+  //  },
+
+  {
+    id: 'idCollection',
+    type: #COLLECTION,
+    label: 'Project header data',
+    position: 10
+  },
+
+  //             { id:              'Fieldgroup1-ID',
+  //               type:            #FIELDGROUP_REFERENCE,
+  //               label:           'Lifecycle Management',
+  //               parentId:        'idJson',
+  //               targetQualifier: 'Fieldgroup1',
+  //               position:         20 },
+
+        // Facet for Fieldgroup 2 - nested inside Facet 1
+
+             { id:              'Fieldgroup2-ID',
+               type:            #FIELDGROUP_REFERENCE,
+               label:           'Implementation Details',
+               parentId:        'idCollection',
+               targetQualifier: 'Fieldgroup2',
+               position:         30 },
+
+
+               { id:              'Fieldgroup3-ID',
+                 type:            #FIELDGROUP_REFERENCE,
+                 label:           'Used to build repository object names',
+                 parentId:        'idCollection',
+                 targetQualifier: 'Fieldgroup3',
+                 position:         05 },
+
+
+
+             { id:              'Fieldgroup4-ID',
+               type:            #FIELDGROUP_REFERENCE,
+               label:           'Generator command line options',
+               parentId:        'idCollection',
+               targetQualifier: 'Fieldgroup4',
+               position:         70 },
+
+  {
+    id: 'idLineitem',
+  //    parentId: 'idCollection',
+    type: #LINEITEM_REFERENCE,
+    label: 'Entities',
+    position: 15 ,
+  //    targetQualifier: 'Facet2',
+    targetElement: '_RAPGeneratorBONode'
+  }
+  //  ,
+  //
+  //    {
+  //      id: 'idJson',
+  //  //      parentId: 'idCollection',
+  //      type:  #COLLECTION,
+  //      label: 'RAP Generator',
+  //      position: 60
+  //    }
+
+      ,
+  
+       {
+        id: 'idApplicationLogItem',
+//        type: #PRESENTATIONVARIANT_REFERENCE ,
+         type: #LINEITEM_REFERENCE,
+        label: 'Application Log',
+        position: 25 ,
+//        targetQualifier: 'pVariant',
+  
+        targetElement: '_ApplicationLog'
+      }
+ 
+//        ,
+//
+//     {
+//     purpose: #STANDARD,
+//      id: 'idApplicationLogItem2',
+//      type: #PRESENTATIONVARIANT_REFERENCE,
+//      label: 'Application Log items',
+//      position: 25 ,
+//      targetQualifier: 'ChildSP',
+//  //      targetQualifier: 'Facet3',
+//
+//      targetElement: '_ApplicationLog'
+//    }
+  // ,
+  //
+  //     {
+  ////      id: 'idApplicationLogItem2',
+  //      type: #PRESENTATIONVARIANT_REFERENCE,
+  //      label: 'Application Log items',
+  //      position: 25 ,
+  ////      targetQualifier: 'Facet3',
+  //
+  //      targetElement: '_ApplicationLog'
+  //    }
+  //  ,
+  //
+  //             { id:              'Fieldgroup4-ID',
+  //               type:            #FIELDGROUP_REFERENCE,
+  //               label:           'Generator command line options',
+  //               parentId:        'idCollection',
+  //               targetQualifier: 'Fieldgroup4',
+  //               position:         70 }
+
+  ]
+  @UI.hidden: true
+  RapNodeUUID;
+
+  @UI.lineItem: [ {
+    position: 20 ,
+    importance: #HIGH,
+    label: 'RAP Business Object'  } ,
+    {  type: #FOR_ACTION, dataAction: 'createBOandRootNode', label: 'New Project'  }
+    ,
+    {  type: #FOR_ACTION, dataAction: 'copyProject', label: 'Copy Project' }
+    ,
+    {  type: #FOR_ACTION, dataAction: 'deleteBO', label: 'Delete repository objects' }
+
+    ]
+  @UI.identification: [ {
+    position: 20,
+    label: 'Root BO interface view' } ,
+    { type: #FOR_ACTION, dataAction: 'createBO', label: 'Generate repository objects' }
+      ,
+      {  type: #FOR_ACTION, dataAction: 'copyProject', label: 'Copy Project' }
+    ,
+    {  type: #FOR_ACTION, dataAction: 'deleteBO', label: 'Delete repository objects' }
+    
+    ]
+
+  BoName;
+
+  @UI: { fieldGroup:     [ { qualifier: 'Fieldgroup1',
+                             position: 50 ,
+                             label: 'ADT Link'    ,
+                             type: #WITH_URL,
+                             url: 'ADTLink',
+                             hidden: #(HideADTLink) }
+                           ] }
+
+  @UI.lineItem: [ {
+   position: 26 ,
+   importance: #HIGH,
+   label: 'ADT Link'
+   ,
+                             type: #WITH_URL,
+                             url: 'ADTLink',
+                             hidden: #(HideADTLink) }
+
+   ]
+
+  ADTLink;
+
+
+  @UI: { fieldGroup:     [ { qualifier: 'Fieldgroup3',
+                             position: 05 ,
+                             label: 'Namespace'}
+                             ] }
+
+
+  Namespace;
+  //
+  //  @UI: { fieldGroup:     [ { qualifier: 'Fieldgroup3',
+  //                             position: 130 ,
+  //                             label: 'Package'
+  //                            } ] }
+  @UI.lineItem: [ {
+    position: 25 ,
+    importance: #HIGH,
+    label: 'Package'  } ]
+
+  PackageName;
+
+  //  @UI: { fieldGroup:     [ { qualifier: 'Fieldgroup2',
+  //                             position: 135 ,
+  //                             label: 'Package Language Version'
+  //                            } ] }
+  @UI.hidden : true
+  PackageLanguageVersion;
+
+  @UI.hidden: true
+  SkipActivation;
+
+
+  @UI.lineItem: [ {
+     position: 70 ,
+     importance: #HIGH,
+     label: 'Implementation Type'
+   } ]
+
+  @UI: {        fieldGroup:     [ { qualifier: 'Fieldgroup2',
+                           position: 70 ,
+                           label: 'Implementation and Key Type'} ] }
+
+  @UI.selectionField: [ { position: 20 } ]
+  ImplementationType;
+
+  @UI.lineItem: [ {
+    position: 80 ,
+    importance: #HIGH,
+    label: 'Data Source Type'
+  } ]
+  @UI: {        fieldGroup:     [ { qualifier: 'Fieldgroup2',
+                          position: 80 ,
+                          label: 'Datasource Type'} ] }
+  @UI.selectionField: [ { position: 30 } ]
+  DataSourceType;
+
+  @UI.lineItem: [ {
+    position: 90 ,
+    importance: #HIGH,
+    label: 'Binding Type'
+  } ]
+
+  @UI: {        fieldGroup:     [ { qualifier: 'Fieldgroup2',
+                          position: 90 ,
+                          label: 'Binding Type'} ] }
+  @UI.selectionField: [ { position: 40 } ]
+  BindingType;
+
+  @UI.lineItem: [ {
+    position: 100 ,
+    importance: #HIGH,
+    label: 'Draft enabled'
+  } ]
+
+  @UI: {        fieldGroup:     [ { qualifier: 'Fieldgroup2',
+                         position: 100 ,
+                         label: 'Draft enabled'} ] }
+  @UI.selectionField: [ { position: 50 } ]
+  DraftEnabled;
+
+  @UI: {      fieldGroup:     [ { qualifier: 'Fieldgroup3',
+                              position: 200 ,
+                              label: 'Suffix'} ] }
+  Suffix;
+
+  @UI: {      fieldGroup:     [ { qualifier: 'Fieldgroup3',
+                               position: 110 ,
+                               label: 'Prefix'} ] }
+  Prefix;
+
+
+  @UI: {        fieldGroup:     [ { qualifier: 'Fieldgroup2',
+                       position: 120 ,
+                       label: 'Multi Inline Edit'} ] }
+  MultiInlineEdit;
+
+  @UI: {        fieldGroup:     [ { qualifier: 'Fieldgroup2',
+                        position: 210 ,
+                        label: 'Customizing Table'} ] }
+  CustomizingTable;
+
+  @UI: {        fieldGroup:     [ { qualifier: 'Fieldgroup2',
+                       position: 220 ,
+                       label: 'Register in Business Configuration App'} ] }
+  AddToManageBusinessConfig;
+
+  @UI.hidden
+  BusinessConfName;
+
+  @UI.hidden
+  BusinessConfIdentifier;
+
+
+  @UI.hidden
+  BusinessConfDescription;
+
+  @UI.hidden: true
+  CreatedBy;
+
+  @UI.hidden: true
+  CreatedAt;
+
+  @UI.hidden: true
+  LastChangedBy;
+
+  //  @UI.hidden: true
+  @UI.lineItem: [ {
+  position: 100 ,
+   importance: #HIGH,
+   label: 'Last changed at' }
+  ]
+
+  LastChangedAt;
+
+  //  @UI.lineItem: [ {
+  //  position: 100 ,
+  //   importance: #HIGH,
+  //   label: 'Last changed at' }
+  //  ]
+  @UI.hidden: true
+  LocalLastChangedAt;
+
+  @UI: { fieldGroup:     [ { qualifier: 'Fieldgroup4',
+                         position: 230 ,
+                         label: 'Transport request'} ] }
+  TransportRequest;
+
+  @UI: { fieldGroup:     [ { qualifier: 'Fieldgroup4',
+                           position: 240 ,
+                           label: 'Json string'} ] }
+  @UI.multiLineText: true
+  JsonString;
+
+
+  @UI.lineItem: [ {
+  position: 220 ,
+  importance: #HIGH,
+  label: 'Job Status',
+  criticality: 'JobStatusCriticality'
+  } ]
+  @UI: { fieldGroup:     [ { qualifier: 'Fieldgroup1',
+                         position: 40 ,
+                         label: 'Generation Status',
+                         criticality: 'JobStatusCriticality'} ] }
+  @UI.dataPoint: {title: 'Generation Job Status', targetValueElement: 'JobStatusText', criticality: 'JobStatusCriticality',
+  criticalityRepresentation: #WITH_ICON}
+  JobStatusText;
+
+  @UI.lineItem: [ {
+  position: 240 ,
+  importance: #HIGH,
+  label: 'Generated' }
+  ]
+  BoIsGenerated;
+  @UI.lineItem: [ {
+  position: 250 ,
+  importance: #HIGH,
+  label: 'Deleted' }
+  ]
+  BoIsDeleted;
+
+
+  //   @UI.facet: [{
+  //    id: 'idApplicationLogItem',
+  //  //    parentId: 'idCollection',
+  //    type: #LINEITEM_REFERENCE,
+  //    label: 'Application Log',
+  //    position: 25 ,
+  //    targetElement: '_ApplicationLog'
+  //    }]
+
+  @UI.lineItem: [ {
+   position: 170 ,
+   importance: #HIGH,
+   label: 'Application Log Handle'
+  } ]
+  @UI.identification:  [ {
+   position: 170 ,
+   importance: #HIGH,
+   label: 'Application Log Handle'
+  } ]
+  ApplicationJobLogHandle;
+
+}
