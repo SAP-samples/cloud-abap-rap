@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<abapGit version="v1.0.0" serializer="LCL_OBJECT_DDLS" serializer_version="v1.0.0">
+ <asx:abap xmlns:asx="http://www.sap.com/abapxml" version="1.0">
+  <asx:values>
+   <DDLS>
+    <DDLNAME>ZDMO_TEST_ABSTRACT_CHILDENTITY</DDLNAME>
+    <DDLANGUAGE>E</DDLANGUAGE>
+    <DDTEXT>Test entity - abstract - child</DDTEXT>
+    <SOURCE_TYPE>A</SOURCE_TYPE>
+   </DDLS>
+  </asx:values>
+ </asx:abap>
+</abapGit>

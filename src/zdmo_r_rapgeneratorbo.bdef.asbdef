@@ -1,0 +1,183 @@
+managed;
+with draft;
+
+define behavior for ZDMO_R_RapGeneratorBO alias RAPGeneratorBO
+implementation in class ZDMO_BP_R_RAPGeneratorBO unique
+persistent table zdmo_rapgen_bo
+with additional save
+draft table zdmo_rapgener01d
+etag master LocalLastChangedAt
+lock master total etag LastChangedAt
+authorization master ( global )
+
+{
+
+  field ( numbering : managed ) RapNodeUUID;
+  field ( readonly ) ABAPLanguageVersion, PackageLanguageVersion, BoName, JsonString, JsonIsValid, BoIsGenerated, BoIsDeleted, JobCount, JobName;
+  field ( mandatory ) ImplementationType, BindingType, DataSourceType;
+  field ( features : instance ) ADTLink, Namespace, PackageName;
+  field ( features : instance ) MultiInlineEdit, CustomizingTable, AddToManageBusinessConfig;
+
+  update;
+  delete;
+
+  static action createBOandRootNode parameter ZDMO_i_rap_gen_param_rapbonode result [1] $self;
+
+  //  factory action copyProject [1]; //result [1] $self;
+  action ( features : instance ) copyProject result [1] $self;
+  action ( features : instance ) createBO result [1] $self;
+  action ( features : instance ) deleteBO result [1] $self;
+
+  draft action ( features : instance ) Edit;
+  draft action Activate;
+  draft action Discard;
+  draft action Resume;
+  draft determine action Prepare
+  {
+    validation ( always ) mandatory_fields_check;
+    validation ( always ) RAPGeneratorBONode~mandatory_fields_check;
+    validation ( always ) allowed_combinations;
+    determination ( always ) createJSONString; }
+
+  mapping for ZDMO_RAPGEN_BO
+  {
+    RapNodeUUID = RAP_NODE_UUID;
+    BoName = BO_NAME;
+    Namespace = NAMESPACE;
+    PackageName = PACKAGE_NAME;
+    TransportRequest = TRANSPORT_REQUEST;
+    SkipActivation = SKIP_ACTIVATION;
+    ImplementationType = IMPLEMENTATION_TYPE;
+    ABAPLanguageVersion = abap_language_version;
+    PackageLanguageVersion = package_language_version;
+    DataSourceType = DATA_SOURCE_TYPE;
+    BindingType = BINDING_TYPE;
+    DraftEnabled = DRAFT_ENABLED;
+    Suffix = SUFFIX;
+    Prefix = PREFIX;
+    MultiInlineEdit = MULTI_INLINE_EDIT;
+    CustomizingTable = CUSTOMIZING_TABLE;
+    AddToManageBusinessConfig = ADD_TO_MANAGE_BUSINESS_CONFIG;
+    BusinessConfName = BUSINESS_CONF_NAME;
+    BusinessConfIdentifier = BUSINESS_CONF_IDENTIFIER;
+    BusinessConfDescription = BUSINESS_CONF_DESCRIPTION;
+    CreatedBy = CREATED_BY;
+    CreatedAt = CREATED_AT;
+    LastChangedBy = LAST_CHANGED_BY;
+    LastChangedAt = LAST_CHANGED_AT;
+    LocalLastChangedAt = LOCAL_LAST_CHANGED_AT;
+    JsonString = JSON_STRING;
+    JsonIsValid = json_is_valid;
+    BoIsGenerated = bo_is_generated;
+    BoIsDeleted = bo_is_deleted;
+    JobCount = job_count;
+    JobName = job_name;
+    ADTLink = adt_link;
+    ApplicationJobLogHandle = appl_job_log_handle;
+  }
+
+  association _RAPGeneratorBONode { create; with draft; }
+
+  determination SetNameSpace on modify { field PackageName; }
+  determination SetObjectNames on modify { field Namespace, Suffix, Prefix, BindingType, ImplementationType, DraftEnabled, DataSourceType; }
+  determination SetFieldNames on modify { field ImplementationType, DraftEnabled; }
+  determination createJsonString on save { create; }
+
+
+  validation mandatory_fields_check on save { field PackageName, BindingType, ImplementationType, DataSourceType; }
+  validation allowed_combinations on save { field CustomizingTable, MultiInlineEdit, AddToManageBusinessConfig; }
+  validation generated_objects_are_deleted on save { delete; }
+
+
+}
+
+define behavior for ZDMO_R_RapGeneratorBONode alias RAPGeneratorBONode
+implementation in class ZDMO_BP_R_RAPGeneratorBONode unique
+persistent table zdmo_rapgen_node
+draft table zdmo_rapgener00d
+etag master LocalLastChangedAt
+lock dependent by _RAPGeneratorBO
+authorization dependent by _RAPGeneratorBO
+
+{
+  field ( readonly )
+  HeaderUUID, NodeNumber, HierarchyDescendantCount,
+  HierarchyDistanceFromRoot, HierarchyDrillState, HierarchyPreorderRank
+  , IsRootNode, ParentEntityName, ParentDataSource, ParentUUID, RootUUID,
+  FieldNameLocLastChangedAt,
+  FieldNameLastChangedAt
+  ;
+
+
+  field ( features : instance ) FieldNameRootUUID, FieldNameUUID, FieldNameParentUUID,
+  ControlStructure, DraftTableName,
+  FieldNameTotalEtag, FieldNameEtagMaster, QueryImplementationClass,
+  ServiceBinding, ServiceDefinition, FieldNameLastChangedBy,
+  FieldNameCreatedAt, FieldNameCreatedBy;
+
+  field ( numbering : managed )
+  NodeUUID;
+
+  field ( mandatory )
+  DataSource, EntityName, FieldNameObjectID, CdsRView,
+  CdsIView, CdsPView, BehaviorImplementationClass, MdeView;
+  update;
+  delete;
+
+  action ( features : instance ) addChild2 parameter ZDMO_I_RAP_GEN_PARAM_ADD_CHILD result [1] ZDMO_R_RAPGENERATORBONODE;
+
+
+  mapping for ZDMO_RAPGEN_NODE
+  {
+    NodeUUID = NODE_UUID;
+    HeaderUUID = HEADER_UUID;
+    ParentUUID = PARENT_UUID;
+    RootUUID = root_uuid;
+    NodeNumber = NODE_NUMBER;
+    IsRootNode = is_root_node;
+    EntityName = ENTITY_NAME;
+    ParentEntityName = PARENT_ENTITY_NAME;
+    ParentDataSource = parent_data_source;
+    DataSource = DATA_SOURCE;
+    FieldNameObjectID = FIELD_NAME_OBJECT_ID;
+    FieldNameEtagMaster = FIELD_NAME_ETAG_MASTER;
+    FieldNameTotalEtag = FIELD_NAME_TOTAL_ETAG;
+    FieldNameUUID = FIELD_NAME_UUID;
+    FieldNameParentUUID = FIELD_NAME_PARENT_UUID;
+    FieldNameRootUUID = FIELD_NAME_ROOT_UUID;
+    FieldNameCreatedBy = FIELD_NAME_CREATED_BY;
+    FieldNameCreatedAt = FIELD_NAME_CREATED_AT;
+    FieldNameLastChangedBy = FIELD_NAME_LAST_CHANGED_BY;
+    FieldNameLastChangedAt = FIELD_NAME_LAST_CHANGED_AT;
+    FieldNameLocLastChangedAt = FIELD_NAME_LOC_LAST_CHANGED_AT;
+    CdsIView = CDS_I_VIEW;
+    CdsRView = CDS_R_VIEW;
+    CdsPView = CDS_P_VIEW;
+    MdeView = MDE_VIEW;
+    BehaviorImplementationClass = BEHAVIOR_IMPLEMENTATION_CLASS;
+    ServiceDefinition = SERVICE_DEFINITION;
+    ServiceBinding = SERVICE_BINDING;
+    ControlStructure = CONTROL_STRUCTURE;
+    QueryImplementationClass = QUERY_IMPLEMENTATION_CLASS;
+    DraftTableName = DRAFT_TABLE_NAME;
+    HierarchyDistanceFromRoot = hierarchy_distance_from_root;
+    HierarchyDescendantCount = hierarchy_descendant_count;
+    HierarchyDrillState = hierarchy_drill_state; // leaf, expanded, collapsed
+    HierarchyPreorderRank = hierarchy_preorder_rank;
+    LocalLastChangedAt = LOCAL_LAST_CHANGED_AT;
+  }
+
+  association _RAPGeneratorBO { with draft; }
+
+  determination CalculateNodeNumber on modify { create; }
+  determination SetChangedAtFieldNames on modify { field FieldNameEtagMaster, FieldNameTotalEtag; }
+  determination SetRepositoryObjectNames on modify { create; field EntityName; }
+  determination SetParentAndRootUUID on modify { field NodeUUID; }
+  determination SetFieldNames on modify { field DataSource; }
+
+  validation mandatory_fields_check on save { create; update; }
+
+  internal action SetRepoObjectNames;
+  internal action SetRepoFieldNames;
+
+}

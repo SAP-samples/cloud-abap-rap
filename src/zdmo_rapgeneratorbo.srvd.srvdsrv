@@ -1,0 +1,13 @@
+@EndUserText.label: 'Service Definition for RAP Genertor BO'
+define service ZDMO_RAPGENERATORBO {
+  expose ZDMO_C_RAPGENERATORBO as RAPGeneratorProjects;
+  expose ZDMO_C_RAPGENERATORBONODE as RAPGeneratorProjectEntities;
+  expose ZDMO_I_RAP_GENERATOR_DSRC_TYPE as DataSourceTypes;
+  expose ZDMO_I_RAP_GENERATOR_BIND_TYPE as BindingTypes;
+  expose ZDMO_I_RAP_GENERATOR_IMPL_TYPE as ImplementationTypes;
+  expose ZDMO_I_RAP_GENERATOR_ABAP_VERS as ABAPLanguageVersions;
+  expose ZDMO_I_RAP_GENERATOR_DATA_SRC as DataSources;
+  expose ZDMO_I_RAP_GENERATOR_PACKAGE as Packages;
+  expose ZDMO_I_RAP_GENERATOR_FIELDS as DataSourceFields;
+  expose ZDMO_I_RAP_GENERATOR_appl_log as ApplicationLog;
+}
