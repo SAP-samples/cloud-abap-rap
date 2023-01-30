@@ -100,11 +100,17 @@ You first have to select the data source that shall be used by the root entity.
 
 ![Implementation types](images/180_Press_return.png)
 
-After you have selected the data source press **Return** to initiate a side effect. (This works for the SAP Fiori Elements OData V2 preview but not for the V4 preview. This is why I chose to use the V2 preview). As a result the generator will try to determine the names of the fields that perform certain roles such as the UUID based key field, the field used as the total etag, etc.
+After you have selected the data source press **Return** to initiate a side effect. This works for the SAP Fiori Elements OData V2 preview on premise releases. This is why I chose to use the V2 preview. 
+
+( In cloud based systems the support for side-effects will be added once these can be added by appropriate implementations in the behavivor definition).
+
+If the side effect does not work simply press the refresh button in your browser after having entered or changed an entry in the field *data source*.
+
+As a result the generator will try to determine the names of the fields that perform certain roles such as the UUID based key field, the field used as the total etag, etc.
 
 ![Implementation types](images/190_select_object_id.png)
 
-What can not be determined automatically is which field shall be used as the **semantic key**. 
+What can not be determined automatically is which field shall be used as the **semantic key**. Therefore you have to select the same via a value help.  
 
 Press **Apply** to return to the header object page.
 
@@ -155,21 +161,21 @@ When clicking on the same you will navigate back to ADT thereby opening the root
 ### SAP BTP ABAP Environment and SAP S/4HANA Cloud ABAP Environment
 
 1. Create a package **'ZDMO_RAP_GENERATOR'**
-2. Link this package with the URL of the RAP Generator repo
+2. Link this package with the URL of the RAP Generator repo `https://github.com/SAP-samples/cloud-abap-rap`  
 3. Pull changes
 4. Use mass activation to activate the objects that have been imported in step 3
 5. Run the class `zdmo_cl_rap_generator_setup`. This class generates the following objects
-   - Application job catalog entry - ZDMO_RAP_GEN_CATATALOG_ENTRY 
-   - Application job template - ZDMO_RAP_GEN_JOB_TEMPLATE
-   - Application log object - ZDMO_RAP_GEN_APPLLOG
-   - Service binding - ZDMO_UI_RAP_GENERATOR_O2
-6. Publish the service binding ZDMO_UI_RAP_GENERATOR_O2
+   - Application job template `ZDMO_RAP_GEN_JOB_TEMPLATE`  
+   - Application log object `ZDMO_RAP_GEN_APPLLOG` 
+   - Service binding `ZDMO_UI_RAP_GENERATOR_O2`  
+6. Publish the service binding `ZDMO_UI_RAP_GENERATOR_O2` 
 
-### SAP S/4HANA 2020 or 2021
+### SAP S/4HANA 2021 or 2022
 
-1. Create a package **'ZDMO_RAP_GENERATOR'**
-2. Start the report ZABAPGIT or ZABAPGIT_STANDALONE depending on what you have installed in your system
-3. Create an offline repository or an online repository with the package and with the URL of the RAP Generator repo
+1. Create a package **'TEST_DMO_RAP_GENERATOR'**.
+2. Start the report `ZABAPGIT_STANDALONE` ( you might have to download the source code of this open source tool first [here](https://raw.githubusercontent.com/abapGit/build/main/zabapgit_standalone.prog.abap) ).
+3. Create an offline repository or an online repository with the package and with the URL of the RAP Generator repo  
+   `https://github.com/SAP-samples/cloud-abap-rap` 
 5. Pull changes
 6. Use mass activation to activate the objects that have been imported in step 3
 7. Run the class `zdmo_cl_rap_generator_setup`. This class generates the following objects
@@ -189,50 +195,49 @@ When clicking on the same you will navigate back to ADT thereby opening the root
 
 This sample code does currently only work in 
 - SAP BTP, ABAP environment
+- SAP S/4HANA 2022
 - SAP S/4HANA 2021
-- SAP S/4HANA 2020
+
+( I have removed the support for SAP S/4HANA 2020 for the time being since downporting it to this release is a cumbersome and especially errorprone task )
 
 Make sure you have set the following option "Wrap and escape text when pasting into string literal" for your ABAP source code editor in your ADT preferences as described in my blog [How to wrap long strings automatically in ADT](https://blogs.sap.com/2020/07/29/how-to-wrap-long-strings-automatically-in-adt/)
 
-For more detailed information please also check out the following blog post:
-https://blogs.sap.com/2020/05/17/the-rap-generator
-
 # Download and Installation
 
-When you want to install this sample code in your own ABAP Environment systems you can simply download it using the abapGIT plugin in ABAP Development Tools in Eclipse when working with SAP BTP, ABAP environment. 
+## SAP BTP, ABAP Environment or SAP S/4HANA Cloud, ABAP Environment  
 
-For this you have to create a package in the Z-namespace (for example ZDMO_RAP_GENERATOR) and link it as an abapGit repository.
+When you want to install this sample code in your own ABAP Environment systems you can simply download it using the abapGIT plugin in ABAP Development Tools in Eclipse when working with *SAP BTP, ABAP environment* or *SAP S/4HANA Cloud, ABAP Environment*  
 
-Please make sure that you use this URL
+Use the following link to the GitHub repsitory https://github.com/SAP-samples/cloud-abap-rap.   
 
-https://github.com/SAP-samples/cloud-abap-rap/tree/main
+For this you have to create a package in the Z-namespace ( for example *ZDMO_RAP_GENERATOR* ) in the software component **ZLOCAL** and link it as an abapGit repository.
 
-so that you have used the "main" branch.
+Please make sure that you use the branch **btp-abap**.  
 
-It is also possible to install the RAP Generator in an on-premise system as of SAP S/4HANA 2020 FSP1. 
+## SAP S/4HANA 2022 or SAP S/4HANA 2021 FSP1
 
-And for **on premise** systems you have to use the appropriate branch **on-premise-2020** https://github.com/SAP-samples/cloud-abap-rap/tree/On-Premise-2020  or **on-premise-2021** https://github.com/SAP-samples/cloud-abap-rap/tree/On-Premise-2020
+It is also possible to install the RAP Generator in an on-premise system as of **SAP S/4HANA 2020 FSP1**. 
+
+And for **on premise** systems you have to use the appropriate branch **on-premise-2021** or **on-premise-2022**
 
 # Known Issues
 
 The sample code is provided "as-is".
 
-It is currently not possible to set the names of the repository objects used by the virtual root node that is implicitly generated by the generator when using customizing tables with multi inline edit capabilities.
+- In SAP BTP ABAP Environment system there is currently no support for side-effects in the SAP Fiori Elements preview. You therefore have to refresh the object page yourself in the browser in order to leverage the determinations that determine the mapping between the field names and their role in the RAP business object (e.g. etag).  
 
-When using the RAP Generator in on premise systems you have to make sure that the latest SAPUI5 libraries are installed. If you don’t have the latest version of the SAPUI5 libraries installed you will get no dialogue when pressing the **New Project** button in the RAP Generator. If the latest SAPUI5 libraries cannot be installed you can use an implicit enhancment in method `get_sapui5core_resources_url( )` of class `CL_ADT_ODATAV2_FEAP` as described in the following blog post:
+- It is currently not possible to set the names of the repository objects used by the virtual root node that is implicitly generated by the generator when using customizing tables with multi inline edit capabilities.
+
+- When using the RAP Generator in on premise systems you have to make sure that the latest SAPUI5 libraries are installed. If you don’t have the latest version of the SAPUI5 libraries installed you will get no dialogue when pressing the **New Project** button in the RAP Generator. If the latest SAPUI5 libraries cannot be installed you can use an implicit enhancment in method `get_sapui5core_resources_url( )` of class `CL_ADT_ODATAV2_FEAP` as described in the following blog post:
 
 https://blogs.sap.com/2022/04/16/how-to-use-the-latest-sapui5-library-for-the-fiori-elements-preview-in-adt/
 
-## on_premise_2020
+## on_premise_2021
 
-- no support for abstract entities as a datasource because it is not possible to generate custom entities using the XCO framework in this release   
-- only view entities are supported as a data source when **cds_view** is selected as a data source type   
-- behavior implementation classes have to be generated manually using a quick fix in the BDEF editor in ADT  
-- no generation of service bindings
-- RAP Generator does not offer a mandatory fields support  
-
+- the behavior implementation class has to be generated / regenerated manually in ADT.
 
 # How to obtain support
+
 If you have problems or questions you can [post them in the SAP Community](https://answers.sap.com/questions/ask.html) using either the primary tag "[SAP BTP, ABAP environment](https://answers.sap.com/tags/73555000100800001164)" or "[ABAP RESTful Application Programming Model](https://answers.sap.com/tags/7e44126e-7b27-471d-a379-df205a12b1ff)".
 
 # Contributing
