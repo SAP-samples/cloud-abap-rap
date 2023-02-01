@@ -12,9 +12,13 @@ Technically it consists out of a RAP business object `ZDMO_R_RapGeneratorBO` tha
 
 ![RAP Generator Overview](images/500_RAP_Generator_Overview.png)  
 
-So in order to leverage this tool you just have to create a package `ZDMO_RAP_GENERATOR` in the software component `ZLOCAL` and link and pull the branch **btp-abap**.    
+So in order to leverage this tool you just have to create a package `ZDMO_RAP_GENERATOR` in the software component `ZLOCAL` and link and pull the branch **btp-abap**. 
+
+In an on premise system you will have to create a package `TEST_RAP_GENERATOR` instead and import the content of one of the on-premise branches, either **on-prem-2021*** or **on-prem-2022**.  
 
 From a usability point of view the RAP Generator works similar like a key user tool since it works with a SAP Fiori UI rather than using an Eclipse based UI. 
+
+![RAP Generator UI](images/510_RAP_Generator_UI.png)  
 
 ## What's new 
 
