@@ -2,7 +2,11 @@
 
 # Description
 
-This repository contains sample code of the *RAP Generator* that helps you to create boiler plate coding for the ABAP RESTful Application Programming Model (RAP) in SAP BTP, ABAP environment, SAP S/4HANA 2022 and SAP S/4HANA 2021.  
+This repository contains sample code of the *RAP Generator* that helps you to create boiler plate coding for the ABAP RESTful Application Programming Model (RAP) in 
+- SAP BTP, ABAP environment  
+- SAP S/4HANA ABAP Environment  
+- SAP S/4HANA 2022  
+- SAP S/4HANA 2021  
 
 ## What's new 
 
