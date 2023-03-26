@@ -12,7 +12,7 @@ define abstract entity ZDMO_I_RAP_GEN_PARAM_ADD_NODEC
                                                             }]
   @EndUserText.label: 'Data Source Name'
   DataSourceName     : abap.char(30);
-  @UI.defaultValue   : #('ELEMENT_OF_REFERENCED_ENTITY:DataSource')
+//  @UI.defaultValue   : #('ELEMENT_OF_REFERENCED_ENTITY:DataSource')
   @UI.hidden: true
   @EndUserText.label: 'Parent Data Source Name'
   parent_data_source : zdmo_rap_gen_entityname;
