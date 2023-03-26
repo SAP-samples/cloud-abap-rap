@@ -7,7 +7,7 @@ Though there is an ADT-based generator available for SAP BTP, ABAP environment a
 
 **RAP generates RAP**  
 Technically the RAP Generator consists out of a RAP business object `ZDMO_R_RAPG_ProjectTP` that is used to generate other RAP business objects.  
-The RAP Generator works similar like the well known **Key user tools** in SAP S/4HANA and uses a Fiori Elements UI. The Fiori Elements UI can be started from within ADT by opening the service binding `ZDMO_UI_RAPG_PROJECT_O4`. There you have to double-click on the entitiy *Project*.   
+The RAP Generator works similar like the well known **Key user tools** in SAP S/4HANA and uses a Fiori Elements UI. The Fiori Elements UI can be started from within ADT by opening the service binding `ZDMO_UI_RAPG_PROJECT_O4`. There you have to double-click on the entitiy *Project* which starts the Fiori Elements UI without the need to install any additional tool.     
 
 The SAP Fiori elements preview based UI provides value helps for the data that has to be entered and it provides validations and determinations that provide the heavy lifting of specifying which table field is used for which purpose (for example, a field called *local_last_changed_at* or a field based on the data element *abp_locinst_lastchange_tstmpl* will be proposed by the RAP Generator to be used as the etag of an entity).
 
