@@ -228,8 +228,8 @@ CLASS ZDMO_CL_RAP_GENERATOR_SETUP IMPLEMENTATION.
 *    DATA mo_srvb_put_operation    TYPE REF TO if_xco_cp_gen_d_o_put .
 ********************************************************************************
     "onpremise
-*    data mo_environment           type ref to if_xco_gen_environment .
-*    data mo_srvb_put_operation    type ref to if_xco_gen_o_mass_put.
+    data mo_environment           type ref to if_xco_gen_environment .
+    data mo_srvb_put_operation    type ref to if_xco_gen_o_mass_put.
 ********************************************************************************
 
     DATA(service_definition) = xco_lib->get_service_definition( service_definition_name ).
