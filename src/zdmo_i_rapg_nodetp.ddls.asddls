@@ -1,0 +1,46 @@
+@AccessControl.authorizationCheck: #CHECK
+@EndUserText.label: 'Projection View forNode'
+define view entity ZDMO_I_RAPG_NodeTP
+  as projection on ZDMO_R_RAPG_NodeTP
+{
+  key NodeUUID,
+  RapBoUUID,
+  ParentUUID,
+  RootUUID,
+  NodeNumber,
+  IsRootNode,
+  EntityName,
+  ParentEntityName,
+  DataSource,
+  ParentDataSource,
+  ViewTypeValue,
+  FieldNameObjectID,
+  FieldNameEtagMaster,
+  FieldNameTotalEtag,
+  FieldNameUUID,
+  FieldNameParentUUID,
+  FieldNameRootUUID,
+  FieldNameCreatedBy,
+  FieldNameCreatedAt,
+  FieldNameLastChangedBy,
+  FieldNameLastChangedAt,
+  FieldNameLocLastChangedAt,
+  CdsIView,
+  CdsRView,
+  CdsPView,
+  MdeView,
+  BehaviorImplementationClass,
+  ServiceDefinition,
+  ServiceBinding,
+  ControlStructure,
+  QueryImplementationClass,
+  DraftTableName,
+  HierarchyDistanceFromRoot,
+  HierarchyDescendantCount,
+  HierarchyDrillState,
+  HierarchyPreorderRank,
+  LocalLastChangedAt,
+  _Field : redirected to composition child ZDMO_I_RAPG_FieldTP,
+  _Project : redirected to parent ZDMO_I_RAPG_ProjectTP
+  
+}

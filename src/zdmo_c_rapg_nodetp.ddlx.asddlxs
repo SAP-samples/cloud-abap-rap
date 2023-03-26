@@ -1,0 +1,335 @@
+@Metadata.layer: #CUSTOMER
+@UI: {
+  headerInfo: {
+    typeName: 'Entity',
+    typeNamePlural: 'Entities',
+    title: {
+      type: #STANDARD,
+      label: 'Entity',
+      value: 'EntityName'
+    }
+  },
+  presentationVariant: [ {
+    sortOrder: [
+    {
+      by: 'HierarchyDistanceFromRoot',
+      direction: #ASC
+    }
+//    ,
+//    {
+//      by: 'EntityName',
+//      direction: #DESC
+//    }
+
+    ],
+    visualizations: [ {
+      type: #AS_LINEITEM
+    } ]
+  } ]
+}
+annotate view ZDMO_C_RAPG_NodeTP with
+{
+
+
+  @UI.facet: [ 
+//  {
+//    id: 'idCollection',
+//    type: #COLLECTION,
+//    label: 'Entity',
+//    position: 10
+//  },
+//  {
+//    id: 'idIdentification',
+//    parentId: 'idCollection',
+//    type: #IDENTIFICATION_REFERENCE,
+//    label: 'General Information',
+//    position: 10
+//  },
+
+    { label    : 'Entity details',
+       id       : 'Facet_05',
+       purpose  : #STANDARD,
+       type     : #COLLECTION,
+       position : 05  },
+     { id       : 'FieldGroup_05',
+       purpose  : #STANDARD,
+       parentId : 'Facet_05',
+       type     : #FIELDGROUP_REFERENCE,
+       targetQualifier: 'FieldGroup_05',
+       position : 05   },
+
+
+    //Facet and field groups for field name mapping
+     { label    : 'Map fields for behavior defintion',
+       id       : 'Facet_10',
+       purpose  : #STANDARD,
+       type     : #COLLECTION,
+       position : 10  },
+     { id       : 'FieldGroup_10',
+       purpose  : #STANDARD,
+       parentId : 'Facet_10',
+       type     : #FIELDGROUP_REFERENCE,
+       targetQualifier: 'FieldGroup_10',
+       position : 10   },
+
+     { label    : 'Map fields for Metadata Extension',
+       id       : 'Facet_15',
+       purpose  : #STANDARD,
+       type     : #COLLECTION,
+       position : 15  },
+     { id       : 'FieldGroup_15',
+       purpose  : #STANDARD,
+       parentId : 'Facet_15',
+       type     : #FIELDGROUP_REFERENCE,
+       targetQualifier: 'FieldGroup_15',
+       position : 15   },
+
+     { label    : 'Map fields for parent and root UUID',
+       id       : 'Facet_20',
+       purpose  : #STANDARD,
+       type     : #COLLECTION,
+  //       hidden   : #(hasSemanticKey),
+       position : 20  },
+     { id       : 'FieldGroup_20',
+       purpose  : #STANDARD,
+       parentId : 'Facet_20',
+       type     : #FIELDGROUP_REFERENCE,
+       targetQualifier: 'FieldGroup_20',
+       position : 20   },
+
+     { label    : 'Map fields for @Semantics annotation',
+       id       : 'Facet_30',
+       purpose  : #STANDARD,
+       type     : #COLLECTION,
+       position : 30  },
+     { id       : 'FieldGroup_30',
+       purpose  : #STANDARD,
+       parentId : 'Facet_30',
+       type     : #FIELDGROUP_REFERENCE,
+       targetQualifier: 'FieldGroup_30',
+       position : 30   },
+
+  //     { label    : 'Map Etag and semantic key',
+  //       id       : 'FieldGroup_10_1',
+  //       purpose  : #STANDARD,
+  //       parentId : 'FieldGroup_10',
+  //       type     : #FIELDGROUP_REFERENCE,
+  //       targetQualifier: 'FieldGroup_10_1',
+  //       position : 10   },
+  //
+  //     { label    : 'Map parent and root UUID',
+  //       id       : 'FieldGroup_10_2',
+  //       purpose  : #STANDARD,
+  //       parentId : 'FieldGroup_10',
+  //       type     : #FIELDGROUP_REFERENCE,
+  //       targetQualifier: 'FieldGroup_10_2',
+  //       position : 20   },
+  //
+  //     { label    : 'Map administrative fields',
+  //       id       : 'FieldGroup_10_3',
+  //       purpose  : #STANDARD,
+  //       parentId : 'FieldGroup_10',
+  //       type     : #FIELDGROUP_REFERENCE,
+  //       targetQualifier: 'FieldGroup_10_3',
+  //       position : 30   },
+
+  //Facet and field groups for repository object names
+
+     { label    : 'Repository object names',
+       id       : 'Facet_4',
+       purpose  : #STANDARD,
+       type     : #COLLECTION,
+       position : 40  },
+     { id       : 'FieldGroup_4',
+       purpose  : #STANDARD,
+       parentId : 'Facet_4',
+       type     : #FIELDGROUP_REFERENCE,
+       targetQualifier: 'FieldGroup_4',
+       position : 40   },
+
+
+
+  {
+    id: 'idLineitem',
+    type: #LINEITEM_REFERENCE,
+    label: 'Field names',
+    position: 50 ,
+    targetElement: '_Field'
+  } ]
+
+  @UI.hidden: true
+  NodeUUID;
+
+  @UI.hidden: true
+  RapBoUUID;
+
+  @UI.hidden: true
+  ParentUUID;
+
+  @UI.hidden: true
+  RootUUID;
+
+  @UI.hidden: true
+  NodeNumber;
+
+  @UI.lineItem: [ {
+    label: 'Is root node',
+    position: 10 ,
+    importance: #HIGH
+  }
+  //  , {
+  //      label: 'Add Child',
+  //      dataAction: 'addChildNode',
+  //      type: #FOR_ACTION,
+  //      position: 10
+  //      }
+      , {
+      label: 'Add Child based on tables',
+      dataAction: 'addChildDataSourceTable',
+      type: #FOR_ACTION,
+      position: 20
+      }
+      , {
+      label: 'Add Child based on CDS',
+      dataAction: 'addChildDataSourceCDSview',
+      type: #FOR_ACTION,
+      position: 30
+      }
+      , {
+      label: 'Add Child based on Abs. Entity',
+      dataAction: 'addChildDataSourceAbsEntity',
+      type: #FOR_ACTION,
+      position: 40
+      }
+  ]
+  @UI.fieldGroup: [{ qualifier: 'FieldGroup_05', position: 70, label: 'Is root node' }]
+  IsRootNode;
+
+  @UI.fieldGroup: [{ qualifier: 'FieldGroup_05', position: 10, label: 'Entity Name' }]
+  @UI.lineItem: [ {
+    label: 'Entity',
+    position: 20 ,
+    importance: #HIGH
+  } ]
+  EntityName;
+
+  @UI.lineItem: [ {
+    label: 'Parent Entity',
+    position: 30 ,
+    importance: #HIGH
+  } ]
+  @UI.fieldGroup: [{ qualifier: 'FieldGroup_05', position: 40, label: 'Parent Entity Name' }]
+  ParentEntityName;
+
+  @UI.lineItem: [ {
+    label: 'Data source',
+    position: 40 ,
+    importance: #HIGH
+  } ]
+  @UI.fieldGroup: [{ qualifier: 'FieldGroup_05', position: 30, label: 'Data Source' }]
+  DataSource;
+
+  @UI.lineItem: [ {
+    label: 'Parent data source',
+    position: 50 ,
+    importance: #HIGH
+  } ]
+  @UI.fieldGroup: [{ qualifier: 'FieldGroup_05', position: 50, label: 'Parent Data Source' }]
+  ParentDataSource;
+
+  @UI.hidden: true
+  DataSourceType;
+
+  @UI.hidden: true
+  ViewTypeValue;
+
+
+  @UI.fieldGroup: [{ qualifier: 'FieldGroup_15', position: 10, label: 'Object ID' }]
+  FieldNameObjectID;
+
+  @UI.fieldGroup: [{ qualifier: 'FieldGroup_10', position: 20, label: 'etag master' }]
+  FieldNameEtagMaster;
+
+  @UI.fieldGroup: [{ qualifier: 'FieldGroup_10', position: 30, label: 'total etag' }]
+  FieldNameTotalEtag;
+
+  @UI.fieldGroup: [{ qualifier: 'FieldGroup_20', position: 10, label: 'UUID based key field' }]
+  FieldNameUUID;
+
+  @UI.fieldGroup: [{ qualifier: 'FieldGroup_20', position: 20, label: 'Parent UUID' }]
+  FieldNameParentUUID;
+
+  @UI.fieldGroup: [{ qualifier: 'FieldGroup_20', position: 30, label: 'Root UUID' }]
+  FieldNameRootUUID;
+
+  @UI.fieldGroup: [{ qualifier: 'FieldGroup_30', position: 20, label: 'user.createdBy: true' }]
+  FieldNameCreatedBy;
+
+  @UI.fieldGroup: [{ qualifier: 'FieldGroup_30', position: 20, label: 'systemDateTime.createdAt: true' }]
+  FieldNameCreatedAt;
+
+  @UI.fieldGroup: [{ qualifier: 'FieldGroup_30', position: 20, label: 'user.lastChangedBy: true' }]
+  FieldNameLastChangedBy;
+
+  @UI.fieldGroup: [{ qualifier: 'FieldGroup_30', position: 20, label: 'systemDateTime.lastChangedAt: true' }]
+  FieldNameLastChangedAt;
+
+  @EndUserText.quickInfo: '@Semantics.systemDateTime.localInstanceLastChangedAt: true'
+  @UI.fieldGroup: [{ qualifier: 'FieldGroup_30', position: 20, label: 'localInstanceLastChangedAt' }]
+  FieldNameLocLastChangedAt;
+
+  @UI.fieldGroup: [{ qualifier: 'FieldGroup_4', position: 30, label: 'CDS I View' }]
+  CdsIView;
+
+  @UI.fieldGroup: [{ qualifier: 'FieldGroup_4', position: 10, label: 'CDS Base View / BDEF' }]
+  CdsRView;
+
+  @UI.fieldGroup: [{ qualifier: 'FieldGroup_4', position: 20, label: 'CDS Projection View / BDEF / MDE' }]
+  CdsPView;
+
+  //  @UI.fieldGroup: [{ qualifier: 'FieldGroup_4', position: 40, label: 'Meta Data Extension' }]
+  @UI.hidden : true
+  MdeView;
+
+  @UI.fieldGroup: [{ qualifier: 'FieldGroup_4', position: 40, label: 'Behavior Implementation Class' }]
+  BehaviorImplementationClass;
+
+  @UI.fieldGroup: [{ qualifier: 'FieldGroup_4', position: 60, label: 'Service Definition' }]
+  ServiceDefinition;
+
+  @UI.fieldGroup: [{ qualifier: 'FieldGroup_4', position: 70, label: 'Service Binding' }]
+  ServiceBinding;
+
+  @UI.fieldGroup: [{ qualifier: 'FieldGroup_4', position: 100, label: 'Control Structure'
+  //   , hidden : #(isManaged)
+   }]
+  ControlStructure;
+
+  @UI.fieldGroup: [{ qualifier: 'FieldGroup_4', position: 90, label: 'Query Implementation'
+  //  , hidden : #(doesNotUseUnmanagedQuery)
+  }]
+  QueryImplementationClass;
+
+  @UI.fieldGroup: [{ qualifier: 'FieldGroup_4', position: 50, label: 'Draft table' }]
+  DraftTableName;
+
+  @UI.lineItem: [ {
+  label: 'Distance from root',
+  position: 15
+    ,
+    importance: #HIGH
+  } ]
+  HierarchyDistanceFromRoot;
+
+  @UI.hidden: true
+  HierarchyDescendantCount;
+
+  @UI.hidden: true
+  HierarchyDrillState;
+
+  @UI.hidden: true
+  HierarchyPreorderRank;
+
+  @UI.hidden: true
+  LocalLastChangedAt;
+}
