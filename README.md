@@ -5,7 +5,7 @@
 The basic idea behind the *RAP Generator* is to ease the life of the developer since it helps you to create most of the boiler plate coding that is needed to implement a RAP business object using the *ABAP RESTful Application Programming Model (RAP)* so that you as a developer can start more quickly to implement the business logic.  
 Though there is an ADT-based generator available for SAP BTP, ABAP environment and for on premise and public cloud systems as of SAP S/4HANA 2022 this generator offers some additional features, and especially supports multiple nodes whereas the ADT-based generator only supports one table. In addition, this generator also supports SAP S/4HANA 2021.  
 
-**RAP generates RAP**
+**RAP generates RAP**  
 Technically the RAP Generator consists out of a RAP business object `ZDMO_R_RAPG_ProjectTP` that is used to generate other RAP business objects.  
 The RAP Generator works similar like the well known **Key user tools** in SAP S/4HANA and uses a Fiori Elements UI. The Fiori Elements UI can be started from within ADT by opening the service binding `ZDMO_UI_RAPG_PROJECT_O4`. There you have to double-click on the entitiy *Project*.   
 
