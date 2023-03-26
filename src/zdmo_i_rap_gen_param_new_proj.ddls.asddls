@@ -2,20 +2,20 @@
 define abstract entity ZDMO_I_RAP_GEN_PARAM_NEW_PROJ
 {
 
-  @UI.defaultValue       : 'table'
+//  @UI.defaultValue       : 'table'
   @EndUserText.label     : 'Datasource Type'
   @Consumption.valueHelpDefinition: [{entity: {name: 'ZDMO_I_RAP_GENERATOR_DSRC_TYPE', element: 'type' }}]
   DataSourceType         : abap.char(30);
-  @UI.defaultValue       : 'managed'
+//  @UI.defaultValue       : 'managed'
   @EndUserText.label     : 'Implementation type'
   @Consumption.valueHelpDefinition: [{entity: {name: 'ZDMO_I_RAP_GENERATOR_IMPL_TYP2', element: 'name' }}]
 
   BdefImplementationType : abap.char(50);
-  @UI.defaultValue       : 'odata_v4_ui'
+//  @UI.defaultValue       : 'odata_v4_ui'
   @EndUserText.label     : 'Binding type'
   @Consumption.valueHelpDefinition: [{entity: {name: 'ZDMO_I_RAP_GENERATOR_BIND_TYPE', element: 'name' }}]
   BindingType            : abap.char(30);
-  @UI.defaultValue       : 'X'
+//  @UI.defaultValue       : 'X'
   @EndUserText.label     : 'Draft enabled'
   @Consumption.valueHelpDefinition: [{entity: {name: 'ZDMO_I_RAP_GENERATOR_BOOL_VH', element: 'bool_value' }}]
   DraftEnabled           : abap_boolean;
