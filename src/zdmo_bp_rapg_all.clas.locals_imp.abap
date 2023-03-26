@@ -99,7 +99,7 @@ CLASS lhc_Project IMPLEMENTATION.
 
       TRY.
 
-          DATA(node) = NEW ZDMO_cl_rap_node(  ).
+          DATA(node) = NEW ZDMO_cl_rap_node( xco_lib ).         
 
           "get package of datasource
 
