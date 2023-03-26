@@ -76,9 +76,11 @@ This sample code does currently work in:
 
 The sample code is provided "as-is".
 
-## SAP BTP, ABAP Environment
+## all on premise branches
 
-- In SAP BTP, ABAP environment system there is currently no support for side-effects in the SAP Fiori elements preview. You therefore have to refresh the object page yourself in the browser to leverage the determinations that determine the mapping between the field names and their role in the RAP business object (for example, etag).
+- There is an issue when adding a new entity. You will receive an **No Value for Entity tag found** error.  When refreshing the object page you will however see that the new entry in the list of entities have been added.  The issue is currently being investigated.   
+
+## SAP BTP, ABAP Environment
 
 - The application job that has to be used to generate the repository object cannot be started immediately in SAP BTP, ABAP environment. Instead we have to wait for the background job scheduler to start the job, which can take up to one minute. This is behavior will be fixed in a future release once an proper background processing framework becomes available.
 
