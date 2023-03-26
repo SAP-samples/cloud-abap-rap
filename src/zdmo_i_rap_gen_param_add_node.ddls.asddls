@@ -28,7 +28,7 @@ define abstract entity ZDMO_I_RAP_GEN_PARAM_ADD_NODE
 
  DataSourceName : abap.char(30);
 //  @EndUserText.label     : 'Datasource Type'
-  @UI.defaultValue: #('ELEMENT_OF_REFERENCED_ENTITY:DataSourceType')
+//  @UI.defaultValue: #('ELEMENT_OF_REFERENCED_ENTITY:DataSourceType')
   DataSourceType : abap.char(30);
 //  @EndUserText.label: 'Data Source Name'
 //  @Consumption.valueHelpDefinition: [{ entity:
