@@ -253,17 +253,17 @@ CLASS ZDMO_CL_RAP_GENERATOR_SETUP IMPLEMENTATION.
 
 **********************************************************************
         "cloud
-        mo_environment = get_environment( transport_request ).
-        mo_srvb_put_operation = get_put_operation( mo_environment ).
+*        mo_environment = get_environment( transport_request ).
+*        mo_srvb_put_operation = get_put_operation( mo_environment ).
 **********************************************************************
         "on premise
-*        if transport_request is not initial.
-*          mo_environment = xco_generation=>environment->transported( transport_request ).
-*        else.
-*          mo_environment = xco_generation=>environment->local.
-*        endif.
-*
-*        mo_srvb_put_operation = mo_environment->create_mass_put_operation( ).
+        if transport_request is not initial.
+          mo_environment = xco_generation=>environment->transported( transport_request ).
+        else.
+          mo_environment = xco_generation=>environment->local.
+        endif.
+
+        mo_srvb_put_operation = mo_environment->create_mass_put_operation( ).
 
 **********************************************************************
 
