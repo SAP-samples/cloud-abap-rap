@@ -22,17 +22,25 @@
   | Implementation Type | managed, unmanaged  |       |  
   | Binding Type  | odata_v4_ui, odata_v4_api, odata_v2_ui or odata_v2_api |   |
   | Draft enabled | Yes, No |  |   
-  | Root Entity Name |  &lt;EntityName&gt; |  Here you should enter a meaningful name for your root entity   |  
-  | Data Source Name | &lt;Table Name&gt; | Here you can search (with type ahead support) for an object of the type that you have selected beforehand.    |
-  | Package | &lt;Package Name&gt;  | Here you can search (with type ahead support) for a package where the repository objects  will be generated     |   
+  | (1) Root Entity Name |  &lt;EntityName&gt; |  Here you should enter a meaningful name for your root entity   |  
+  | (2) Data Source Name | &lt;Table Name&gt; | Here you can search (with type ahead support) for an object of the type that you have selected beforehand.    |
+  | (3) Package | &lt;Package Name&gt;  | Here you can search (with type ahead support) for a package where the repository objects  will be generated     |   
   
-
   ![enter project details](/images_how_to_uuid/120_the_new_project_dialog.png)  
 
+- Enter the name of the root entity   
+
   ![Choose root entity name](/images_how_to_uuid/130_root_entity_name.png)   
+  
+- Search for the data source ( start to search with the string **UUID** 
+  
   ![select datasource](/images_how_to_uuid/140_select_table_for_root_entity.png)  
+  
+- Search for the package 
+  
   ![select package](/images_how_to_uuid/150_select_package.png)  
 
+- nnn
 
     ![root entity meta data](/images_how_to_uuid/200_select_root_entity_definition.png)   
 
