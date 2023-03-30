@@ -52,7 +52,7 @@
 
   ![map field for semantic key](/images_how_to_uuid/300_map_field_for_object_id.png)   
 
-- hhhh
+- Select the root entity **SalesOrder** and then press the button **Add Child based on tables**  
  
   ![select field for object id](/images_how_to_uuid/310_select_object_id_field.png)   
 
@@ -60,7 +60,7 @@
 
   ![other automatically mapped fields](/images_how_to_uuid/320_show_other_mapped_fields.png)   
 
-- Proposed repository names and field names   
+- Select the root entity **SalesOrder** and then press the button **Add Child based on tables**    
 
   ![proposed repository object names and field names](/images_how_to_uuid/330_show_proposed_repo_obj_names_and_field_names.png)   
 
