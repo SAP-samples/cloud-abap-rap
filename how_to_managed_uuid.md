@@ -1,13 +1,26 @@
 
 # Open the Fiori Elements preview
 
-1. In ADT open the repository object `ZDMO_UI_RAPG_PROJECT_O4` which is located in the package `ZDMO_RAP_GENERATOR` (or in `TEST_RAP_GENERATOR`)  
+- In ADT open the repository object `ZDMO_UI_RAPG_PROJECT_O4` which is located in the package `ZDMO_RAP_GENERATOR` (or in `TEST_RAP_GENERATOR`)  
 
-2. Double-click on the entity **Project**  
+- You can now start the Fiori Elements preview of the RAP Generator business object
+  
+  1. Select the entity **Project**  
+  2. Click on **Preview**   
 
    ![Start FE preview](/images_how_to_uuid/100_start_FE_preview.png)  
 
-3. 
+- In the **New Project** dialogue you have to specify parameters for the RAP business object 
+   
+  | Parameter    | Possible entries    | Explanation |
+  |--------------|-----------|------------|
+  | Datasource Type | table, cds_view, abstract_entity      |         |
+  | Implementation Type | managed, unmanaged  |       |  
+  | Binding Type  | odata_v4_ui, odata_v4_api, odata_v2_ui or odata_v2_api |   |
+  
+  
+  
+
    ![new project](/images_how_to_uuid/110_new_project.png)   
 
 
