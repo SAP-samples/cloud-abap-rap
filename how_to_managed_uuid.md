@@ -26,16 +26,12 @@
   | Data Source Name | &lt;Table Name&gt; | Here you can search (with type ahead support) for an object of the type that you have selected beforehand.    |
   | Package | &lt;Package Name&gt;  | Here you can search (with type ahead support) for a package where the repository objects  will be generated     |   
   
- 
 
+  ![enter project details](/images_how_to_uuid/120_the_new_project_dialog.png)  
 
-   ![enter project details](/images_how_to_uuid/120_the_new_project_dialog.png)  
-
-      ![Choose root entity name](/images_how_to_uuid/130_root_entity_name.png)   
-
-      ![select datasource](/images_how_to_uuid/140_select_table_for_root_entity.png)  
-
-      ![select package](/images_how_to_uuid/150_select_package.png)  
+  ![Choose root entity name](/images_how_to_uuid/130_root_entity_name.png)   
+  ![select datasource](/images_how_to_uuid/140_select_table_for_root_entity.png)  
+  ![select package](/images_how_to_uuid/150_select_package.png)  
 
 
     ![root entity meta data](/images_how_to_uuid/200_select_root_entity_definition.png)   
