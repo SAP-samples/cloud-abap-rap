@@ -32,20 +32,23 @@
 
   ![Choose root entity name](/images_how_to_uuid/130_root_entity_name.png)   
   
-- Search for the data source ( start to search with the string **UUID** 
+- Search for the data source ( start to search with the string *UUID*  )
   
   ![select datasource](/images_how_to_uuid/140_select_table_for_root_entity.png)  
   
-- Search for the package 
+- Search for the package (here: enter *demo_of* )
   
   ![select package](/images_how_to_uuid/150_select_package.png)  
 
-- nnn
+- Press **New Project**   
 
-    ![root entity meta data](/images_how_to_uuid/200_select_root_entity_definition.png)   
+- Now you have to click on the entry **SalesOrder** in the tab **Entities**  
 
+  ![root entity meta data](/images_how_to_uuid/200_select_root_entity_definition.png)   
 
-    ![map field for semantic key](/images_how_to_uuid/300_map_field_for_object_id.png)   
+- Navigate to the tab **hh**  
+
+  ![map field for semantic key](/images_how_to_uuid/300_map_field_for_object_id.png)   
 
 
     ![select field for object id](/images_how_to_uuid/310_select_object_id_field.png)   
