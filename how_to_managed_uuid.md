@@ -46,31 +46,54 @@
 
   ![root entity meta data](/images_how_to_uuid/200_select_root_entity_definition.png)   
 
-- Navigate to the tab **hh**  
+- Navigate to the tab **Map fields for meta data extension**  
+
+  When using tables with UUID based keys you have to specify one field that contains the semantic key.
 
   ![map field for semantic key](/images_how_to_uuid/300_map_field_for_object_id.png)   
 
+- hhhh
+ 
+  ![select field for object id](/images_how_to_uuid/310_select_object_id_field.png)   
 
-    ![select field for object id](/images_how_to_uuid/310_select_object_id_field.png)   
+- Check the automatically mapped field names   
 
-    ![other automatically mapped fields](/images_how_to_uuid/320_show_other_mapped_fields.png)   
+  ![other automatically mapped fields](/images_how_to_uuid/320_show_other_mapped_fields.png)   
 
-    ![proposed repository object names and field names](/images_how_to_uuid/330_show_proposed_repo_obj_names_and_field_names.png)   
+- Proposed repository names and field names   
 
-    ![add child entity](/images_how_to_uuid/400_add_child_entity.png)   
+  ![proposed repository object names and field names](/images_how_to_uuid/330_show_proposed_repo_obj_names_and_field_names.png)   
 
-    ![add child entity 2](/images_how_to_uuid/500_add_child_entity.png)   
+- Press on "add child entity"   
 
-    ![maintain fields for child entity](/images_how_to_uuid/530_maintain_fields_for_child.png)   
+  ![add child entity](/images_how_to_uuid/400_add_child_entity.png)   
 
-    ![other item specific fields](/images_how_to_uuid/540_rest_of_item_specifc_settings.png)   
+- add child entity 2  
 
-    ![generate_repo_objects](/images_how_to_uuid/550_generate_repo_objects.png)  
+  ![add child entity 2](/images_how_to_uuid/500_add_child_entity.png)   
 
-    ![save business object](/images_how_to_uuid/600_create_save_bo.png)
+- maintain fields for child entity   
 
-    ![Press Generate button](/images_how_to_uuid/600_generate_objects.png)  
+  ![maintain fields for child entity](/images_how_to_uuid/530_maintain_fields_for_child.png)   
 
+- enter item specific fields   
+
+ ![other item specific fields](/images_how_to_uuid/540_rest_of_item_specifc_settings.png)   
+
+
+- test  
+  
+  ![generate_repo_objects](/images_how_to_uuid/550_generate_repo_objects.png)  
+
+- save bo  
+
+  ![save business object](/images_how_to_uuid/600_create_save_bo.png)
+
+- geneate  
+
+  ![Press Generate button](/images_how_to_uuid/600_generate_objects.png)  
+  
+  
     ![in process](/images_how_to_uuid/610_in_process.png)   
 
      
