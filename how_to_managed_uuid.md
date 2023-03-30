@@ -2,6 +2,9 @@
 # Open the Fiori Elements preview
 
 1. In ADT open the repository object `ZDMO_UI_RAPG_PROJECT_O4` which is located in the package `ZDMO_RAP_GENERATOR` (or in `TEST_RAP_GENERATOR`)  
+
+2. Double-click on the entity **Project**  
+
    [Start FE preview](/images_how_to_uuid/100_start_FE_preview.png)  
 
 
