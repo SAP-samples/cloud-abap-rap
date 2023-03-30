@@ -10,6 +10,10 @@
 
    ![Start FE preview](/images_how_to_uuid/100_start_FE_preview.png)  
 
+- Press **New Project**   
+    
+  ![new project](/images_how_to_uuid/110_new_project.png)  
+
 - In the **New Project** dialogue you have to specify parameters for the RAP business object 
    
   | Parameter    | Possible entries    | Explanation |
@@ -22,9 +26,7 @@
   | Data Source Name | &lt;Table Name&gt; | Here you can search (with type ahead support) for an object of the type that you have selected beforehand.    |
   | Package | &lt;Package Name&gt;  | Here you can search (with type ahead support) for a package where the repository objects  will be generated     |   
   
-  Press **New Project**   
-    
-  ![new project](/images_how_to_uuid/110_new_project.png)   
+ 
 
 
    ![enter project details](/images_how_to_uuid/120_the_new_project_dialog.png)  
