@@ -17,11 +17,14 @@
   | Datasource Type | table, cds_view, abstract_entity      |         |
   | Implementation Type | managed, unmanaged  |       |  
   | Binding Type  | odata_v4_ui, odata_v4_api, odata_v2_ui or odata_v2_api |   |
+  | Draft enabled | Yes, No |  |   
+  | Root Entity Name |  <EntityName> |  Here you should enter a meaningful name for your root entity |  
+  | Data Source Name |  <Table Name> | Here you can search (with type ahead support) for an object of the type that you have selected beforehand. |
+  | Package | <Package Name>  | Here you can search (with type ahead support) for a package where the repository objects of the RAP BO will be generated   |   
   
-  
-  
-
-   ![new project](/images_how_to_uuid/110_new_project.png)   
+  Press **New Project**   
+    
+  ![new project](/images_how_to_uuid/110_new_project.png)   
 
 
    ![enter project details](/images_how_to_uuid/120_the_new_project_dialog.png)  
