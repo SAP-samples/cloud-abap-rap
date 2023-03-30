@@ -5,9 +5,9 @@
 
 2. Double-click on the entity **Project**  
 
-   [Start FE preview](/images_how_to_uuid/100_start_FE_preview.png)  
+   ![Start FE preview](/images_how_to_uuid/100_start_FE_preview.png)  
 
-
+3. 
    ![new project](/images_how_to_uuid/110_new_project.png)   
 
 
