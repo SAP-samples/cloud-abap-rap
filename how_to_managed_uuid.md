@@ -42,17 +42,26 @@
 
 - Press **New Project**   
 
-- Now you have to click on the entry **SalesOrder** in the tab **Entities**  
+- Based on the information that you have entered a new Project will be created that contains the information for the root entity as a starting point. 
+
+  The object page will be opened and you now have to maintain information that the generator needs to know in order to generate the RAP business object. 
+
+  Therefore you have to click on the entry of the root entity (here: **SalesOrder**) in the tab **Entities**  
 
   ![root entity meta data](/images_how_to_uuid/200_select_root_entity_definition.png)   
 
-- Navigate to the tab **Map fields for meta data extension**  
-
-  When using tables with UUID based keys you have to specify one field that contains the semantic key.
+- On this page you have to map the fields of your data source to their function in your RAP business object. That means you have to specify which field of your data source is used as an etag or which field is used to store the information who has created or who has changed the business object. 
+The generator will try to suggest appropriate mappings based on information such as the underlying data elements and / or field names.
+When using tables with UUID based keys you have at least to specify one field that contains the semantic key. Since this cannot be retrieved automatically we have to navigate to the tab **Map fields for meta data extension**. Here you can select the field that is used as the semantic key via a drop down box.
 
   ![map field for semantic key](/images_how_to_uuid/300_map_field_for_object_id.png)   
 
-- Select the root entity **SalesOrder** and then press the button **Add Child based on tables**  
+
+Since the table that we are using in this example uses appropriate data elements for the administrative fields the generator was able to map all fields beside the semantic key automatically. 
+
+ 
+
+- We now will add a child entity to our project. Select the root entity **SalesOrder** and then press the button **Add Child based on tables**.    
  
   ![select field for object id](/images_how_to_uuid/310_select_object_id_field.png)   
 
