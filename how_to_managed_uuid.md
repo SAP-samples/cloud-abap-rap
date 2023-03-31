@@ -67,7 +67,7 @@ When using tables with UUID based keys you have at least to specify one field th
 
   ![select field for object id](/images_how_to_uuid/310_select_object_id_field.png)   
 
-- You can now check the mapping of the field names and you can change this mapping if needed.   
+- You can now check the mapping of the field names and you can change this mapping if needed. Please note that the generator has also suggested names for the repository objects that will be generated. The proposals for these names are based on the VDM naming conventions that can be found in the SAP Online Help, e.g. "Z" & "R_" & "EntityName" & "TP" for the base restricted view and the behavior definition.    
 
   ![other automatically mapped fields](/images_how_to_uuid/320_show_other_mapped_fields.png)   
   
@@ -85,12 +85,12 @@ When you are finished with your changes you have to press the **Apply** button t
 
   ![add child entity 2](/images_how_to_uuid/500_add_child_entity.png)   
 
-- Since we are using tables with UUID based key fields as the data source we again have to provide a mapping which field of the table is used to store the semantic key field of our child entity.    
+- Since we are using tables with UUID based key fields as the data source we again have to provide a mapping which field of the table is used to store the semantic key field of our child entity.  
+In addition we have to specify a field in the child table that stores the value of the UUID based key field of the parent entity, the Parent UUID. Since the table that we are using just have one UUID based key field and one UUID based field that is not a key field the generator will suggest to use this field to store the parent UUID.  
 
   ![maintain fields for child entity](/images_how_to_uuid/530_maintain_fields_for_child.png)   
 
-- Since we have added a child entity the fields for root entity specific repository objects such as the service definition are read only. 
-The names that are suggested by the generator follow the VDM naming convention, e.g. "Z" & "R_" & "EntityName" & "TP".  
+- Since we have added a child entity the fields for root entity specific repository objects such as the service definition are read only and only names for the child entity specific repository objects will be suggested.   
 If objects that have this name already exist in your system the generator will add a suffix (here "01") to the entity name. 
 To avoid duplicates it is also possible to add a suffix or prefix to all repository object names on the header level of the rap generator project.    
 
