@@ -81,7 +81,10 @@ When using tables with UUID based keys you have at least to specify one field th
 
   ![maintain fields for child entity](/images_how_to_uuid/530_maintain_fields_for_child.png)   
 
-- enter item specific fields   
+- Since we have added a child entity the fields for root entity specific repository objects such as the service definition are read only. 
+The names that are suggested by the generator follow the VDM naming convention, e.g. "Z" & "R_" & "EntityName" & "TP".  
+If objects that have this name already exist in your system the generator will add a suffix (here "01") to the entity name. 
+To avoid duplicates it is also possible to add a suffix or prefix to all repository object names on the header level of the rap generator project.    
 
  ![other item specific fields](/images_how_to_uuid/540_rest_of_item_specifc_settings.png)   
 
