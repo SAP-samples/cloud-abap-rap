@@ -96,32 +96,37 @@ To avoid duplicates it is also possible to add a suffix or prefix to all reposit
 
  ![other item specific fields](/images_how_to_uuid/540_rest_of_item_specifc_settings.png)   
 
-
-- test  
-  
-  ![generate_repo_objects](/images_how_to_uuid/550_generate_repo_objects.png)  
-
-- save bo  
+- You now can save your probject. This will perform a final validation of your project. If this has passed successfully you can start the generation of the repository objects.    
 
   ![save business object](/images_how_to_uuid/600_create_save_bo.png)
 
-- geneate  
+- After having saved the project and after the final validations have passed you can now press the button "Generate repository objects". By pressing this button an application job will be scheduled that runs the RAP Generator class in a separate session. This workaround is necessary since the generation of repository objects will perform several commit work statements which are forbidden within the RAP interaction and save phase.     
+  
+  ![generate_repo_objects](/images_how_to_uuid/550_generate_repo_objects.png)  
+
+
+
+- The status of the application job will be shown in the object page as well as on the list page.    
 
   ![Press Generate button](/images_how_to_uuid/600_generate_objects.png)  
   
   
-    ![in process](/images_how_to_uuid/610_in_process.png)   
+  ![in process](/images_how_to_uuid/610_in_process.png)   
 
-     
-    ![finished](/images_how_to_uuid/620_finished.png)
+- When the application job has finished successfully the status will change and a ADT URL will be displayed that lets you navigate back to ADT by opening the root entity view that has been generated.  
+    
+ ![finished](/images_how_to_uuid/620_finished.png)
+
+- If something went wrong you can check this in the log information  
+
+ ![check log](/images_how_to_uuid/650_check_log.png)  
 
 
-    ![check log](/images_how_to_uuid/650_check_log.png)  
+ ![navigate back](/images_how_to_uuid/700_navigate_back_1.png)
 
+- The generated root entity view should look as follows:  
 
-    ![navigate back](/images_how_to_uuid/700_navigate_back_1.png)
-
-    ![result](/images_how_to_uuid/800%20Result.png)
+ ![result](/images_how_to_uuid/800%20Result.png)
 
 
 
