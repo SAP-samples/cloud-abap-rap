@@ -1,5 +1,9 @@
 
-# Open the Fiori Elements preview
+# How to generate a RAP BO using table with UUID based key fields 
+
+  For green field scenarios tables with UUID based key fields are very convenient since the RAP framework can easily generate unique values for the key fields so that there is no need to implement a numbering as you would need it when using a semantic key layout.  
+  
+  In the following the use of the RAP generator is shown.
 
 - In ADT open the repository object `ZDMO_UI_RAPG_PROJECT_O4` which is located in the package `ZDMO_RAP_GENERATOR` (or in `TEST_RAP_GENERATOR`)  
 
@@ -63,9 +67,13 @@ When using tables with UUID based keys you have at least to specify one field th
 
   ![select field for object id](/images_how_to_uuid/310_select_object_id_field.png)   
 
-- You can now check the mapping of the field names and you can change this mapping if needed. Then press the **Apply** button to save your changes.  
+- You can now check the mapping of the field names and you can change this mapping if needed.   
 
   ![other automatically mapped fields](/images_how_to_uuid/320_show_other_mapped_fields.png)   
+  
+- As a new feature the RAP Generator now allows you to maintain the values of the aliases for the field names of your entity. The generator will propose aliases by creating CamelCase values from the underlying ABAP field names by removing the underscores that are usually used for table field names. That means it will suggest SalesOrderID when the ABAP field name is called SALES_ORDER_ID.  
+
+When you are finished with your changes you have to press the **Apply** button to save your changes. 
 
   ![proposed repository object names and field names](/images_how_to_uuid/330_show_proposed_repo_obj_names_and_field_names.png)   
 
