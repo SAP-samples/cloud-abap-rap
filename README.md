@@ -30,6 +30,10 @@ This sample code does currently work in:
 - SAP S/4HANA 2022
 - SAP S/4HANA 2021
 
+# How to Guides
+
+- [How to create a managed RAP BO based on tables with UUID based key fields](how_to_managed_uuid.md).
+
 # Download and Installation
 
 ## How to Install the RAP Generator
