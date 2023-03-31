@@ -52,36 +52,32 @@
 
 - On this page you have to map the fields of your data source to their function in your RAP business object. That means you have to specify which field of your data source is used as an etag or which field is used to store the information who has created or who has changed the business object. 
 The generator will try to suggest appropriate mappings based on information such as the underlying data elements and / or field names.
-When using tables with UUID based keys you have at least to specify one field that contains the semantic key. Since this cannot be retrieved automatically we have to navigate to the tab **Map fields for meta data extension**. Here you can select the field that is used as the semantic key via a drop down box.
+Since the table that we are using in this example uses appropriate data elements for the administrative fields the generator was able to map all fields beside the semantic key automatically. 
+When using tables with UUID based keys you have at least to specify one field that contains the semantic key. Since this cannot be retrieved automatically we have to navigate to the tab **Map fields for meta data extension**. 
 
   ![map field for semantic key](/images_how_to_uuid/300_map_field_for_object_id.png)   
 
 
-Since the table that we are using in this example uses appropriate data elements for the administrative fields the generator was able to map all fields beside the semantic key automatically. 
-
+- Here you can select the field that is used as the semantic key via a drop down box (in this case the field SALESORDER_ID). 
  
 
-- We now will add a child entity to our project. Select the root entity **SalesOrder** and then press the button **Add Child based on tables**.    
- 
   ![select field for object id](/images_how_to_uuid/310_select_object_id_field.png)   
 
-- Check the automatically mapped field names   
+- You can now check the mapping of the field names and you can change this mapping if needed. Then press the **Apply** button to save your changes.  
 
   ![other automatically mapped fields](/images_how_to_uuid/320_show_other_mapped_fields.png)   
 
-- Select the root entity **SalesOrder** and then press the button **Add Child based on tables**    
-
   ![proposed repository object names and field names](/images_how_to_uuid/330_show_proposed_repo_obj_names_and_field_names.png)   
 
-- Press on "add child entity"   
+- Now we can add a child entity to our RAP generator project. To do so select the root entity **SalesOrder** and then press the button **Add Child based on tables**.     
 
   ![add child entity](/images_how_to_uuid/400_add_child_entity.png)   
 
-- add child entity 2  
+- In the dialogue that opens you have to specify the name of the child entity and you have to select the datasource that is used by the child entity. By selecting the datasource the generator can run determinations for the field mappings before the object page opens.    
 
   ![add child entity 2](/images_how_to_uuid/500_add_child_entity.png)   
 
-- maintain fields for child entity   
+- Since we are using tables with UUID based key fields as the data source we again have to provide a mapping which field of the table is used to store the semantic key field of our child entity.    
 
   ![maintain fields for child entity](/images_how_to_uuid/530_maintain_fields_for_child.png)   
 
