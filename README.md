@@ -62,12 +62,11 @@ This sample code does currently work in:
 
 1. Create a package **'TEST_DMO_RAP_GENERATOR'**.
 2. Start the report `ZABAPGIT_STANDALONE`. You might have to download the [source code](https://raw.githubusercontent.com/abapGit/build/main/zabapgit_standalone.prog.abap) of this open source tool.
-3. Create an offline repository or an online repository with the package and with the URL of the RAP Generator repo
-   `https://github.com/SAP-samples/cloud-abap-rap`.
-4. Use the branch `on-prem-2022` or `on-prem-2021`.   
-5. Pull changes.
-6. Use mass activation to activate the objects that have been imported in step 3.
-7. Run the class `zdmo_cl_rap_generator_setup`. This class generates the following objects:
+3. Create an an online repository with the package and with the URL of the RAP Generator repo
+   `https://github.com/SAP-samples/cloud-abap-rap` or create an offline repository and download the source code as a ZIP file from `https://github.com/SAP-samples/cloud-abap-rap`. Make sure that you use the appropriate branch `on-prem-2022` or `on-prem-2021`.   
+4. Pull changes.
+5. Use mass activation to activate the objects that have been imported in step 3.
+6. Run the class `zdmo_cl_rap_generator_setup`. This class generates the following objects:
    - Application job catalog entries:
      - ZDMO_RAP_GEN_CATALOG_ENTRY
      - ZDMO_RAP_DEL_CATALOG_ENTRY
@@ -89,7 +88,7 @@ The sample code is provided "as-is".
 ## on_premise_2021
 
 - When using the RAP Generator in on-premise systems, you have to make sure that the latest SAPUI5 libraries are installed. If you don’t have the latest version of the SAPUI5 libraries installed you will get no dialogue when choosing the **New Project** button in the RAP Generator.
-If the latest SAPUI5 libraries cannot be installed, you can use an implicit enhancement in method `get_sapui5core_resources_url( )` of class `CL_ADT_ODATAV2_FEAP` as described in the following [blog post](https://blogs.sap.com/2022/04/16/how-to-use-the-latest-sapui5-library-for-the-fiori-elements-preview-in-adt/).
+If the latest SAPUI5 libraries cannot be installed, you can use an implicit enhancement in method `get_sapui5core_resources_url( )` of class `CL_ADT_ODATAV4_FEAP` as described in the following [blog post](https://blogs.sap.com/2022/04/16/how-to-use-the-latest-sapui5-library-for-the-fiori-elements-preview-in-adt/).
 
 # How to Obtain Support
 
