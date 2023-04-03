@@ -79,9 +79,17 @@ This sample code does currently work in:
 
 The sample code is provided "as-is".
 
-## SAP BTP, ABAP Environment
+## SAP BTP ABAP Environment, SAP S/4HANA ABAP environment and on premise releases
 
-- In SAP BTP, ABAP environment system there is currently no support for side-effects in the SAP Fiori elements preview. You therefore have to refresh the object page yourself in the browser to leverage the determinations that determine the mapping between the field names and their role in the RAP business object (for example, etag).
+- When refreshing the UI of the object page of an active instance you get the error message :
+
+  *Number of specified key properties does not match number of key properties of type 'com.sap.gateway.srvd.zdmo_rapg_project01.v0001.ProjectType'; expected number of key properties '2'*
+
+  The issue is currently being investigated.
+
+  Workaround:   
+
+  You have to start the SAP Fiori Elements preview again and navigate to the project again.   
 
 - The application job that has to be used to generate the repository object cannot be started immediately in SAP BTP, ABAP environment. Instead we have to wait for the background job scheduler to start the job, which can take up to one minute. This is behavior will be fixed in a future release once an proper background processing framework becomes available.
 
@@ -93,8 +101,6 @@ If the latest SAPUI5 libraries cannot be installed, you can use an implicit enha
 # How to Obtain Support
 
 If you have problems or questions, you can post them in the [SAP Community](https://answers.sap.com/questions/ask.html) using either the primary tag or "[ABAP RESTful Application Programming Model](https://answers.sap.com/tags/7e44126e-7b27-471d-a379-df205a12b1ff)".
-
-A ![how-to-guide](how_to_use_the_generator.md) has been added to this repository.
 
 # Contributing
 
