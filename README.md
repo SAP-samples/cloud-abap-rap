@@ -73,7 +73,7 @@ This sample code does currently work in:
    - Application job templates:
      - ZDMO_RAP_GEN_JOB_TEMPLATE
      - ZDMO_RAP_DEL_JOB_TEMPLATE
-   - Service binding `ZDMO_UI_RAPG_PROJECT_O4`(in on-premise or public cloud releases the service binding will automatically be published as well)
+   - Service binding `ZDMO_UI_RAPG_PROJECT_O4`(in on-premise or private cloud systems the service binding will automatically be published as well)
 
 # Known Issues
 
