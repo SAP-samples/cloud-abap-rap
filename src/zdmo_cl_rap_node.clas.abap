@@ -2639,7 +2639,7 @@ CLASS ZDMO_CL_RAP_NODE IMPLEMENTATION.
         ls_fields-name = lo_field->name.
         DATA(field_content) = lo_field->content( )->get( ).
         IF field_content-alias IS INITIAL.
-          ls_fields-cds_view_field = ls_fields-name.
+          ls_fields-cds_view_field = field_content-original_name.   "ls_fields-name.
         ELSE.
           ls_fields-cds_view_field = field_content-alias.
         ENDIF.
