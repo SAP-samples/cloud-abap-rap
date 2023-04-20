@@ -1,4 +1,4 @@
-CLASS zdmo_cl_rap_xco_on_prem_lib DEFINITION INHERITING FROM ZDMO_cl_rap_xco_lib
+CLASS zdmo_cl_rap_gen_env_on_prem DEFINITION INHERITING FROM ZDMO_cl_rap_xco_lib
   PUBLIC
   FINAL
   CREATE PUBLIC .
