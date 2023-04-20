@@ -1,7 +1,7 @@
 @AccessControl.authorizationCheck: #CHECK
 @EndUserText.label: 'Projection View forProject'
 define root view entity ZDMO_I_RAPG_ProjectTP
-  provider contract transactional_interface
+  provider contract transactional_query
   as projection on ZDMO_R_RAPG_ProjectTP
 {
   key RapBoUUID,
