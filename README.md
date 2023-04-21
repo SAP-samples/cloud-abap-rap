@@ -60,7 +60,7 @@ This sample code does currently work in:
 
 ### SAP S/4HANA 2021 or 2022
 
-1. Create a package **'TEST_DMO_RAP_GENERATOR'**.
+1. Create a package **'TEST_RAP_GENERATOR'**.
 2. Start the report `ZABAPGIT_STANDALONE`. You might have to download the [source code](https://raw.githubusercontent.com/abapGit/build/main/zabapgit_standalone.prog.abap) of this open source tool.
 3. Create an an online repository with the package and with the URL of the RAP Generator repo
    `https://github.com/SAP-samples/cloud-abap-rap` or create an offline repository and download the source code as a ZIP file from `https://github.com/SAP-samples/cloud-abap-rap`. Make sure that you use the appropriate branch `on-prem-2022` or `on-prem-2021`.   
