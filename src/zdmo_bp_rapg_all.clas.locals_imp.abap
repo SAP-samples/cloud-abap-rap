@@ -259,13 +259,13 @@ CLASS lhc_Project IMPLEMENTATION.
     ENDLOOP.
 
 
-    MODIFY ENTITIES OF zdmo_r_rapg_projecttp IN LOCAL MODE
-           ENTITY Project
-           EXECUTE check_allowed_combinations_det
-           FROM test_keys
-              MAPPED   mapped
-              FAILED   failed
-              REPORTED reported.
+*    MODIFY ENTITIES OF zdmo_r_rapg_projecttp IN LOCAL MODE
+*           ENTITY Project
+*           EXECUTE check_allowed_combinations_det
+*           FROM test_keys
+*              MAPPED   mapped
+*              FAILED   failed
+*              REPORTED reported.
 
 *"set values for node object in global class
 *      zdmo_bp_rapg_all=>rap_bo_nodes[ uuid = mapped-project[ 1 ]-%key-RapBoUUID
@@ -576,6 +576,7 @@ CLASS lhc_Project IMPLEMENTATION.
             %param-entityname = root_node-EntityName
             %param-data_source_name = root_node-DataSource
             %param-DataSourceType = rapbo-DataSourceType
+            %param-package_name = selected_packagename
             ) )
                " check result
         MAPPED   mapped
@@ -1445,11 +1446,14 @@ CLASS lhc_Project IMPLEMENTATION.
 
     LOOP AT projects INTO DATA(entity).
 
-      "for CDS views we can not (yet?) determine the fields of the persistence table
-      "we hence only support the generation of an unmanaged scenario
+      "managed scenarios should use tables as data sources
+      "scenarios where CDS views are used as datasources are scenarios
+      "where one reads from SAP CDS views and one uses API's such as BAPI's
+      "to store the changes
+
 
       IF entity-DataSourceType = zdmo_cl_rap_node=>data_source_types-cds_view AND
-          entity-ImplementationType <> zdmo_cl_rap_node=>implementation_type-unmanaged_semantic .
+         entity-ImplementationType <> zdmo_cl_rap_node=>implementation_type-unmanaged_semantic .
         APPEND VALUE #( %tky = entity-%tky )
                TO failed-project.
         APPEND VALUE #( %tky = entity-%tky
@@ -1476,6 +1480,8 @@ CLASS lhc_Project IMPLEMENTATION.
                                             v1       = |{ entity-BoName }| ) )
                TO reported-project.
       ENDIF.
+
+      "custom entities = unmanaged queries do only support an unmanaged transactional implementation
 
       IF entity-DataSourceType = zdmo_cl_rap_node=>data_source_types-abstract_entity AND
          entity-ImplementationType <> zdmo_cl_rap_node=>implementation_type-unmanaged_semantic.
@@ -1505,9 +1511,11 @@ CLASS lhc_Project IMPLEMENTATION.
                TO reported-project.
       ENDIF.
 
+      "For customizing tables are required as data source
+      "the same is true when multi inline edit shall be used
 
       IF ( entity-MultiInlineEdit = abap_true OR entity-CustomizingTable = abap_true ) AND
-         entity-DataSourceType <> zdmo_cl_rap_node=>data_source_types-table .
+           entity-DataSourceType <> zdmo_cl_rap_node=>data_source_types-table .
         APPEND VALUE #( %tky = entity-%tky )
                TO failed-project.
         APPEND VALUE #( %tky = entity-%tky
@@ -1519,7 +1527,7 @@ CLASS lhc_Project IMPLEMENTATION.
       ENDIF.
 
       IF ( entity-MultiInlineEdit = abap_true OR entity-CustomizingTable = abap_true ) AND
-         entity-ImplementationType <> zdmo_cl_rap_node=>implementation_type-managed_semantic .
+           entity-ImplementationType <> zdmo_cl_rap_node=>implementation_type-managed_semantic .
         APPEND VALUE #( %tky = entity-%tky )
                TO failed-project.
         APPEND VALUE #( %tky = entity-%tky
@@ -1531,8 +1539,8 @@ CLASS lhc_Project IMPLEMENTATION.
       ENDIF.
 
       IF entity-MultiInlineEdit = abap_true AND
-         ( entity-BindingType <> zdmo_cl_rap_node=>binding_type_name-odata_v4_ui OR
-           entity-DraftEnabled = abap_false ) .
+       ( entity-BindingType <> zdmo_cl_rap_node=>binding_type_name-odata_v4_ui OR
+         entity-DraftEnabled = abap_false ) .
         APPEND VALUE #( %tky = entity-%tky )
                TO failed-project.
         APPEND VALUE #( %tky = entity-%tky

@@ -311,7 +311,7 @@ ENDCLASS.
 
 
 
-CLASS ZDMO_CL_RAP_GENERATOR IMPLEMENTATION.
+CLASS zdmo_cl_rap_generator IMPLEMENTATION.
 
 
   METHOD add_annotation_ui_facets.
@@ -1259,12 +1259,25 @@ CLASS ZDMO_CL_RAP_GENERATOR IMPLEMENTATION.
           ENDCASE.
         ENDLOOP.
 
-      WHEN ZDMO_cl_rap_node=>implementation_type-managed_semantic.
+      WHEN ZDMO_cl_rap_node=>implementation_type-managed_semantic .
 
-        "no specific settings needed for managed_semantic until draft would be supported
+        LOOP AT io_rap_bo_node->lt_fields INTO DATA(key_field_root_node)
+               WHERE key_indicator = abap_true AND name <> io_rap_bo_node->field_name-client.
 
-        "xco libraries do not yet support
-        "field ( readonly : update ) HolidayID;
+          DATA(key_field_root_behavior) = lo_header_behavior->add_field( key_field_root_node-cds_view_field ).
+
+          method_exists_in_interface-interface_name = 'if_xco_gen_bdef_s_fo_b_field'.
+          method_exists_in_interface-method_name    = 'SET_READONLY_UPDATE'.
+
+          IF xco_api->method_exists_in_interface( interface_name = method_exists_in_interface-interface_name
+                                                  method_name    = method_exists_in_interface-method_name ).
+            CALL METHOD key_field_root_behavior->(method_exists_in_interface-method_name).
+          ENDIF.
+
+
+          "lo_item_behavior->add_field( ls_fields-cds_view_field )->set_readonly_update(  ).
+        ENDLOOP.
+
 
       WHEN ZDMO_cl_rap_node=>implementation_type-unmanaged_semantic.
 
@@ -1960,8 +1973,17 @@ CLASS ZDMO_CL_RAP_GENERATOR IMPLEMENTATION.
     DATA  source_action_set_transport TYPE if_xco_gen_clas_s_fo_i_method=>tt_source  .
     DATA  source_code_line LIKE LINE OF source_method_save_modified.
 
+    DATA handler_has_method TYPE abap_bool.
+    DATA saver_has_method TYPE abap_bool.
 
+    DATA  local_handler_class_name TYPE sxco_ao_object_name.
+    DATA local_saver_class_name   TYPE sxco_ao_object_name.
 
+    handler_has_method = abap_false.
+    saver_has_method = abap_false.
+
+    local_handler_class_name = |lhc_{ io_rap_bo_node->entityname }| .
+    local_saver_class_name = 'LCL_SAVER' .
 
     DATA(lo_specification) = mo_put_operation->for-clas->add_object(  io_rap_bo_node->rap_node_objects-behavior_implementation
                                     )->set_package( mo_package
@@ -1990,7 +2012,7 @@ CLASS ZDMO_CL_RAP_GENERATOR IMPLEMENTATION.
     "The BEHAVIOR class "LCL_HANDLER" does not contain the BEHAVIOR method "MODIFY | READ".
 
 
-    DATA(lo_handler) = lo_specification->add_local_class( |lhc_{ io_rap_bo_node->entityname }| ).
+    DATA(lo_handler) = lo_specification->add_local_class( local_handler_class_name ).
     lo_handler->definition->set_superclass( 'CL_ABAP_BEHAVIOR_HANDLER' ).
 
 **********************************************************************
@@ -2014,6 +2036,7 @@ CLASS ZDMO_CL_RAP_GENERATOR IMPLEMENTATION.
             iv_request = 'requested_authorizations'.
 
         lo_handler->implementation->add_method( method_get_glbl_authorizations ).
+        handler_has_method = abap_true.
       ENDIF.
     ENDIF.
 
@@ -2039,6 +2062,7 @@ CLASS ZDMO_CL_RAP_GENERATOR IMPLEMENTATION.
           iv_request = 'requested_features'.
 
       lo_handler->implementation->add_method( method_get_instance_features ).
+      handler_has_method = abap_true.
 
       CLEAR  source_method_get_inst_feat.
       APPEND |READ ENTITIES OF { io_rap_bo_node->rap_root_node_objects-behavior_definition_r } IN LOCAL MODE| TO  source_method_get_inst_feat ##no_text.
@@ -2089,6 +2113,7 @@ CLASS ZDMO_CL_RAP_GENERATOR IMPLEMENTATION.
       APPEND    |                          %param = singleton ) ).| TO source_action_set_transport ##no_text.
 
       lo_handler->implementation->add_method( CONV #( lv_action_name ) )->set_source( source_action_set_transport ).
+      handler_has_method = abap_true.
     ENDIF.
 
 
@@ -2131,13 +2156,14 @@ CLASS ZDMO_CL_RAP_GENERATOR IMPLEMENTATION.
 
 
       lo_handler->implementation->add_method( CONV #( lv_validation_name ) )->set_source( source_method_validation ).
+      handler_has_method = abap_true.
     ENDIF.
 
     "add local saver class to record customizing data
     IF io_rap_bo_node->is_customizing_table = abap_true AND
        io_rap_bo_node->is_root(  ) = abap_true.
 
-      DATA(lo_saver) = lo_specification->add_local_class( 'LCL_SAVER' ).
+      DATA(lo_saver) = lo_specification->add_local_class( local_saver_class_name ).
       lo_saver->definition->set_superclass( 'CL_ABAP_BEHAVIOR_SAVER' ).
 
       lo_saver->definition->section-protected->add_method( cleanup_finalize )->set_redefinition( ).
@@ -2197,7 +2223,7 @@ CLASS ZDMO_CL_RAP_GENERATOR IMPLEMENTATION.
         lo_keys_determination->behavior_implementation->set_for( iv_for = | { io_rap_bo_node->entityname }~{ lv_determination_name } | ).
 
         lo_handler->implementation->add_method( CONV #( lv_determination_name ) ).
-
+        handler_has_method = abap_true.
       WHEN ZDMO_cl_rap_node=>implementation_type-unmanaged_semantic.
 
         IF io_rap_bo_node->is_root(  ).
@@ -2206,6 +2232,7 @@ CLASS ZDMO_CL_RAP_GENERATOR IMPLEMENTATION.
           DATA(lo_import_parameter) = lo_method->add_importing_parameter( iv_name = 'entities' ).
           lo_import_parameter->behavior_implementation->set_for_create( iv_entity_name = | { io_rap_bo_node->entityname } | ).
           lo_handler->implementation->add_method( method_create ).
+          handler_has_method = abap_true.
         ENDIF.
 
         lo_method = lo_handler->definition->section-private->add_method( method_update ).
@@ -2213,12 +2240,14 @@ CLASS ZDMO_CL_RAP_GENERATOR IMPLEMENTATION.
         lo_import_parameter = lo_method->add_importing_parameter( iv_name = 'entities' ).
         lo_import_parameter->behavior_implementation->set_for_update( iv_entity_name = | { io_rap_bo_node->entityname } | ).
         lo_handler->implementation->add_method( method_update ).
+        handler_has_method = abap_true.
 
         lo_method = lo_handler->definition->section-private->add_method( method_delete ).
         lo_method->behavior_implementation->set_for_modify(  ).
         lo_import_parameter = lo_method->add_importing_parameter( iv_name = 'keys' ).
         lo_import_parameter->behavior_implementation->set_for_delete( iv_entity_name = | { io_rap_bo_node->entityname } | ).
         lo_handler->implementation->add_method( method_delete ).
+        handler_has_method = abap_true.
 
         IF io_rap_bo_node->is_root(  ).
           lo_method = lo_handler->definition->section-private->add_method( method_lock ).
@@ -2226,6 +2255,7 @@ CLASS ZDMO_CL_RAP_GENERATOR IMPLEMENTATION.
           lo_import_parameter = lo_method->add_importing_parameter( iv_name = 'keys' ).
           lo_import_parameter->behavior_implementation->set_for_lock( iv_entity_name = | { io_rap_bo_node->entityname } | ).
           lo_handler->implementation->add_method( method_lock ).
+          handler_has_method = abap_true.
         ENDIF.
 
         lo_method = lo_handler->definition->section-private->add_method( method_read ).
@@ -2233,6 +2263,7 @@ CLASS ZDMO_CL_RAP_GENERATOR IMPLEMENTATION.
         lo_import_parameter = lo_method->add_importing_parameter( iv_name = 'keys' ).
         lo_import_parameter->behavior_implementation->set_for_read( iv_entity_name = | { io_rap_bo_node->entityname } | ).
         lo_handler->implementation->add_method( method_read ).
+        handler_has_method = abap_true.
 
         IF io_rap_bo_node->is_child(  ) = abap_true OR
            io_rap_bo_node->is_grand_child_or_deeper(  ) = abap_true.
@@ -2243,6 +2274,7 @@ CLASS ZDMO_CL_RAP_GENERATOR IMPLEMENTATION.
           lo_import_parameter = lo_method->add_importing_parameter( iv_name = |keys_{ method_rba } | ).
           lo_import_parameter->behavior_implementation->set_for_read( iv_entity_name = | { io_rap_bo_node->entityname }\\_{ io_rap_bo_node->parent_node->entityname } | ).
           lo_handler->implementation->add_method( rba_method_name ).
+          handler_has_method = abap_true.
 
         ENDIF.
 
@@ -2253,6 +2285,7 @@ CLASS ZDMO_CL_RAP_GENERATOR IMPLEMENTATION.
           lo_import_parameter = lo_method->add_importing_parameter( iv_name = |entities_{ method_cba } | ).
           lo_import_parameter->behavior_implementation->set_for_create( iv_entity_name = | { io_rap_bo_node->entityname }\\_{ childnode->entityname } | ).
           lo_handler->implementation->add_method( |{ method_cba }_{ childnode->entityname }| ).
+          handler_has_method = abap_true.
 
           rba_method_name = |{ method_rba }_{ childnode->entityname }|.
           lo_method = lo_handler->definition->section-private->add_method( rba_method_name ).
@@ -2260,12 +2293,14 @@ CLASS ZDMO_CL_RAP_GENERATOR IMPLEMENTATION.
           lo_import_parameter = lo_method->add_importing_parameter( iv_name = |keys_{ method_rba } | ).
           lo_import_parameter->behavior_implementation->set_for_read( iv_entity_name = | { io_rap_bo_node->entityname }\\_{ childnode->entityname } | ).
           lo_handler->implementation->add_method( rba_method_name ).
+          handler_has_method = abap_true.
 
         ENDLOOP.
 
         IF io_rap_bo_node->is_root(  ).
           lo_saver = lo_specification->add_local_class( |LCL_{ io_rap_bo_node->rap_root_node_objects-behavior_definition_r }| ).
           lo_saver->definition->set_superclass( 'CL_ABAP_BEHAVIOR_SAVER' ).
+          saver_has_method = abap_true.
 
           lo_saver->definition->section-protected->add_method( method_finalize )->set_redefinition( ).
           lo_saver->implementation->add_method( method_finalize ).
@@ -2283,6 +2318,19 @@ CLASS ZDMO_CL_RAP_GENERATOR IMPLEMENTATION.
           lo_saver->implementation->add_method( method_cleanup_finalize ).
         ENDIF.
     ENDCASE.
+
+
+    DATA(implementation) = lo_handler->implementation.
+
+    DATA(definition) = lo_handler->definition.
+
+    "remove implementation if no method is there
+    IF handler_has_method = abap_false AND lo_handler IS NOT INITIAL.
+      lo_specification->remove_local_class( local_handler_class_name ).
+    ENDIF.
+    IF saver_has_method = abap_false AND lo_saver IS NOT INITIAL.
+      lo_specification->remove_local_class( local_saver_class_name ).
+    ENDIF.
 
   ENDMETHOD.
 

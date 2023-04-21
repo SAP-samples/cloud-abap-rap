@@ -1077,7 +1077,7 @@ ENDCLASS.
 
 
 
-CLASS ZDMO_CL_RAP_NODE IMPLEMENTATION.
+CLASS zdmo_cl_rap_node IMPLEMENTATION.
 
 
   METHOD add_additional_fields.
@@ -2067,10 +2067,10 @@ CLASS ZDMO_CL_RAP_NODE IMPLEMENTATION.
       DATA(is_unmanaged_semantic) = abap_true.
     ENDIF.
 
-    IF is_managed_semantic = abap_true.
-      result = abap_false.
-      EXIT.
-    ENDIF.
+*    IF is_managed_semantic = abap_true.
+*      result = abap_false.
+*      EXIT.
+*    ENDIF.
 
     result = xsdbool(
     (
@@ -2638,11 +2638,14 @@ CLASS ZDMO_CL_RAP_NODE IMPLEMENTATION.
 
         ls_fields-name = lo_field->name.
         DATA(field_content) = lo_field->content( )->get( ).
-        IF field_content-alias IS INITIAL.
-          ls_fields-cds_view_field = field_content-original_name.   " ls_fields-name.
-        ELSE.
-          ls_fields-cds_view_field = field_content-alias.
-        ENDIF.
+*        IF field_content-alias IS INITIAL.
+*          ls_fields-cds_view_field = ls_fields-name.
+*        ELSE.
+*          ls_fields-cds_view_field = field_content-alias.
+*        ENDIF.
+
+        ls_fields-name = field_content-expression->if_xco_text~get_lines( )->join( )->value.
+        ls_fields-cds_view_field = field_content-original_name.
 
         ls_fields-key_indicator =  field_content-key_indicator.
 
