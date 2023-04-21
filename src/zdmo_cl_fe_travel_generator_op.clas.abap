@@ -1,5 +1,5 @@
 CLASS zdmo_cl_fe_travel_generator_op DEFINITION
-INHERITING FROM zdmo_cl_rap_gen_env_on_prem
+INHERITING FROM zdmo_cl_rap_generator_base
 **************************************************************************
 **
 ** Welcome to the SAP Fiori elements travel exercise generator!
