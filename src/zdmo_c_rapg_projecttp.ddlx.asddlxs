@@ -323,7 +323,9 @@ annotate view ZDMO_C_RAPG_ProjectTP with
   LocalLastChangedAt;
 
 
-  @UI.fieldGroup: [{ qualifier: 'FieldGroup_3', position: 30, label: 'Json string', isPartOfPreview: true }]
+  @UI.fieldGroup: [{ qualifier: 'FieldGroup_3', position: 30, label: 'Json string'
+//  , isPartOfPreview: true 
+  }]
   @UI.multiLineText: true
   JsonString;
 

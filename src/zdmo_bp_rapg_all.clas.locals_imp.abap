@@ -98,8 +98,8 @@ CLASS lhc_Project IMPLEMENTATION.
     LOOP AT keys INTO DATA(ls_key).
 
       TRY.
-
-          DATA(node) = NEW ZDMO_cl_rap_node(  ).
+          "dummy fix
+          DATA(node) = NEW ZDMO_cl_rap_node( xco_lib ) .
 
           "get package of datasource
 
