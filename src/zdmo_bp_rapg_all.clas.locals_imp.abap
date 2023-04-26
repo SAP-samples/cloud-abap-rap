@@ -2306,6 +2306,7 @@ CLASS lhc_Node IMPLEMENTATION.
     DATA create_log_cba TYPE TABLE FOR CREATE ZDMO_R_RAPG_NodeTP\_Field.
     DATA create_log_cba_line TYPE STRUCTURE FOR CREATE ZDMO_R_RAPG_NodeTP\_Field.
 
+    DATA reported_local LIKE reported.
 
 * todo check why we only use draft keys here
 * when the action is not enabled in non draft this would not be necessary
@@ -2488,6 +2489,12 @@ CLASS lhc_Node IMPLEMENTATION.
 
         CATCH ZDMO_cx_rap_generator INTO DATA(rap_node_exception).
           DATA(exception_text) = rap_node_exception->get_text(  ).
+
+          INSERT VALUE #( %is_draft = rapbo_node-%is_draft
+                           nodeuuid  = rapbo_node-nodeuuid
+                           %msg      = new_message_with_text( text = exception_text ) )
+            INTO TABLE reported_local-node.
+
       ENDTRY.
 
       DATA n TYPE i.
@@ -2565,6 +2572,7 @@ CLASS lhc_Node IMPLEMENTATION.
 
     reported = CORRESPONDING #( DEEP update_reported ).
 
+    INSERT LINES OF reported_local-node INTO TABLE reported-node.
 
   ENDMETHOD.
 
