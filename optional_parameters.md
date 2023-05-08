@@ -214,7 +214,8 @@ In order to generate a value help as mentioned above the following entry would h
               },
               {
                 "localElement": "ConnectionID",
-                "element": "ConnectionID"
+                "element": "ConnectionID",
+                "usage": "RESULT"
               }
             ]
           },
