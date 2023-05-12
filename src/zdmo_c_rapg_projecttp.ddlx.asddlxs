@@ -1,0 +1,389 @@
+@Metadata.layer: #CUSTOMER
+@UI: {
+headerInfo: {
+typeName: 'Project',
+typeNamePlural: 'Projects',
+description.url: 'ADTLink'
+,
+title: {
+type: #STANDARD,
+label: 'Project',
+value: 'BoName'
+}
+},
+presentationVariant: [ {
+  sortOrder: [ {
+  by: 'LocalLastChangedAt',
+  direction: #DESC
+  } ],
+  visualizations: [ {
+  type: #AS_LINEITEM
+  } ],
+    maxItems: 20
+  } ],
+  selectionVariant: [
+  {
+    qualifier: 'svariant',
+    text: 'Press the Go button',
+    filter: 'ImplementationType NE '' '
+  }
+]
+
+
+}
+annotate view ZDMO_C_RAPG_ProjectTP with
+{
+
+
+
+  @UI.facet: [ 
+  
+//  {
+//    id: 'idCollection',
+//    type: #COLLECTION,
+//    label: 'Project',
+//    position: 05
+//  },
+//  {
+//    id: 'idIdentification',
+//    parentId: 'idCollection',
+//    type: #IDENTIFICATION_REFERENCE,
+//    label: 'General Information',
+//    position: 07
+//  },
+
+  // Show ADT Link and Job Status in Header
+  {
+    purpose: #HEADER,
+    type: #FIELDGROUP_REFERENCE,
+    position: 50,
+    targetQualifier: 'Fieldgroup_0'
+   },
+
+
+  //Facet and field group for implementation details ( managed, draft, .. )
+     { label    : 'Implementation details',
+       id       : 'Facet_1',
+       purpose  : #STANDARD,
+       type     : #COLLECTION,
+       position : 20  },
+     { id       : 'FieldGroup_1',
+       purpose  : #STANDARD,
+       parentId : 'Facet_1',
+       type     : #FIELDGROUP_REFERENCE,
+       targetQualifier: 'FieldGroup_1',
+       position : 20   },
+
+  //Facet and field group for prefix, suffix and namespace
+     { label    : 'Naming parameters',
+       id       : 'Facet_2',
+       purpose  : #STANDARD,
+       type     : #COLLECTION,
+       position : 30  },
+     { id       : 'FieldGroup_2',
+       purpose  : #STANDARD,
+       parentId : 'Facet_2',
+       type     : #FIELDGROUP_REFERENCE,
+       targetQualifier: 'FieldGroup_2',
+       position : 30   },
+
+  //Facet and field group for lifecycle management related information
+     { label    : 'Lifecycle Management',
+       id       : 'Facet_3',
+       purpose  : #STANDARD,
+       type     : #COLLECTION,
+       position : 40  },
+     { id       : 'FieldGroup_3',
+       purpose  : #STANDARD,
+       parentId : 'Facet_3',
+       type     : #FIELDGROUP_REFERENCE,
+       targetQualifier: 'FieldGroup_3',
+       isPartOfPreview: false,
+       position : 40   },
+
+  //Facet and field group for optional parameters
+     { label    : 'Optional parameters',
+       id       : 'Facet_4',
+       purpose  : #STANDARD,
+       type     : #COLLECTION,
+//       isPartOfPreview: false,
+       position : 50  },
+     { id       : 'FieldGroup_4',
+       purpose  : #STANDARD,
+       parentId : 'Facet_4',
+       type     : #FIELDGROUP_REFERENCE,
+       targetQualifier: 'FieldGroup_4',
+       isPartOfPreview: false,
+       position : 50   },
+
+
+  {
+    id: 'idLineitem',
+    type: #LINEITEM_REFERENCE,
+    label: 'Entities',
+    position: 10 ,    
+    targetElement: '_Node'
+  }
+  ,
+  {
+  id: 'idLog',
+  type: #LINEITEM_REFERENCE,
+  label: 'Generation Log',
+  position: 70 ,
+  targetElement: '_Log'
+  }
+
+
+  ]
+
+
+
+  @UI.hidden: true
+  RapBoUUID;
+
+  @UI.lineItem: [ {
+    position: 20 ,
+    importance: #HIGH
+  } 
+  ,
+    {  type: #FOR_ACTION, dataAction: 'createProjectAndRootNode', label: 'New Project'   }
+    ,
+    {  type: #FOR_ACTION, dataAction: 'copyProject', label: 'Copy Project'  }
+    ,
+    {  type: #FOR_ACTION, dataAction: 'deleteProject', label: 'Delete repository objects' }
+  
+  
+  
+  ]
+  
+  @UI.identification: [ {
+    position: 20 ,
+    importance: #HIGH
+  } 
+
+  ,
+    { type: #FOR_ACTION, dataAction: 'generateProject', label: 'Generate repository objects' }
+      ,
+      {  type: #FOR_ACTION, dataAction: 'copyProject', label: 'Copy Project' }
+    ,
+    {  type: #FOR_ACTION, dataAction: 'deleteProject', label: 'Delete repository objects' }
+  
+  
+  
+  ]
+  
+  @UI.fieldGroup: [{ qualifier: 'FieldGroup_0', position: 10, label: 'RAP BO Name' }
+  
+//  ,
+//    { type: #FOR_ACTION, dataAction: 'generateProject', label: 'Generate repository objects' }
+//      ,
+//      {  type: #FOR_ACTION, dataAction: 'copyProject', label: 'Copy Project' }
+//    ,
+//    {  type: #FOR_ACTION, dataAction: 'deleteProject', label: 'Delete repository objects' }
+//  
+  
+  ]
+  @UI.selectionField: [ {
+    position: 20
+  } ]
+  @EndUserText.label: 'RAP BO Name'
+  BoName;
+
+  @UI.lineItem: [ {
+    position: 30 ,
+    importance: #HIGH
+  } ]
+  //  @UI.identification: [ {
+  //    position: 30
+  //  } ]
+  RootEntityName;
+
+  //  @UI.lineItem: [ {
+  //    position: 40 ,
+  //    importance: #HIGH
+  //  } ]
+  @UI.fieldGroup: [{ qualifier: 'FieldGroup_2', position: 10, label: 'Namespace' }]
+  Namespace;
+
+  @UI.fieldGroup: [{ qualifier: 'FieldGroup_1', position: 50, label: 'Package' }]
+  PackageName;
+
+  @UI.fieldGroup: [{ qualifier: 'FieldGroup_3', position: 10, label: 'Transport' }]
+  TransportRequest;
+
+  @UI.hidden: true
+  SkipActivation;
+
+  @UI.lineItem: [ {
+    position: 80 ,
+    importance: #HIGH,
+    label: 'Implementation_Key Type'
+  } ]
+  //  @UI.identification: [ {
+  //    position: 80 ,
+  //    label: 'ImplementationType'
+  //  } ]
+  @UI.fieldGroup: [{ qualifier: 'FieldGroup_1', position: 10, label: 'Implementation_Key Type' }]
+  ImplementationType;
+
+  @UI.hidden: true
+  AbapLanguageVersion;
+
+  @UI.hidden: true
+  PackageLanguageVersion;
+
+  @UI.lineItem: [ {
+    position: 110 ,
+    importance: #HIGH,
+    label: 'DataSourceType'
+  } ]
+  //  @UI.identification: [ {
+  //    position: 110 ,
+  //    label: 'DataSourceType'
+  //  } ]
+  @UI.fieldGroup: [{ qualifier: 'FieldGroup_1', position: 20, label: 'Datasource type' }]
+  DataSourceType;
+
+  @UI.lineItem: [ {
+    position: 120 ,
+    importance: #HIGH,
+    label: 'BindingType'
+  } ]
+  //  @UI.identification: [ {
+  //    position: 120 ,
+  //    label: 'BindingType'
+  //  } ]
+  @UI.fieldGroup: [{ qualifier: 'FieldGroup_1', position: 30, label: 'Binding type' }]
+  BindingType;
+
+  @UI.lineItem: [ {
+    position: 130 ,
+    importance: #HIGH,
+    label: 'Draft enabled'
+  } ]
+  //  @UI.identification: [ {
+  //    position: 130
+  //  } ]
+  @UI.fieldGroup: [{ qualifier: 'FieldGroup_1', position: 40, label: 'Draft enabled' }]
+  DraftEnabled;
+
+  //  @UI.lineItem: [ {
+  //    position: 140 ,
+  //    importance: #HIGH
+  //  } ]
+  @UI.fieldGroup: [{ qualifier: 'FieldGroup_2', position: 30, label: 'Suffix' }]
+  Suffix;
+
+  //  @UI.lineItem: [ {
+  //    position: 150 ,
+  //    importance: #HIGH
+  //  } ]
+  @UI.fieldGroup: [{ qualifier: 'FieldGroup_2', position: 20, label: 'Prefix' }]
+  Prefix;
+
+  @UI.fieldGroup: [{ qualifier: 'FieldGroup_4', position: 10, label: 'Multi Inline Edit' }]
+  MultiInlineEdit;
+
+  @UI.fieldGroup: [{ qualifier: 'FieldGroup_4', position: 10, label: 'Record customizing' }]
+  CustomizingTable;
+
+  @UI.fieldGroup: [{ qualifier: 'FieldGroup_4', position: 10, label: 'Add to manage business configuration' }]
+  AddToManageBusinessConfig;
+
+  @UI.hidden: true
+  BusinessConfName;
+
+  @UI.hidden: true
+  BusinessConfIdentifier;
+
+  @UI.hidden: true
+  BusinessConfDescription;
+
+  @UI.hidden: true
+  CreatedAt;
+
+  @UI.lineItem: [ {
+    position: 230 ,
+    importance: #HIGH
+  } ]
+  @UI.fieldGroup: [{ qualifier: 'FieldGroup_3', position: 40, label: 'Created by' }]
+  CreatedBy;
+
+  @UI.hidden: true
+  LastChangedBy;
+
+  @UI.lineItem: [ {
+    position: 250 ,
+    importance: #HIGH
+  } ]
+  @UI.fieldGroup: [{ qualifier: 'FieldGroup_3', position: 30, label: 'Last changed at' }]
+  LastChangedAt;
+
+  @UI.hidden: true
+  LocalLastChangedAt;
+
+
+  @UI.fieldGroup: [{ qualifier: 'FieldGroup_3', position: 30, label: 'Json string'
+//  , isPartOfPreview: true 
+  }]
+  @UI.multiLineText: true
+  JsonString;
+
+  @UI.hidden: true
+  JsonIsValid;
+
+  @UI.hidden: true
+  BoIsGenerated;
+
+  @UI.hidden: true
+  BoIsDeleted;
+
+  @UI.hidden: true
+  ApplJobLogHandle;
+
+  @UI.hidden: true
+  JobCount;
+
+  @UI.hidden: true
+  JobName;
+
+  @UI: { fieldGroup:     [ { qualifier: 'Fieldgroup_0',
+                             position: 50 ,
+                             label: 'ADT Link'    ,
+                             type: #WITH_URL,
+                             url: 'ADTLink'
+                             ,
+                             hidden: #(HideADTLink) 
+                             }
+                           ] }
+
+  ADTLink;
+
+  // virtual fields
+
+  @UI.lineItem: [ {
+  position: 220 ,
+  importance: #HIGH,
+  label: 'Job Status',
+  criticality: 'JobStatusCriticality'
+  } ]
+  @UI: { fieldGroup:     [ { qualifier: 'Fieldgroup_0',
+                             position: 40 ,
+                             label: 'Job Status',
+                             criticality: 'JobStatusCriticality'} ] }
+  @UI.dataPoint: {title: 'Generation Job Status', targetValueElement: 'JobStatusText', criticality: 'JobStatusCriticality',
+  criticalityRepresentation: #WITH_ICON}
+  JobStatusText;
+
+  @UI.lineItem: [ {
+    position: 110 ,
+    importance: #HIGH,
+    label: 'Repository objects exist'
+  } ]
+  @UI: { fieldGroup:     [ { qualifier: 'Fieldgroup_0',
+                             position: 40 ,
+                             label: 'Repository Objects Exist'} ] }
+  RepositoryObjectsExist;
+
+
+}

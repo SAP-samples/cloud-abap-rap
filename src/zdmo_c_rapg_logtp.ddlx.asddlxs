@@ -1,0 +1,87 @@
+@Metadata.layer: #CUSTOMER
+@UI: {
+  headerInfo: {
+    typeName: 'Log', 
+    typeNamePlural: 'Logs', 
+    title: {
+      type: #STANDARD, 
+      label: 'Log', 
+      value: 'LogItemNumber'
+    }
+  }, 
+  presentationVariant: [ {
+    sortOrder: [ {
+      by: 'LogItemNumber', 
+      direction: #DESC
+    } ], 
+    visualizations: [ {
+      type: #AS_LINEITEM
+    } ]
+  } ]
+}
+annotate view ZDMO_C_RAPG_LogTP with
+{
+  @UI.facet: [ {
+    id: 'idLog', 
+    purpose: #STANDARD, 
+    type: #IDENTIFICATION_REFERENCE, 
+    label: 'Log', 
+    position: 10 
+  } ]
+  @UI.hidden: true
+  LogUUID;
+  
+  @UI.hidden: true
+  RapBoUUID;
+  
+  @UI.lineItem: [ {
+    position: 30 , 
+    importance: #HIGH
+  } ]
+  @UI.identification: [ {
+    position: 30 
+  } ]
+  @UI.selectionField: [ { position: 30 } ]
+  LogItemNumber;
+  
+  @UI.lineItem: [ {
+    position: 40 , 
+    importance: #HIGH
+  } ]
+  @UI.identification: [ {
+    position: 40 
+  } ]
+  DetailLevel;
+  
+  @UI.lineItem: [ {
+    position: 50 , 
+    importance: #HIGH,
+    criticality: 'Criticality'
+  } ]
+  @UI.identification: [ {
+    position: 50 ,
+    criticality: 'Criticality'
+  } ]
+  Severity;
+  
+  @UI.lineItem: [ {
+    position: 60 , 
+    importance: #HIGH
+  } ]
+  @UI.identification: [ {
+    position: 60 
+  } ]
+  Text;
+  
+  @UI.lineItem: [ {
+    position: 70 , 
+    importance: #HIGH
+  } ]
+  @UI.identification: [ {
+    position: 70 
+  } ]
+  TimeStamp;
+  
+  @UI.hidden: true
+  LocalLastChangedAt;
+}

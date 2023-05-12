@@ -1,0 +1,64 @@
+@Metadata.layer: #CUSTOMER
+@UI: {
+  headerInfo: {
+    typeName: 'Field', 
+    typeNamePlural: 'Fields', 
+    title: {
+      type: #STANDARD, 
+      label: 'Field', 
+      value: 'DbtableField'
+    }
+  }, 
+  presentationVariant: [ {
+    sortOrder: [ {
+      by: 'DbtableField', 
+      direction: #DESC
+    } ], 
+    visualizations: [ {
+      type: #AS_LINEITEM
+    } ]
+  } ]
+}
+annotate view ZDMO_C_RAPG_FieldTP with
+{
+  @UI.facet: [ {
+    id: 'idField', 
+    purpose: #STANDARD, 
+    type: #IDENTIFICATION_REFERENCE, 
+    label: 'Field', 
+    position: 10 
+  } ]
+  @UI.hidden: true
+  FieldUUID;
+  
+  @UI.hidden: true
+  NodeUUID;
+  
+  @UI.hidden: true
+  RapboUUID;
+  
+  @UI.lineItem: [ {
+    label : 'Fieldname datasource',
+    position: 40 , 
+    importance: #HIGH
+  } ]
+  @UI.identification: [ {
+    label : 'Fieldname datasource',
+    position: 40 
+  } ]
+  DbtableField;
+  
+  @UI.lineItem: [ {
+    label : 'Fieldname CDS view',
+    position: 50 , 
+    importance: #HIGH
+  } ]
+  @UI.identification: [ {
+    label : 'Fieldname CDS view',
+    position: 50 
+  } ]
+  CdsViewField;
+  
+  @UI.hidden: true
+  LocalLastChangedAt;
+}

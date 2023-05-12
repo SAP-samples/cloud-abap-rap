@@ -1,0 +1,338 @@
+managed implementation in class zdmo_bp_rapg_all unique;
+
+
+//strict ( 2 );
+with draft;
+
+define behavior for ZDMO_R_RAPG_ProjectTP alias Project
+//implementation in class ZDMO_BP_R_RAPG_Project unique
+persistent table zdmo_rapgen_bo
+with additional save
+draft table zdmo_rapgproj00d
+etag master LocalLastChangedAt
+lock master
+total etag LastChangedAt
+authorization master ( global )
+
+{
+  field ( readonly )
+  RapBoUUID,
+  BoName,
+  // set when being created
+  ImplementationType,
+  DataSourceType,
+  BindingType,
+  DraftEnabled,
+  PackageName,
+  Namespace,
+  // RAP Generator Parameters
+  JsonString,
+  //ADT
+  ADTLink,
+  // administrative fields
+  CreatedAt,
+  CreatedBy,
+  LastChangedBy,
+  LastChangedAt,
+  LocalLastChangedAt;
+
+//  field ( mandatory )
+//  PackageName;
+
+//  field ( features : instance ) ADTLink;
+  field ( features : instance ) MultiInlineEdit, CustomizingTable, AddToManageBusinessConfig;
+
+  field ( numbering : managed ) RapBoUUID;
+
+  internal create;
+  update;
+  delete;
+
+  draft action ( features : instance ) Edit;
+  draft action Activate;
+  draft action Discard;
+  draft action Resume;
+  draft determine action Prepare
+  {
+    determination ( always ) createJSONString;
+    validation ( always ) mandatory_fields_check;
+    validation ( always ) Node~mandatory_fields_check;
+    validation ( always ) is_customizing_table;
+    validation ( always ) check_for_allowed_combinations;
+  }
+
+
+  determine action check_allowed_combinations_det
+  {
+    validation ( always ) check_for_allowed_combinations;
+  }
+
+  static action createProjectAndRootNode parameter ZDMO_I_RAP_GEN_PARAM_NEW_PROJ result [1] $self;
+  action ( features : instance ) copyProject parameter ZDMO_I_RAP_GEN_PARAM_COPY_PROJ result [1] $self;
+  action ( features : instance ) generateProject result [1] $self;
+  action ( features : instance ) deleteProject result [1] $self;
+
+  determination createJsonString on save { create; }
+
+  determination CalculateBoName on save { create; }
+  determination SetRepositoryObjectNames on modify { field Suffix, Prefix; }
+
+  validation generated_objects_are_deleted on save { delete; }
+  validation mandatory_fields_check on save { create; }
+  validation is_customizing_table on save { create; }
+  validation check_for_allowed_combinations on save { create; }
+
+  association _Log { create; with draft; }
+  association _Node { create; with draft; }
+  mapping for zdmo_rapgen_bo
+    {
+      RapBoUUID                 = RAP_NODE_UUID;
+      BoName                    = BO_NAME;
+      RootEntityName            = ROOT_ENTITY_NAME;
+      Namespace                 = NAMESPACE;
+      PackageName               = PACKAGE_NAME;
+      TransportRequest          = TRANSPORT_REQUEST;
+      SkipActivation            = SKIP_ACTIVATION;
+      ImplementationType        = IMPLEMENTATION_TYPE;
+      AbapLanguageVersion       = ABAP_LANGUAGE_VERSION;
+      PackageLanguageVersion    = PACKAGE_LANGUAGE_VERSION;
+      DataSourceType            = DATA_SOURCE_TYPE;
+      BindingType               = BINDING_TYPE;
+      DraftEnabled              = DRAFT_ENABLED;
+      Suffix                    = SUFFIX;
+      Prefix                    = PREFIX;
+      MultiInlineEdit           = MULTI_INLINE_EDIT;
+      CustomizingTable          = CUSTOMIZING_TABLE;
+      AddToManageBusinessConfig = ADD_TO_MANAGE_BUSINESS_CONFIG;
+      BusinessConfName          = BUSINESS_CONF_NAME;
+      BusinessConfIdentifier    = BUSINESS_CONF_IDENTIFIER;
+      BusinessConfDescription   = BUSINESS_CONF_DESCRIPTION;
+      CreatedAt                 = CREATED_AT;
+      CreatedBy                 = CREATED_BY;
+      LastChangedBy             = LAST_CHANGED_BY;
+      LastChangedAt             = LAST_CHANGED_AT;
+      LocalLastChangedAt        = LOCAL_LAST_CHANGED_AT;
+      JsonString                = JSON_STRING;
+      JsonIsValid               = JSON_IS_VALID;
+      BoIsGenerated             = BO_IS_GENERATED;
+      BoIsDeleted               = BO_IS_DELETED;
+      ApplJobLogHandle          = APPL_JOB_LOG_HANDLE;
+      JobCount                  = JOB_COUNT;
+      JobName                   = JOB_NAME;
+      ADTLink                   = ADT_LINK;
+      hasSematicKey             = has_semantic_key;
+    }
+
+
+
+
+}
+
+define behavior for ZDMO_R_RAPG_LogTP alias Log
+//implementation in class ZDMO_BP_R_RAPG_Log unique
+persistent table zdmo_rapgen_log
+draft table zdmo_rapglog00d
+etag master LocalLastChangedAt
+lock dependent by _Project
+authorization dependent by _Project
+
+{
+  field ( readonly )
+  LogUUID,
+  RapBoUUID,
+  //  LogItemNumber,
+  LocalLastChangedAt;
+
+  field ( numbering : managed )
+  LogUUID;
+
+
+  update;
+  delete;
+
+  association _Project { with draft; }
+
+  determination CalculateLogItemNumber on save { create; }
+  mapping for zdmo_rapgen_log
+    {
+      LogUUID            = LOG_UUID;
+      RapBoUUID          = RAPBO_UUID;
+      LogItemNumber      = LOG_ITEM_NUMBER;
+      DetailLevel        = DETAIL_LEVEL;
+      Severity           = SEVERITY;
+      Text               = TEXT;
+      TimeStamp          = TIME_STAMP;
+      LocalLastChangedAt = LOCAL_LAST_CHANGED_AT;
+    }
+
+
+}
+
+define behavior for ZDMO_R_RAPG_NodeTP alias Node
+//implementation in class ZDMO_BP_R_RAPG_Node unique
+persistent table zdmo_rapgen_node
+draft table zdmo_rapgnode00d
+etag master LocalLastChangedAt
+lock dependent by _Project
+authorization dependent by _Project
+
+{
+  field ( readonly )
+  NodeUUID,
+  RapBoUUID,
+  EntityName,
+  ParentEntityName,
+  IsRootNode,
+  DataSource,
+  ParentDataSource,
+  FieldNameUUID,
+  MdeView,
+  //Hierarchy information (to be adapted)
+  HierarchyDescendantCount,
+  HierarchyDistanceFromRoot,
+  HierarchyDrillState,
+  HierarchyPreorderRank,
+  //administrative field
+  LocalLastChangedAt;
+
+
+  field ( features : instance )
+  FieldNameRootUUID,
+  //  FieldNameUUID,
+  FieldNameParentUUID,
+  ControlStructure,
+  DraftTableName,
+  FieldNameTotalEtag,
+  FieldNameEtagMaster,
+  QueryImplementationClass,
+  ServiceBinding,
+  ServiceDefinition,
+  FieldNameLastChangedAt,
+  FieldNameLastChangedBy,
+  FieldNameCreatedAt,
+  FieldNameCreatedBy;
+
+
+  //  field ( mandatory : create ) EntityName, DataSource ;
+
+  //  field ( readonly )  ParentEntityName;
+
+  field ( mandatory ) FieldNameObjectID;
+
+  field ( numbering : managed ) NodeUUID;
+
+
+
+  update;
+  delete;
+
+  //  static action ( features : global ) createRootNode parameter ZDMO_I_RAP_GEN_PARAM_ADD_NODE result [1] $self;
+  //  action ( features : instance ) addChildNode parameter ZDMO_I_RAP_GEN_PARAM_ADD_NODE result [1] $self;
+  action ( features : instance ) SetRepositoryObjectNames;
+
+
+  //  static action  createRootNode parameter ZDMO_I_RAP_GEN_PARAM_ADD_NODE result [1] $self;
+  internal action addChildNode parameter ZDMO_I_RAP_GEN_PARAM_ADD_NODE result [1] $self;
+  action ( features : instance ) addChildDataSourceTable parameter ZDMO_I_RAP_GEN_PARAM_ADD_NODEt; // "result [1] $self;
+  action ( features : instance ) addChildDataSourceCDSview parameter ZDMO_I_RAP_GEN_PARAM_ADD_NODEc; // result [1] $self;
+  action ( features : instance ) addChildDataSourceAbsEntity parameter ZDMO_I_RAP_GEN_PARAM_ADD_NODEa; // result [1] $self;
+
+
+  determination CalculateEntityName on save { create; }
+  determination SetRepositoryObjectNames_det on modify
+  { create;
+    field EntityName;
+  }
+  determination SetFieldNames on modify
+  { create;
+    field DataSource;
+  }
+  validation mandatory_fields_check on save { create; }
+  association _Project { with draft; }
+  association _Field { create; with draft; }
+  mapping for zdmo_rapgen_node
+    {
+      NodeUUID                    = NODE_UUID;
+      RapBoUUID                   = HEADER_UUID;
+      ParentUUID                  = PARENT_UUID;
+      RootUUID                    = ROOT_UUID;
+      NodeNumber                  = NODE_NUMBER;
+      IsRootNode                  = IS_ROOT_NODE;
+      EntityName                  = ENTITY_NAME;
+      ParentEntityName            = PARENT_ENTITY_NAME;
+      DataSource                  = DATA_SOURCE;
+      ParentDataSource            = PARENT_DATA_SOURCE;
+      ViewTypeValue               = VIEW_TYPE_VALUE;
+      FieldNameObjectID           = FIELD_NAME_OBJECT_ID;
+      FieldNameEtagMaster         = FIELD_NAME_ETAG_MASTER;
+      FieldNameTotalEtag          = FIELD_NAME_TOTAL_ETAG;
+      FieldNameUUID               = FIELD_NAME_UUID;
+      FieldNameParentUUID         = FIELD_NAME_PARENT_UUID;
+      FieldNameRootUUID           = FIELD_NAME_ROOT_UUID;
+      FieldNameCreatedBy          = FIELD_NAME_CREATED_BY;
+      FieldNameCreatedAt          = FIELD_NAME_CREATED_AT;
+      FieldNameLastChangedBy      = FIELD_NAME_LAST_CHANGED_BY;
+      FieldNameLastChangedAt      = FIELD_NAME_LAST_CHANGED_AT;
+      FieldNameLocLastChangedAt   = FIELD_NAME_LOC_LAST_CHANGED_AT;
+      CdsIView                    = CDS_I_VIEW;
+      CdsRView                    = CDS_R_VIEW;
+      CdsPView                    = CDS_P_VIEW;
+      MdeView                     = MDE_VIEW;
+      BehaviorImplementationClass = BEHAVIOR_IMPLEMENTATION_CLASS;
+      ServiceDefinition           = SERVICE_DEFINITION;
+      ServiceBinding              = SERVICE_BINDING;
+      ControlStructure            = CONTROL_STRUCTURE;
+      QueryImplementationClass    = QUERY_IMPLEMENTATION_CLASS;
+      DraftTableName              = DRAFT_TABLE_NAME;
+      HierarchyDistanceFromRoot   = HIERARCHY_DISTANCE_FROM_ROOT;
+      HierarchyDescendantCount    = HIERARCHY_DESCENDANT_COUNT;
+      HierarchyDrillState         = HIERARCHY_DRILL_STATE;
+      HierarchyPreorderRank       = HIERARCHY_PREORDER_RANK;
+      LocalLastChangedAt          = LOCAL_LAST_CHANGED_AT;
+    }
+
+
+
+
+
+}
+
+define behavior for ZDMO_R_RAPG_FieldTP alias Field
+//implementation in class ZDMO_BP_R_RAPG_Field unique
+persistent table zdmo_rapgen_flds
+draft table zdmo_rapgfiel00d
+etag master LocalLastChangedAt
+lock dependent by _Project
+authorization dependent by _Project
+
+{
+  field ( readonly )
+  FieldUUID,
+  NodeUUID,
+  RapboUUID,
+  DbtableField,
+  LocalLastChangedAt;
+
+  field ( numbering : managed )
+  FieldUUID;
+
+
+  update;
+  delete;
+
+  association _Node { with draft; }
+  association _Project { with draft; }
+
+  determination CalculateDbtableField on save { create; }
+  mapping for zdmo_rapgen_flds
+    {
+      FieldUUID          = FIELD_UUID;
+      NodeUUID           = NODE_UUID;
+      RapboUUID          = RAPBO_UUID;
+      DbtableField       = DBTABLE_FIELD;
+      CdsViewField       = CDS_VIEW_FIELD;
+      LocalLastChangedAt = LOCAL_LAST_CHANGED_AT;
+    }
+
+
+}
