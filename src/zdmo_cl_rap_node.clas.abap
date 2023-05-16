@@ -849,6 +849,7 @@ CLASS zdmo_cl_rap_node DEFINITION
         iv_localelement       TYPE sxco_cds_field_name
         iv_element            TYPE sxco_cds_field_name
         it_additional_binding TYPE tt_addtionalbinding OPTIONAL
+        iv_useForValidation   TYPE abap_bool OPTIONAL
       RAISING
         ZDMO_cx_rap_generator.
 
@@ -1281,6 +1282,10 @@ CLASS zdmo_cl_rap_node IMPLEMENTATION.
     ls_valuehelp-localelement = iv_localelement.
     ls_valuehelp-name = iv_name.
 
+    IF iv_useforvalidation IS NOT INITIAL.
+      ls_valuehelp-useforvalidation = iv_useforvalidation.
+    ENDIF.
+
     IF it_additional_binding IS NOT INITIAL.
 
       LOOP AT it_additional_binding INTO DATA(ls_additional_binding).
@@ -1332,6 +1337,7 @@ CLASS zdmo_cl_rap_node IMPLEMENTATION.
               iv_name               = 'I_Currency'
               iv_localelement       = lt_fields[ name = field-currencycode ]-cds_view_field
               iv_element            = 'Currency'
+              iv_useforvalidation   = abap_true
           ).
         ENDIF.
       ENDIF.
@@ -1350,6 +1356,7 @@ CLASS zdmo_cl_rap_node IMPLEMENTATION.
               iv_name               = 'I_UnitOfMeasure'
               iv_localelement       = lt_fields[ name = field-unitofmeasure ]-cds_view_field
               iv_element            = 'UnitOfMeasure'
+              iv_useforvalidation   = abap_true
           ).
         ENDIF.
       ENDIF.
@@ -1371,6 +1378,7 @@ CLASS zdmo_cl_rap_node IMPLEMENTATION.
                 iv_name               = 'I_Language'
                 iv_localelement       = field-cds_view_field
                 iv_element            = 'Language'
+                iv_useforvalidation   = abap_true
             ).
       ENDIF.
     ENDLOOP.

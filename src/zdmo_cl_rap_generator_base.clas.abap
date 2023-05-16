@@ -3,12 +3,12 @@ CLASS zdmo_cl_rap_generator_base DEFINITION ABSTRACT
   CREATE PUBLIC .
 
   PUBLIC SECTION.
-    DATA : mo_environment             TYPE REF TO if_xco_cp_gen_env_dev_system,
-           mo_put_operation           TYPE REF TO if_xco_cp_gen_d_o_put,
-           mo_draft_tabl_put_opertion TYPE REF TO if_xco_cp_gen_d_o_put,
-           mo_put_operation1          TYPE REF TO if_xco_cp_gen_d_o_put,
-           mo_put_operation2          TYPE REF TO if_xco_cp_gen_d_o_put,
-           mo_srvb_put_operation      TYPE REF TO if_xco_cp_gen_d_o_put.
+    DATA : mo_environment              TYPE REF TO if_xco_cp_gen_env_dev_system,
+           mo_put_operation            TYPE REF TO if_xco_cp_gen_d_o_put,
+           mo_draft_tabl_put_operation TYPE REF TO if_xco_cp_gen_d_o_put,
+           mo_put_operation1           TYPE REF TO if_xco_cp_gen_d_o_put,
+           mo_put_operation2           TYPE REF TO if_xco_cp_gen_d_o_put,
+           mo_srvb_put_operation       TYPE REF TO if_xco_cp_gen_d_o_put.
     METHODS get_environment IMPORTING i_transport          TYPE sxco_transport OPTIONAL
                             RETURNING VALUE(r_environment) TYPE REF TO if_xco_cp_gen_env_dev_system.
     METHODS get_put_operation IMPORTING i_environment          TYPE REF TO if_xco_cp_gen_env_dev_system
@@ -19,7 +19,7 @@ CLASS zdmo_cl_rap_generator_base DEFINITION ABSTRACT
 *           mo_put_operation           TYPE REF TO if_xco_gen_o_mass_put,
 *           mo_put_operation1          TYPE REF TO if_xco_gen_o_mass_put,
 *           mo_put_operation2          TYPE REF TO if_xco_gen_o_mass_put,
-*           mo_draft_tabl_put_opertion TYPE REF TO if_xco_gen_o_mass_put,
+*           mo_draft_tabl_put_operation TYPE REF TO if_xco_gen_o_mass_put,
 *           mo_srvb_put_operation      TYPE REF TO if_xco_gen_o_mass_put.
 *    METHODS get_environment IMPORTING i_transport          TYPE sxco_transport OPTIONAL
 *                            RETURNING VALUE(r_environment) TYPE REF TO if_xco_gen_environment.
@@ -44,7 +44,7 @@ ENDCLASS.
 
 
 
-CLASS ZDMO_CL_RAP_GENERATOR_BASE IMPLEMENTATION.
+CLASS zdmo_cl_rap_generator_base IMPLEMENTATION.
 
 
   METHOD cds_i_view_set_provider_cntrct.

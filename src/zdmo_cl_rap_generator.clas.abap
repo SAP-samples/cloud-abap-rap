@@ -311,7 +311,7 @@ ENDCLASS.
 
 
 
-CLASS ZDMO_CL_RAP_GENERATOR IMPLEMENTATION.
+CLASS zdmo_cl_rap_generator IMPLEMENTATION.
 
 
   METHOD add_annotation_ui_facets.
@@ -857,7 +857,7 @@ CLASS ZDMO_CL_RAP_GENERATOR IMPLEMENTATION.
 
 
     mo_environment = get_environment( mo_transport ) .
-    mo_draft_tabl_put_opertion = get_put_operation( mo_environment ).
+    mo_draft_tabl_put_operation = get_put_operation( mo_environment ).
     mo_put_operation = get_put_operation( mo_environment ).
     mo_srvb_put_operation = get_put_operation( mo_environment ).
 
@@ -1265,6 +1265,7 @@ CLASS ZDMO_CL_RAP_GENERATOR IMPLEMENTATION.
                WHERE key_indicator = abap_true AND name <> io_rap_bo_node->field_name-client.
 
           DATA(key_field_root_behavior) = lo_header_behavior->add_field( key_field_root_node-cds_view_field ).
+
 
           method_exists_in_interface-interface_name = 'if_xco_gen_bdef_s_fo_b_field'.
           method_exists_in_interface-method_name    = 'SET_READONLY_UPDATE'.
@@ -1678,16 +1679,30 @@ CLASS ZDMO_CL_RAP_GENERATOR IMPLEMENTATION.
               lo_item_behavior->add_field( lo_childnode->singleton_field_name )->set_read_only( ).
             ENDIF.
 
+
+
             LOOP AT lo_childnode->lt_fields INTO DATA(ls_fields)
                    WHERE key_indicator = abap_true AND name <> lo_childnode->field_name-client.
 
               DATA(key_field_behavior) = lo_item_behavior->add_field( ls_fields-cds_view_field ).
 
-              IF xco_api->method_exists_in_interface( interface_name = 'if_xco_gen_bdef_s_fo_b_field'
-                                                      method_name    = 'SET_READONLY_UPDATE' ).
-                CALL METHOD key_field_behavior->('SET_READONLY_UPDATE').
-              ENDIF.
+              "sematic key fields that are set via cba have to be read only.
+              "This are these key fields that are not part of the semantic key
+              "of the parent entity
+              "the remaining key fields have to be set as readonly:update
 
+              IF line_exists( lo_childnode->parent_node->semantic_key[ name = ls_fields-name ] ).
+
+                key_field_behavior->set_read_only( ).
+
+              ELSE.
+
+                IF xco_api->method_exists_in_interface( interface_name = 'if_xco_gen_bdef_s_fo_b_field'
+                                                        method_name    = 'SET_READONLY_UPDATE' ).
+                  CALL METHOD key_field_behavior->('SET_READONLY_UPDATE').
+                ENDIF.
+
+              ENDIF.
 
               "lo_item_behavior->add_field( ls_fields-cds_view_field )->set_readonly_update(  ).
             ENDLOOP.
@@ -2995,7 +3010,12 @@ CLASS ZDMO_CL_RAP_GENERATOR IMPLEMENTATION.
                                )->add_member( 'element' )->add_string( CONV #( ls_valuehelp-element )
                             )->end_record( ).
 
-            lo_valuebuilder->add_member( 'useForValidation' )->add_boolean( abap_true ).
+            "use for validation will be set to true for
+            "currencycode and unitofmeasture fields
+
+            IF ls_valuehelp-useforvalidation = abap_true.
+              lo_valuebuilder->add_member( 'useForValidation' )->add_boolean( abap_true ).
+            ENDIF.
 
             IF ls_valuehelp-additionalbinding IS NOT INITIAL.
 
@@ -3496,7 +3516,7 @@ CLASS ZDMO_CL_RAP_GENERATOR IMPLEMENTATION.
     ENDIF.
 
 
-    DATA(lo_specification) = mo_draft_tabl_put_opertion->for-tabl-for-database_table->add_object( name_of_generated_table
+    DATA(lo_specification) = mo_draft_tabl_put_operation->for-tabl-for-database_table->add_object( name_of_generated_table
                                   )->set_package( mo_package
                                   )->create_form_specification( ).
 
@@ -3783,12 +3803,12 @@ CLASS ZDMO_CL_RAP_GENERATOR IMPLEMENTATION.
 **********************************************************************
 ** Begin of insertion 2020
 **********************************************************************
-            lo_result = mo_draft_tabl_put_opertion->execute(  ).
+            lo_result = mo_draft_tabl_put_operation->execute(  ).
 **********************************************************************
 ** End of insertion 2020
 **********************************************************************
           ELSE.
-            lo_result = mo_draft_tabl_put_opertion->execute(  ).
+            lo_result = mo_draft_tabl_put_operation->execute(  ).
           ENDIF.
 
           DATA(lo_findings) = lo_result->findings.
