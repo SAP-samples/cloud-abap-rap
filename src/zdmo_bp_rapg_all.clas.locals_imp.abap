@@ -2498,8 +2498,10 @@ CLASS lhc_Node IMPLEMENTATION.
 
       CLEAR create_log_cba.
 
-      LOOP AT my_node->lt_fields INTO DATA(field).
-
+      LOOP AT my_node->lt_fields INTO DATA(field)
+                                                  WHERE cds_view_field IS NOT INITIAL AND
+                                                        name IS NOT INITIAL
+            .
         n += 1 .
 
         create_log_cba_line = VALUE #(  %is_draft = if_abap_behv=>mk-on

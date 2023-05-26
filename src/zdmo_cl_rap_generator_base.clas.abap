@@ -44,7 +44,7 @@ ENDCLASS.
 
 
 
-CLASS zdmo_cl_rap_generator_base IMPLEMENTATION.
+CLASS ZDMO_CL_RAP_GENERATOR_BASE IMPLEMENTATION.
 
 
   METHOD cds_i_view_set_provider_cntrct.

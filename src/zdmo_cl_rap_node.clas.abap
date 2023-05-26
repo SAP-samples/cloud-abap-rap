@@ -1079,7 +1079,7 @@ ENDCLASS.
 
 
 
-CLASS zdmo_cl_rap_node IMPLEMENTATION.
+CLASS ZDMO_CL_RAP_NODE IMPLEMENTATION.
 
 
   METHOD add_additional_fields.
@@ -2386,7 +2386,7 @@ CLASS zdmo_cl_rap_node IMPLEMENTATION.
 
         END-TEST-SEAM.
 
-        set_mapping(  ).
+*        set_mapping(  ).
 
       WHEN data_source_types-structure.
 
@@ -2395,13 +2395,13 @@ CLASS zdmo_cl_rap_node IMPLEMENTATION.
         lt_fields = get_structure_components( lo_structure ).
 
 
-        set_mapping(  ).
+*        set_mapping(  ).
 
       WHEN data_source_types-abap_type.
 
         lt_fields = get_abap_type_components( abap_type_name ).
 
-        set_mapping(  ).
+*        set_mapping(  ).
 
       WHEN data_source_types-cds_view OR data_source_types-abstract_entity.
 
@@ -2463,6 +2463,8 @@ CLASS zdmo_cl_rap_node IMPLEMENTATION.
     "add additional fields to lt_all_fields if additional fields are added
     "in add_additional_fields_2
     " lt_all_fields = lt_fields.
+
+    set_mapping(  ).
 
   ENDMETHOD.
 
@@ -2659,7 +2661,12 @@ CLASS zdmo_cl_rap_node IMPLEMENTATION.
 *          ls_fields-cds_view_field = field_content-alias.
 *        ENDIF.
 
-        ls_fields-name = field_content-expression->if_xco_text~get_lines( )->join( )->value.
+        "This would retrieve field names such as _ageny.name when
+        "defined as _agency.name = AgencyName
+
+*        ls_fields-name = field_content-expression->if_xco_text~get_lines( )->join( )->value.
+
+        ls_fields-name = field_content-original_name.
         ls_fields-cds_view_field = field_content-original_name.
 
         ls_fields-key_indicator =  field_content-key_indicator.

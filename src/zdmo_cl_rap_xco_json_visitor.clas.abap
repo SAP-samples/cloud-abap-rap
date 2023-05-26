@@ -75,7 +75,7 @@ ENDCLASS.
 
 
 
-CLASS zdmo_cl_rap_xco_json_visitor IMPLEMENTATION.
+CLASS ZDMO_CL_RAP_XCO_JSON_VISITOR IMPLEMENTATION.
 
 
   METHOD constructor.

@@ -311,7 +311,7 @@ ENDCLASS.
 
 
 
-CLASS zdmo_cl_rap_generator IMPLEMENTATION.
+CLASS ZDMO_CL_RAP_GENERATOR IMPLEMENTATION.
 
 
   METHOD add_annotation_ui_facets.
@@ -2391,7 +2391,7 @@ CLASS zdmo_cl_rap_generator IMPLEMENTATION.
     "create a view entity
     lo_specification->set_short_description( |Control structure for { io_rap_bo_node->rap_node_objects-alias }| ) ##no_text.
 
-    LOOP AT io_rap_bo_node->lt_fields  INTO  DATA(ls_header_fields) WHERE  key_indicator  <> abap_true .
+    LOOP AT io_rap_bo_node->lt_fields  INTO  DATA(ls_header_fields) WHERE  key_indicator  <> abap_true and name is not INITIAL.
       lo_specification->add_component( ls_header_fields-name
          )->set_type( xco_cp_abap_dictionary=>data_element( 'xsdboolean' ) ).
     ENDLOOP.
