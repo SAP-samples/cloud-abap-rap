@@ -206,6 +206,13 @@ annotate view ZDMO_C_RAPG_ProjectTP with
   Namespace;
 
   @UI.fieldGroup: [{ qualifier: 'FieldGroup_1', position: 50, label: 'Package' }]
+  
+  @UI.lineItem: [ {
+    position: 180 ,
+    importance: #HIGH,
+    label: 'Package Name'
+  } ]
+  
   PackageName;
 
   @UI.fieldGroup: [{ qualifier: 'FieldGroup_3', position: 10, label: 'Transport' }]
