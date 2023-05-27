@@ -1,7 +1,7 @@
 managed implementation in class zdmo_bp_rapg_all unique;
 
 
-//strict ( 2 );
+strict;
 with draft;
 
 define behavior for ZDMO_R_RAPG_ProjectTP alias Project
@@ -36,10 +36,10 @@ authorization master ( global )
   LastChangedAt,
   LocalLastChangedAt;
 
-//  field ( mandatory )
-//  PackageName;
+  //  field ( mandatory )
+  //  PackageName;
 
-//  field ( features : instance ) ADTLink;
+  //  field ( features : instance ) ADTLink;
   field ( features : instance ) MultiInlineEdit, CustomizingTable, AddToManageBusinessConfig;
 
   field ( numbering : managed ) RapBoUUID;

@@ -1,5 +1,5 @@
 projection;
-//strict ( 2 );
+strict ;
 use draft;
 
 define behavior for ZDMO_C_RAPG_ProjectTP alias Project

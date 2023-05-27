@@ -473,8 +473,8 @@ CLASS lhc_Project IMPLEMENTATION.
 
     DATA update_bonodes TYPE TABLE FOR CREATE ZDMO_R_RAPG_ProjectTP\_Node.
     DATA update_bonode LIKE LINE OF update_bonodes.
-    DATA targets TYPE TABLE FOR CREATE ZDMO_R_RAPG_ProjectTP\\node .
-    DATA target LIKE LINE OF targets.
+*    DATA targets TYPE TABLE FOR CREATE ZDMO_R_RAPG_ProjectTP\\node .
+*    DATA target LIKE LINE OF targets.
     DATA update_rapbonode TYPE TABLE FOR UPDATE ZDMO_R_RAPG_Nodetp.
 
     DATA update_fields TYPE TABLE FOR UPDATE ZDMO_R_RAPG_FieldTP.

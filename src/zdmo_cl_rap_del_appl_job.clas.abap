@@ -72,11 +72,13 @@ INHERITING FROM zdmo_cl_rap_generator_base
       IMPORTING i_task_name      TYPE bapi_msg
                 i_findings       TYPE REF TO if_xco_gen_o_findings
       RETURNING VALUE(r_success) TYPE abap_bool
-      RAISING   cx_bali_runtime .
+*      RAISING   cx_bali_runtime
+      .
     METHODS add_text_to_app_log_or_console
       IMPORTING i_text     TYPE cl_bali_free_text_setter=>ty_text
                 i_severity TYPE cl_bali_free_text_setter=>ty_severity DEFAULT if_bali_constants=>c_severity_status
-      RAISING   cx_bali_runtime.
+*      RAISING   cx_bali_runtime
+      .
     METHODS get_objects_from_package
       IMPORTING i_package                   TYPE sxco_package
       RETURNING VALUE(r_repository_objects) TYPE zdmo_cl_rap_generator=>t_generated_repository_objects.
@@ -101,45 +103,54 @@ INHERITING FROM zdmo_cl_rap_generator_base
     METHODS delete_service_bindings
       IMPORTING i_repository_objects TYPE zdmo_cl_rap_generator=>t_generated_repository_objects
 *                i_environment        TYPE REF TO if_xco_cp_gen_env_dev_system
-      RAISING   cx_bali_runtime.
+*      RAISING   cx_bali_runtime
+       .
     METHODS delete_service_definitions
       IMPORTING i_repository_objects TYPE zdmo_cl_rap_generator=>t_generated_repository_objects
 *                i_environment        TYPE REF TO if_xco_cp_gen_env_dev_system
-      RAISING   cx_bali_runtime.
+*      RAISING   cx_bali_runtime
+      .
     METHODS delete_behavior_definitions
       IMPORTING i_repository_objects TYPE zdmo_cl_rap_generator=>t_generated_repository_objects
 *                i_environment        TYPE REF TO if_xco_cp_gen_env_dev_system
-      RAISING   cx_bali_runtime.
+*      RAISING   cx_bali_runtime
+      .
     METHODS delete_metadata_extensions
       IMPORTING i_repository_objects TYPE zdmo_cl_rap_generator=>t_generated_repository_objects
 *                i_environment        TYPE REF TO if_xco_cp_gen_env_dev_system
-      RAISING   cx_bali_runtime.
+*      RAISING   cx_bali_runtime
+      .
     METHODS delete_cds_views
       IMPORTING i_repository_objects TYPE zdmo_cl_rap_generator=>t_generated_repository_objects
 *                i_environment        TYPE REF TO if_xco_cp_gen_env_dev_system
-      RAISING   cx_bali_runtime.
+*      RAISING   cx_bali_runtime
+      .
     METHODS delete_classes
       IMPORTING i_repository_objects TYPE zdmo_cl_rap_generator=>t_generated_repository_objects
 *                i_environment        TYPE REF TO if_xco_cp_gen_env_dev_system
-      RAISING   cx_bali_runtime.
+*      RAISING   cx_bali_runtime
+      .
     METHODS delete_draft_tables
       IMPORTING i_repository_objects TYPE zdmo_cl_rap_generator=>t_generated_repository_objects
 *                i_environment        TYPE REF TO if_xco_cp_gen_env_dev_system
-      RAISING   cx_bali_runtime.
+*      RAISING   cx_bali_runtime
+      .
     METHODS delete_structures
       IMPORTING i_repository_objects TYPE zdmo_cl_rap_generator=>t_generated_repository_objects
 *                i_environment        TYPE REF TO if_xco_cp_gen_env_dev_system
-      RAISING   cx_bali_runtime.
+*      RAISING   cx_bali_runtime
+      .
     METHODS Delete_RAP_Generator_Project
       IMPORTING
         i_rap_bo_name TYPE sxco_ar_object_name
-      RAISING
-        cx_bali_runtime.
+*      RAISING
+*        cx_bali_runtime
+        .
 ENDCLASS.
 
 
 
-CLASS ZDMO_CL_RAP_DEL_APPL_JOB IMPLEMENTATION.
+CLASS zdmo_cl_rap_del_appl_job IMPLEMENTATION.
 
 
   METHOD add_findings_to_output.
@@ -204,8 +215,12 @@ CLASS ZDMO_CL_RAP_DEL_APPL_JOB IMPLEMENTATION.
   METHOD add_log_entries_for_rap_bo.
 
     DATA create_rapbolog_cba TYPE TABLE FOR CREATE ZDMO_R_RAPG_ProjectTP\_Log.
-    DATA log_entries TYPE TABLE FOR CREATE ZDMO_R_RAPG_ProjectTP\\log   .
-    DATA log_entry TYPE STRUCTURE FOR CREATE ZDMO_R_RAPG_ProjectTP\\log   .
+
+    DATA create_raplog_cba_line TYPE STRUCTURE FOR CREATE ZDMO_R_RAPG_ProjectTP\_Log.
+    DATA log_entries LIKE create_raplog_cba_line-%target.
+    DATA log_entry LIKE LINE OF log_entries.
+*    DATA log_entries TYPE TABLE FOR CREATE ZDMO_R_RAPG_ProjectTP\\log   .
+*    DATA log_entry TYPE STRUCTURE FOR CREATE ZDMO_R_RAPG_ProjectTP\\log   .
     DATA n TYPE i.
     DATA time_stamp TYPE timestampl.
 

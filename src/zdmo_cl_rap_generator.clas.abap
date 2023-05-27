@@ -311,7 +311,7 @@ ENDCLASS.
 
 
 
-CLASS ZDMO_CL_RAP_GENERATOR IMPLEMENTATION.
+CLASS zdmo_cl_rap_generator IMPLEMENTATION.
 
 
   METHOD add_annotation_ui_facets.
@@ -681,8 +681,12 @@ CLASS ZDMO_CL_RAP_GENERATOR IMPLEMENTATION.
 *    ENDIF.
 
     DATA create_rapbolog_cba TYPE TABLE FOR CREATE ZDMO_R_RAPG_ProjectTP\_Log.
-    DATA log_entries TYPE TABLE FOR CREATE ZDMO_R_RAPG_ProjectTP\\Log   .
-    DATA log_entry TYPE STRUCTURE FOR CREATE ZDMO_R_RAPG_ProjectTP\\Log   .
+*    DATA log_entries TYPE TABLE FOR CREATE ZDMO_R_RAPG_ProjectTP\\Log   .
+*    DATA log_entry TYPE STRUCTURE FOR CREATE ZDMO_R_RAPG_ProjectTP\\Log   .
+    DATA create_raplog_cba_line TYPE STRUCTURE FOR CREATE ZDMO_R_RAPG_ProjectTP\_Log.
+    DATA log_entries LIKE create_raplog_cba_line-%target.
+    DATA log_entry LIKE LINE OF log_entries.
+
     DATA n TYPE i.
     DATA time_stamp TYPE timestampl.
 
@@ -2391,7 +2395,7 @@ CLASS ZDMO_CL_RAP_GENERATOR IMPLEMENTATION.
     "create a view entity
     lo_specification->set_short_description( |Control structure for { io_rap_bo_node->rap_node_objects-alias }| ) ##no_text.
 
-    LOOP AT io_rap_bo_node->lt_fields  INTO  DATA(ls_header_fields) WHERE  key_indicator  <> abap_true and name is not INITIAL.
+    LOOP AT io_rap_bo_node->lt_fields  INTO  DATA(ls_header_fields) WHERE  key_indicator  <> abap_true AND name IS NOT INITIAL.
       lo_specification->add_component( ls_header_fields-name
          )->set_type( xco_cp_abap_dictionary=>data_element( 'xsdboolean' ) ).
     ENDLOOP.
