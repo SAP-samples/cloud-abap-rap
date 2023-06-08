@@ -253,17 +253,17 @@ CLASS ZDMO_CL_RAP_GENERATOR_SETUP IMPLEMENTATION.
 
 **********************************************************************
         "cloud
-        mo_environment = get_environment( transport_request ).
-        mo_srvb_put_operation = get_put_operation( mo_environment ).
+*        mo_environment = get_environment( transport_request ).
+*        mo_srvb_put_operation = get_put_operation( mo_environment ).
 **********************************************************************
         "on premise
-*        if transport_request is not initial.
-*          mo_environment = xco_generation=>environment->transported( transport_request ).
-*        else.
-*          mo_environment = xco_generation=>environment->local.
-*        endif.
-*
-*        mo_srvb_put_operation = mo_environment->create_mass_put_operation( ).
+        if transport_request is not initial.
+          mo_environment = xco_generation=>environment->transported( transport_request ).
+        else.
+          mo_environment = xco_generation=>environment->local.
+        endif.
+
+        mo_srvb_put_operation = mo_environment->create_mass_put_operation( ).
 
 **********************************************************************
 
@@ -273,7 +273,7 @@ CLASS ZDMO_CL_RAP_GENERATOR_SETUP IMPLEMENTATION.
 
         specification_srvb->set_short_description( |Service binding for RAP Generator| ) ##no_text.
 
-        specification_srvb->set_binding_type( xco_cp_service_binding=>binding_type->odata_v2_ui ). " odata_v4_ui ).
+        specification_srvb->set_binding_type( xco_cp_service_binding=>binding_type->odata_v2_ui ). " odata_v4_ui ). 
 
         specification_srvb->add_service( )->add_version( '0001' )->set_service_definition( service_definition_name ).
 
