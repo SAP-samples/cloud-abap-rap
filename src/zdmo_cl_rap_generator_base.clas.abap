@@ -51,13 +51,13 @@ CLASS zdmo_cl_rap_generator_base IMPLEMENTATION.
 
   METHOD cds_i_view_set_provider_cntrct.
     "valid as of 2022
-    i_interface_view_spcification->set_provider_contract( io_provider_contract = xco_cp_cds=>provider_contract->transactional_interface ).
+    "i_interface_view_spcification->set_provider_contract( io_provider_contract = xco_cp_cds=>provider_contract->transactional_interface ).
   ENDMETHOD.
 
 
   METHOD cds_p_view_set_provider_cntrct.
     "valid as of 2022
-    i_projection_view_spcification->set_provider_contract( io_provider_contract = xco_cp_cds=>provider_contract->transactional_query ).
+    "i_projection_view_spcification->set_provider_contract( io_provider_contract = xco_cp_cds=>provider_contract->transactional_query ).
   ENDMETHOD.
 
 
