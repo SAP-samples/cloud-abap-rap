@@ -273,7 +273,7 @@ CLASS ZDMO_CL_RAP_GENERATOR_SETUP IMPLEMENTATION.
 
         specification_srvb->set_short_description( |Service binding for RAP Generator| ) ##no_text.
 
-        specification_srvb->set_binding_type( xco_cp_service_binding=>binding_type->odata_v2_ui ). " odata_v4_ui ). 
+        specification_srvb->set_binding_type( xco_cp_service_binding=>binding_type->odata_v2_ui ). " odata_v4_ui ).
 
         specification_srvb->add_service( )->add_version( '0001' )->set_service_definition( service_definition_name ).
 
