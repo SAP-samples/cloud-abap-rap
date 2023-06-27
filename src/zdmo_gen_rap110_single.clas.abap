@@ -94,7 +94,7 @@ INHERITING FROM zdmo_cl_rap_generator_base
     METHODS create_abs_ent_a_daystoflight  IMPORTING out          TYPE REF TO if_oo_adt_classrun_out.
     METHODS create_abs_ent_a_travel        IMPORTING out          TYPE REF TO if_oo_adt_classrun_out.
 
-
+    METHODS create_number_range IMPORTING out TYPE REF TO if_oo_adt_classrun_out.
 
     METHODS create_additional_objects IMPORTING out TYPE REF TO if_oo_adt_classrun_out.
 
@@ -254,7 +254,7 @@ CLASS zdmo_gen_rap110_single IMPLEMENTATION.
       create_additional_objects( out = out ).
     ENDIF.
 
-
+    create_number_range(  out = out ).
 
     out->write( | The following package got created for you and includes everything you need: { package_name } | ).
     out->write( | In the "Project Explorer" right click on "Favorite Packages" and click on "Add Package...". | ).
@@ -2233,4 +2233,93 @@ CLASS zdmo_gen_rap110_single IMPLEMENTATION.
         ENDIF.
     ENDTRY.
   ENDMETHOD.
+
+  METHOD create_number_range.
+    DATA:
+      lv_object   TYPE cl_numberrange_objects=>nr_attributes-object,
+      lv_devclass TYPE cl_numberrange_objects=>nr_attributes-devclass,
+      lv_corrnr   TYPE cl_numberrange_objects=>nr_attributes-corrnr.
+
+    DATA: lt_interval TYPE cl_numberrange_intervals=>nr_interval,
+          ls_interval TYPE cl_numberrange_intervals=>nr_nriv_line.
+
+    ls_interval-nrrangenr  = '01'.
+    ls_interval-fromnumber = '00000001'.
+    ls_interval-tonumber   = '99999999'.
+    ls_interval-procind    = 'I'.
+    APPEND ls_interval TO lt_interval.
+
+
+    DATA: group_id   TYPE string,
+          error_flag TYPE c.
+
+    group_id = unique_suffix.
+
+    CLEAR error_flag.
+
+    lv_object   = |ZRAP110{ group_id }|.
+    lv_devclass = |ZRAP110_{ group_id }|.
+    lv_corrnr   = transport.
+
+    TRY.
+        cl_numberrange_objects=>create(
+          EXPORTING
+            attributes = VALUE #( object     = lv_object
+                                  domlen     = '/DMO/TRAVEL_ID'
+                                  percentage = 10
+                                  buffer     = abap_false
+                                  noivbuffer = 0
+                                  devclass   = lv_devclass
+                                  corrnr     = lv_corrnr )
+            obj_text   = VALUE #( object     = lv_object
+                                  langu      = 'E'
+                                  txt        = |RAP110 Travel ID group { group_id }|
+                                  txtshort   = 'RAP110 Travel ID' )
+          IMPORTING
+            errors     = DATA(lt_errors)
+            returncode = DATA(lv_returncode)
+            ).
+
+      CATCH cx_nr_object_not_found INTO DATA(lx_nr_object_not_found).
+        ASSERT 1 = 1.  error_flag = '1'.
+
+      CATCH cx_number_ranges INTO DATA(lx_number_ranges).
+        ASSERT 1 = 1.  error_flag = '2'.
+
+    ENDTRY.
+
+
+    TRY.
+
+        CALL METHOD cl_numberrange_intervals=>create
+          EXPORTING
+            interval  = lt_interval
+            object    = lv_object
+            subobject = ' '
+          IMPORTING
+            error     = DATA(lv_error)
+            error_inf = DATA(ls_error)
+            error_iv  = DATA(lt_error_iv)
+            warning   = DATA(lv_warning).
+
+      CATCH cx_nr_object_not_found INTO lx_nr_object_not_found.
+        ASSERT 1 = 1.  error_flag = '3'.
+
+      CATCH cx_number_ranges INTO lx_number_ranges.
+        ASSERT 1 = 1.  error_flag = '4'.
+
+    ENDTRY.
+
+    COMMIT WORK.
+
+    IF error_flag > 0.
+      out->write( |Number Range Object: { lv_object }   Package: { lv_devclass }   Transport: { lv_corrnr }   Error: { error_flag }| ).
+    ELSE.
+      out->write( |Number Range Object: { lv_object }   Package: { lv_devclass } created.| ).
+    ENDIF.
+
+
+
+  ENDMETHOD.
+
 ENDCLASS.
