@@ -72,7 +72,7 @@ annotate view ZDMO_C_RAPG_NodeTP with
        targetQualifier: 'FieldGroup_10',
        position : 10   },
 
-     { label    : 'Map fields for Metadata Extension',
+     { label    : 'Map fields for @ObjectModel annotation',
        id       : 'Facet_15',
        purpose  : #STANDARD,
        type     : #COLLECTION,
@@ -244,7 +244,7 @@ annotate view ZDMO_C_RAPG_NodeTP with
   ViewTypeValue;
 
 
-  @UI.fieldGroup: [{ qualifier: 'FieldGroup_15', position: 10, label: 'Object ID' }]
+  @UI.fieldGroup: [{ qualifier: 'FieldGroup_15', position: 10, label: 'semanticKey' }]
   FieldNameObjectID;
 
   @UI.fieldGroup: [{ qualifier: 'FieldGroup_10', position: 20, label: 'etag master' }]
