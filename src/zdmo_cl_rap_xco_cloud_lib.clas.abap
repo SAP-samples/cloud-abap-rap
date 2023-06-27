@@ -27,6 +27,8 @@ CLASS zdmo_cl_rap_xco_cloud_lib DEFINITION INHERITING FROM ZDMO_cl_rap_xco_lib
     METHODS get_abap_obj_directory_entry REDEFINITION.
     METHODS get_objects_in_package REDEFINITION.
 
+    METHODS publish_service_binding REDEFINITION.
+    methods un_publish_service_binding REDEFINITION.
 
   PROTECTED SECTION.
   PRIVATE SECTION.
@@ -37,7 +39,7 @@ ENDCLASS.
 
 
 
-CLASS ZDMO_CL_RAP_XCO_CLOUD_LIB IMPLEMENTATION.
+CLASS zdmo_cl_rap_xco_cloud_lib IMPLEMENTATION.
 
 
   METHOD get_abap_obj_directory_entry.
@@ -195,4 +197,56 @@ CLASS ZDMO_CL_RAP_XCO_CLOUD_LIB IMPLEMENTATION.
       r_is_published = abap_true.
     ENDIF.
   ENDMETHOD.
+
+  METHOD publish_service_binding.
+*    DATA(lo_service_binding) = xco_cp_abap_repository=>object->srvb->for( '$SERVICE_BINDING_NAME$' ).
+
+    DATA(lo_service_binding) = get_service_binding( i_service_binding ).
+
+    " First we check whether the local service endpoint for LO_SERVICE_BINDING is
+    " currently published.
+    DATA(lv_is_published) = xco_cp_service_binding=>local_service_endpoint->odata_v4->is_published( lo_service_binding ).
+
+    " Depending on whether the local service endpoint is currently published we either
+    " trigger an unpublish or a publish of the local service endpoint.
+    DATA lo_operation TYPE REF TO if_xco_srvb_operation.
+
+    IF lv_is_published EQ abap_false.
+*      lo_operation = xco_cp_service_binding=>local_service_endpoint->odata_v4->operation->unpublish( lo_service_binding ).
+*    ELSE.
+      lo_operation = xco_cp_service_binding=>local_service_endpoint->odata_v4->operation->publish( lo_service_binding ).
+      " Note that both a publish as well as an unpublish operation are concrete
+      " realizations of an IF_XCO_SRVB_OPERATION and can thus be treated uniformly.
+      " Regardless of the concrete realization of the operation, its execution can
+      " always be triggered via the method EXECUTE.
+      lo_operation->execute( ).
+    ENDIF.
+
+
+  ENDMETHOD.
+
+  METHOD un_publish_service_binding.
+
+    DATA(lo_service_binding) = get_service_binding( i_service_binding ).
+
+    " First we check whether the local service endpoint for LO_SERVICE_BINDING is
+    " currently published.
+    DATA(lv_is_published) = xco_cp_service_binding=>local_service_endpoint->odata_v4->is_published( lo_service_binding ).
+
+    " Depending on whether the local service endpoint is currently published we either
+    " trigger an unpublish or a publish of the local service endpoint.
+    DATA lo_operation TYPE REF TO if_xco_srvb_operation.
+
+    IF lv_is_published EQ abap_true.
+      lo_operation = xco_cp_service_binding=>local_service_endpoint->odata_v4->operation->unpublish( lo_service_binding ).
+*    ELSE.
+*      lo_operation = xco_cp_service_binding=>local_service_endpoint->odata_v4->operation->publish( lo_service_binding ).
+      " Note that both a publish as well as an unpublish operation are concrete
+      " realizations of an IF_XCO_SRVB_OPERATION and can thus be treated uniformly.
+      " Regardless of the concrete realization of the operation, its execution can
+      " always be triggered via the method EXECUTE.
+      lo_operation->execute( ).
+    ENDIF.
+  ENDMETHOD.
+
 ENDCLASS.
