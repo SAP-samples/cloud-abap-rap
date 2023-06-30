@@ -98,7 +98,9 @@ annotate view ZDMO_C_RAPG_ProjectTP with
        parentId : 'Facet_3',
        type     : #FIELDGROUP_REFERENCE,
        targetQualifier: 'FieldGroup_3',
-       isPartOfPreview: false,
+  //
+         isPartOfPreview: false,
+//       isSummary: true,
        position : 40   },
 
   //Facet and field group for optional parameters
@@ -106,14 +108,15 @@ annotate view ZDMO_C_RAPG_ProjectTP with
        id       : 'Facet_4',
        purpose  : #STANDARD,
        type     : #COLLECTION,
-  //       isPartOfPreview: false,
        position : 50  },
      { id       : 'FieldGroup_4',
        purpose  : #STANDARD,
        parentId : 'Facet_4',
        type     : #FIELDGROUP_REFERENCE,
        targetQualifier: 'FieldGroup_4',
-//       isPartOfPreview: false,
+  //
+//       isSummary: true,
+       isPartOfPreview: false,
        position : 50   },
 
 
@@ -297,9 +300,6 @@ annotate view ZDMO_C_RAPG_ProjectTP with
   @UI.fieldGroup: [{ qualifier: 'FieldGroup_4', position: 10, label: 'Add to manage business configuration' }]
   AddToManageBusinessConfig;
 
-  @UI.fieldGroup: [{ qualifier: 'FieldGroup_4', position: 20, label: 'Create service' }]
-  PublishService;
-
   @UI.hidden: true
   BusinessConfName;
 
@@ -334,7 +334,6 @@ annotate view ZDMO_C_RAPG_ProjectTP with
 
 
   @UI.fieldGroup: [{ qualifier: 'FieldGroup_3', position: 30, label: 'Json string'
-  //  , isPartOfPreview: true
   }]
   @UI.multiLineText: true
   JsonString;
