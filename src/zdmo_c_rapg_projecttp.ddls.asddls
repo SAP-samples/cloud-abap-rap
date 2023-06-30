@@ -18,6 +18,7 @@ define root view entity ZDMO_C_RAPG_ProjectTP
            PackageName,
            TransportRequest,
            SkipActivation,
+           PublishService,
            ImplementationType,
            AbapLanguageVersion,
            PackageLanguageVersion,

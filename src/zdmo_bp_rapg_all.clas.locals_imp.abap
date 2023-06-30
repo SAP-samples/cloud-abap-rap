@@ -207,6 +207,7 @@ CLASS lhc_Project IMPLEMENTATION.
                                 hasSematicKey    = has_semantic_key
                                 doesNotUseUnmanagedQuery = does_not_use_unmanaged_query
                                 isManaged = is_managed
+                                PublishService = abap_true
                                             ).
 
 
@@ -233,7 +234,7 @@ CLASS lhc_Project IMPLEMENTATION.
                             abaplanguageversion PackageLanguageVersion
                             draftenabled implementationtype datasourcetype bindingtype
                             hasSematicKey doesNotUseUnmanagedQuery isManaged
-                            TransportRequest )
+                            TransportRequest PublishService )
                   WITH create_rapbo
                   CREATE BY \_Node
                   FIELDS ( entityname isrootnode hierarchydistancefromroot DataSource )

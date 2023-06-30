@@ -379,7 +379,7 @@ CLASS ZDMO_CL_RAP_XCO_JSON_VISITOR IMPLEMENTATION.
 
   METHOD if_xco_json_tree_visitor~visit_boolean.
     DATA error_message TYPE string.
-    CHECK iv_value IS NOT INITIAL.
+*    CHECK iv_value IS NOT INITIAL.
     IF object_number = 1.
       CASE last_visited_member.
 

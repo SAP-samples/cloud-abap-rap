@@ -36,21 +36,21 @@ annotate view ZDMO_C_RAPG_ProjectTP with
 
 
 
-  @UI.facet: [ 
-  
-//  {
-//    id: 'idCollection',
-//    type: #COLLECTION,
-//    label: 'Project',
-//    position: 05
-//  },
-//  {
-//    id: 'idIdentification',
-//    parentId: 'idCollection',
-//    type: #IDENTIFICATION_REFERENCE,
-//    label: 'General Information',
-//    position: 07
-//  },
+  @UI.facet: [
+
+  //  {
+  //    id: 'idCollection',
+  //    type: #COLLECTION,
+  //    label: 'Project',
+  //    position: 05
+  //  },
+  //  {
+  //    id: 'idIdentification',
+  //    parentId: 'idCollection',
+  //    type: #IDENTIFICATION_REFERENCE,
+  //    label: 'General Information',
+  //    position: 07
+  //  },
 
   // Show ADT Link and Job Status in Header
   {
@@ -106,14 +106,14 @@ annotate view ZDMO_C_RAPG_ProjectTP with
        id       : 'Facet_4',
        purpose  : #STANDARD,
        type     : #COLLECTION,
-//       isPartOfPreview: false,
+  //       isPartOfPreview: false,
        position : 50  },
      { id       : 'FieldGroup_4',
        purpose  : #STANDARD,
        parentId : 'Facet_4',
        type     : #FIELDGROUP_REFERENCE,
        targetQualifier: 'FieldGroup_4',
-       isPartOfPreview: false,
+//       isPartOfPreview: false,
        position : 50   },
 
 
@@ -121,7 +121,7 @@ annotate view ZDMO_C_RAPG_ProjectTP with
     id: 'idLineitem',
     type: #LINEITEM_REFERENCE,
     label: 'Entities',
-    position: 10 ,    
+    position: 10 ,
     targetElement: '_Node'
   }
   ,
@@ -144,22 +144,22 @@ annotate view ZDMO_C_RAPG_ProjectTP with
   @UI.lineItem: [ {
     position: 20 ,
     importance: #HIGH
-  } 
+  }
   ,
     {  type: #FOR_ACTION, dataAction: 'createProjectAndRootNode', label: 'New Project'   }
     ,
     {  type: #FOR_ACTION, dataAction: 'copyProject', label: 'Copy Project'  }
     ,
     {  type: #FOR_ACTION, dataAction: 'deleteProject', label: 'Delete repository objects' }
-  
-  
-  
+
+
+
   ]
-  
+
   @UI.identification: [ {
     position: 20 ,
     importance: #HIGH
-  } 
+  }
 
   ,
     { type: #FOR_ACTION, dataAction: 'generateProject', label: 'Generate repository objects' }
@@ -167,21 +167,21 @@ annotate view ZDMO_C_RAPG_ProjectTP with
       {  type: #FOR_ACTION, dataAction: 'copyProject', label: 'Copy Project' }
     ,
     {  type: #FOR_ACTION, dataAction: 'deleteProject', label: 'Delete repository objects' }
-  
-  
-  
+
+
+
   ]
-  
+
   @UI.fieldGroup: [{ qualifier: 'FieldGroup_0', position: 10, label: 'RAP BO Name' }
-  
-//  ,
-//    { type: #FOR_ACTION, dataAction: 'generateProject', label: 'Generate repository objects' }
-//      ,
-//      {  type: #FOR_ACTION, dataAction: 'copyProject', label: 'Copy Project' }
-//    ,
-//    {  type: #FOR_ACTION, dataAction: 'deleteProject', label: 'Delete repository objects' }
-//  
-  
+
+  //  ,
+  //    { type: #FOR_ACTION, dataAction: 'generateProject', label: 'Generate repository objects' }
+  //      ,
+  //      {  type: #FOR_ACTION, dataAction: 'copyProject', label: 'Copy Project' }
+  //    ,
+  //    {  type: #FOR_ACTION, dataAction: 'deleteProject', label: 'Delete repository objects' }
+  //
+
   ]
   @UI.selectionField: [ {
     position: 20
@@ -206,13 +206,13 @@ annotate view ZDMO_C_RAPG_ProjectTP with
   Namespace;
 
   @UI.fieldGroup: [{ qualifier: 'FieldGroup_1', position: 50, label: 'Package' }]
-  
+
   @UI.lineItem: [ {
     position: 180 ,
     importance: #HIGH,
     label: 'Package Name'
   } ]
-  
+
   PackageName;
 
   @UI.fieldGroup: [{ qualifier: 'FieldGroup_3', position: 10, label: 'Transport' }]
@@ -297,6 +297,9 @@ annotate view ZDMO_C_RAPG_ProjectTP with
   @UI.fieldGroup: [{ qualifier: 'FieldGroup_4', position: 10, label: 'Add to manage business configuration' }]
   AddToManageBusinessConfig;
 
+  @UI.fieldGroup: [{ qualifier: 'FieldGroup_4', position: 20, label: 'Create service' }]
+  PublishService;
+
   @UI.hidden: true
   BusinessConfName;
 
@@ -331,7 +334,7 @@ annotate view ZDMO_C_RAPG_ProjectTP with
 
 
   @UI.fieldGroup: [{ qualifier: 'FieldGroup_3', position: 30, label: 'Json string'
-//  , isPartOfPreview: true 
+  //  , isPartOfPreview: true
   }]
   @UI.multiLineText: true
   JsonString;
@@ -360,7 +363,7 @@ annotate view ZDMO_C_RAPG_ProjectTP with
                              type: #WITH_URL,
                              url: 'ADTLink'
                              ,
-                             hidden: #(HideADTLink) 
+                             hidden: #(HideADTLink)
                              }
                            ] }
 

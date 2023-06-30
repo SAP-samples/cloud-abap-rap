@@ -42,6 +42,8 @@ authorization master ( global )
   //  field ( features : instance ) ADTLink;
   field ( features : instance ) MultiInlineEdit, CustomizingTable, AddToManageBusinessConfig;
 
+  field ( features : instance ) PublishService;
+
   field ( numbering : managed ) RapBoUUID;
 
   internal create;
@@ -103,6 +105,7 @@ authorization master ( global )
       Prefix                    = PREFIX;
       MultiInlineEdit           = MULTI_INLINE_EDIT;
       CustomizingTable          = CUSTOMIZING_TABLE;
+      PublishService            = PUBLISH_SERVICE;
       AddToManageBusinessConfig = ADD_TO_MANAGE_BUSINESS_CONFIG;
       BusinessConfName          = BUSINESS_CONF_NAME;
       BusinessConfIdentifier    = BUSINESS_CONF_IDENTIFIER;
