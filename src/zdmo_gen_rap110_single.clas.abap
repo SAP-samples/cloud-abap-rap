@@ -105,17 +105,17 @@ INHERITING FROM zdmo_cl_rap_generator_base
     METHODS create_package_in_zlocal IMPORTING VALUE(lo_transport) TYPE sxco_transport.
 
 
-    METHODS generate_table        IMPORTING io_put_operation        TYPE REF TO if_xco_cp_gen_d_o_put
+    METHODS generate_table        IMPORTING io_put_operation        LIKE mo_put_operation
                                             table_fields            TYPE tt_fields
                                             table_name              TYPE sxco_dbt_object_name
                                             table_short_description TYPE if_xco_cp_gen_tabl_dbt_s_form=>tv_short_description.
     METHODS get_root_table_fields  RETURNING VALUE(root_table_fields) TYPE tt_fields.
     METHODS get_child_table_fields RETURNING VALUE(child_table_fields) TYPE tt_fields.
 *    METHODS generate_data.
-    METHODS generate_data_generator_class IMPORTING VALUE(lo_transport) TYPE sxco_transport io_put_operation TYPE REF TO if_xco_cp_gen_d_o_put .
-    METHODS generate_virt_elem_trav_class IMPORTING VALUE(lo_transport) TYPE sxco_transport io_put_operation TYPE REF TO if_xco_cp_gen_d_o_put .
-    METHODS generate_virt_elem_book_class IMPORTING VALUE(lo_transport) TYPE sxco_transport io_put_operation TYPE REF TO if_xco_cp_gen_d_o_put .
-    METHODS generate_eml_playground_class IMPORTING VALUE(lo_transport) TYPE sxco_transport io_put_operation TYPE REF TO if_xco_cp_gen_d_o_put .
+    METHODS generate_data_generator_class IMPORTING VALUE(lo_transport) TYPE sxco_transport io_put_operation LIKE mo_put_operation  .
+    METHODS generate_virt_elem_trav_class IMPORTING VALUE(lo_transport) TYPE sxco_transport io_put_operation LIKE mo_put_operation  .
+    METHODS generate_virt_elem_book_class IMPORTING VALUE(lo_transport) TYPE sxco_transport io_put_operation LIKE mo_put_operation  .
+    METHODS generate_eml_playground_class IMPORTING VALUE(lo_transport) TYPE sxco_transport io_put_operation LIKE mo_put_operation  .
 
 *    METHODS release_data_generator_class  IMPORTING VALUE(lo_transport) TYPE sxco_transport.
     METHODS get_json_string           RETURNING VALUE(json_string) TYPE string.
@@ -225,8 +225,10 @@ CLASS zdmo_gen_rap110_single IMPLEMENTATION.
     DATA(lo_table_child) = xco_cp_abap_repository=>object->tabl->for( CONV #( table_name_child ) ).
 
 
-    IF lo_table_root->exists(  )  = abap_true AND
-       lo_table_child->exists(  ) = abap_true.
+*    IF lo_table_root->exists(  )  = abap_true AND
+*       lo_table_child->exists(  ) = abap_true.
+    IF xco_lib->get_database_table( CONV #( table_name_root ) )->exists( ) = abap_true  AND
+       xco_lib->get_database_table( CONV #( table_name_child ) )->exists( ) = abap_true .
 
       create_rap_bo(
         EXPORTING
@@ -238,8 +240,8 @@ CLASS zdmo_gen_rap110_single IMPLEMENTATION.
       delete_iview_and_mde( out = out ).
 
     ENDIF.
-
-    DATA(lo_travel_bdef) = xco_cp_abap_repository=>object->bdef->for( CONV #( r_view_name_travel  ) ).
+    DATA(lo_travel_bdef) = xco_lib->get_behavior_definition( CONV #( r_view_name_travel  ) ).
+*    DATA(lo_travel_bdef) = xco_cp_abap_repository=>object->bdef->for( CONV #( r_view_name_travel  ) ).
 *      DATA(lo_travel_bdef) = xco_cp_abap_repository=>object->bdef->for( r_view_name_travel  ).
 
     IF lo_travel_bdef->exists(  ).
@@ -1658,8 +1660,13 @@ CLASS zdmo_gen_rap110_single IMPLEMENTATION.
     DATA(root_table_fields)        = get_root_table_fields(  ).
     DATA(child_table_fields)       = get_child_table_fields(  ).
 
-    IF lo_table_root->exists( io_origin = xco_cp_table=>origin->local(  )  )   = abap_false AND
-       lo_table_child->exists( io_origin = xco_cp_table=>origin->local(  ) ) = abap_false.
+    "cloud
+*    IF lo_table_root->exists( io_origin = xco_cp_table=>origin->local(  ) )   = abap_false AND
+*       lo_table_child->exists( io_origin = xco_cp_table=>origin->local(  ) ) = abap_false.
+    "on prem
+    IF xco_lib->get_database_table( CONV #( table_name_root ) )->exists( ) = abap_false  AND
+       xco_lib->get_database_table( CONV #( table_name_child ) )->exists( ) = abap_false .
+
 
       "generate of travel table
       generate_table(

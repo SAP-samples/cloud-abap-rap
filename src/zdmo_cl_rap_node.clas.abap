@@ -1079,7 +1079,7 @@ ENDCLASS.
 
 
 
-CLASS ZDMO_CL_RAP_NODE IMPLEMENTATION.
+CLASS zdmo_cl_rap_node IMPLEMENTATION.
 
 
   METHOD add_additional_fields.
@@ -3505,10 +3505,13 @@ CLASS ZDMO_CL_RAP_NODE IMPLEMENTATION.
 
     DATA(ls_data_element) = io_data_element->content( )->get( ).
 
-    "domain does not exist if
+    "The call of is_domain( ) fails if:
     "a) a built in type such as CUKY is used
     "b) if language version 5 is used and if the underlying domain is not c1-released.
-    "   In this case the check for existence will fail since the domain is not visible for the XCO_CP libraries
+    "   In this case the check for existence failed < 2102 since the domain was not visible for the XCO_CP libraries
+    "   As of 2102 the following call shall be used
+    "   xco_cp_abap_dictionary=>data_element( ‘…’ )->content( )->has/get_underlying_built_in_type( )
+
 
     IF ls_data_element-data_type->is_domain( ) EQ abap_true.
       DATA(lo_domain) = ls_data_element-data_type->get_domain( ).
@@ -3532,6 +3535,17 @@ CLASS ZDMO_CL_RAP_NODE IMPLEMENTATION.
         "add code to call the methods
         "if_xco_dtel_data_type~GET_UNDERLYING_BUILT_IN_TYPE
         "if_xco_dtel_data_type~HAS_UNDERLYING_BUILT_IN_TYPE
+
+
+        IF xco_cp_abap_dictionary=>data_element( es_fields-data_element )->content( )->has_underlying_built_in_type( ).
+          DATA(underlying_built_in_type) = xco_cp_abap_dictionary=>data_element( es_fields-data_element )->content( )->get_underlying_built_in_type( ).
+
+          es_fields-built_in_type = underlying_built_in_type->type.
+          es_fields-built_in_type_length = underlying_built_in_type->length.
+          es_fields-built_in_type_decimals = underlying_built_in_type->decimals.
+
+        ENDIF.
+
       ENDIF.
     ELSE.
       IF ls_data_element-data_type->is_built_in_type(  ) = abap_true.
