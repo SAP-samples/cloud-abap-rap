@@ -79,7 +79,7 @@ This sample code does currently work in:
 
 The sample code is provided "as-is".
 
-Known issues are listed here: [Issues](issues)   
+Known issues are listed here: [Issues](../../issues)   
 
 ## SAP BTP ABAP Environment, SAP S/4HANA ABAP environment and on premise releases
 
