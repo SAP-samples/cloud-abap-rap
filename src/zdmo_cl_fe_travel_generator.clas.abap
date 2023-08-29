@@ -600,7 +600,7 @@ CLASS ZDMO_CL_FE_TRAVEL_GENERATOR IMPLEMENTATION.
 
   METHOD generate_data_generator_class.
 
-    DATA(lo_specification) = mo_draft_tabl_put_opertion->for-clas->add_object(  data_generator_class_name
+    DATA(lo_specification) = mo_draft_tabl_put_operation->for-clas->add_object(  data_generator_class_name
                                   )->set_package( package_name
                                   )->create_form_specification( ).
     lo_specification->set_short_description( |This class generates the test data| ).
@@ -1581,13 +1581,13 @@ CLASS ZDMO_CL_FE_TRAVEL_GENERATOR IMPLEMENTATION.
 
 *   Create data generator class
 
-    mo_draft_tabl_put_opertion = get_put_operation( mo_environment  ).
+    mo_draft_tabl_put_operation = get_put_operation( mo_environment  ).
     generate_data_generator_class(
       EXPORTING
 *        io_put_operation       = put_operation
         lo_transport            = transport
     ).
-    lo_result = mo_draft_tabl_put_opertion->execute( ).
+    lo_result = mo_draft_tabl_put_operation->execute( ).
     " handle findings
     lo_findings = lo_result->findings.
     lt_findings = lo_findings->get( ).
