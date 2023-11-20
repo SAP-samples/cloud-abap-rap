@@ -45,6 +45,9 @@ This sample code does currently work in:
 3. Use the branch `abap-environment`.
 4. Pull changes.
 5. Use mass activation to activate the objects that have been imported in step 3.
+
+Additional steps (only needed in on premise systems)
+
 6. Run the class `zdmo_cl_rap_generator_setup`. This class generates the following objects:
    - Application job catalog entries:
      - ZDMO_RAP_GEN_CATALOG_ENTRY
