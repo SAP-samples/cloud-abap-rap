@@ -1,0 +1,76 @@
+projection;
+strict ;
+use draft;
+use side effects;
+
+define behavior for ZDMO_C_RAPG_ProjectTP alias Project
+use etag
+
+{
+
+  //  use create;
+  use update;
+  use delete;
+
+  use action Edit;
+  use action Activate;
+  use action Discard;
+  use action Resume;
+  use action Prepare;
+
+  use action createProjectAndRootNode;
+  use action copyProject;
+  use action deleteProject;
+  use action generateProject;
+
+  use association _Log
+  {
+    //  create;
+    with draft; }
+  use association _Node
+  {
+//      create;
+    with draft; }
+}
+
+define behavior for ZDMO_C_RAPG_LogTP alias Log
+use etag
+
+{
+  use update;
+  use delete;
+
+  use association _Project { with draft; }
+}
+
+define behavior for ZDMO_C_RAPG_NodeTP alias Node
+use etag
+
+{
+  use update;
+  use delete;
+
+//   use action addChildNode;
+   use action addChildDataSourceAbsEntity;
+   use action addChildDataSourceCDSview;
+   use action addChildDataSourceTable;
+//  use action createRootNode;
+//  use action SetRepositoryObjectNames;
+
+  use association _Project { with draft; }
+  use association _Field
+  {
+    //   create;
+    with draft; }
+}
+
+define behavior for ZDMO_C_RAPG_FieldTP alias Field
+use etag
+
+{
+  use update;
+  use delete;
+
+  use association _Project { with draft; }
+  use association _Node { with draft; }
+}

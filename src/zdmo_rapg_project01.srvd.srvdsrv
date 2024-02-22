@@ -1,0 +1,18 @@
+@ObjectModel.leadingEntity.name: 'ZDMO_C_RAPG_ProjectTP'
+define service ZDMO_RAPG_Project01 {
+  expose ZDMO_C_RAPG_ProjectTP          as Project;
+  expose ZDMO_C_RAPG_LogTP              as Log;
+  expose ZDMO_C_RAPG_NodeTP             as Node;
+  expose ZDMO_C_RAPG_FieldTP            as Field;
+  expose ZDMO_I_RAP_GENERATOR_DSRC_TYPE as DataSourceTypes;
+  expose ZDMO_I_RAP_GENERATOR_BIND_TYPE as BindingTypes;
+  expose ZDMO_I_RAP_GENERATOR_ABAP_VERS as ABAPLanguageVersions;
+  expose ZDMO_I_RAP_GENERATOR_PACKAGE   as Packages;
+  expose ZDMO_I_RAP_GENERATOR_FIELDS    as DataSourceFields;
+  expose zdmo_I_rap_generator_bool_VH   as DraftEnabled;
+  expose ZDMO_I_RAP_GENERATOR_DATA_SRC2 as DataSources2;
+  expose ZDMO_I_RAP_GENERATOR_IMPL_TYP2 as ImplementationTypes2;
+  expose ZDMO_I_RAP_GEN_GET_ABSTRCT_ENT as AbstractEntities;
+  expose ZDMO_I_RAP_GEN_GET_CDS_VIEWS   as CDSViews;
+  expose ZDMO_I_RAP_GEN_GET_TABLES      as Tables;
+}
