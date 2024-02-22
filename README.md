@@ -14,7 +14,7 @@ The SAP Fiori elements preview based UI provides value helps for the data that h
 Once the repository objects are generated, the UI offers an ADT link that lets you conveniently navigate back into ADT to continue to work on your objects.
 
 ## What's New 
-- The RAP Generator allows to generate an I-view layer beneath the R-view layer as being used in SAP S/4HANA
+- The RAP Generator allows to generate a basic I-view layer beneath the R-view layer as being used in SAP S/4HANA
 - The generation and deletion process now leverages the background processing framework (BGPF)
 - You can now generate extensible RAP business objects
    - The generator generates the required additional repository objects (include structure, extension include view, ...)   
