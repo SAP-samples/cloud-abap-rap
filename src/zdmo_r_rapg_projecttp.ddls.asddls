@@ -58,7 +58,7 @@ define root view entity ZDMO_R_RAPG_ProjectTP
       job_status_text               as JobStatusText,
       
       sap_object_type               as SAPObjectType,
-      
+      add_sap_object_type           as AddSAPObjectType,
       _Log,
       _Node
 

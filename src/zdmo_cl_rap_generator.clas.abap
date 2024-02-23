@@ -5227,6 +5227,21 @@ CLASS zdmo_cl_rap_generator IMPLEMENTATION.
                       i_log_entries = log_entries
                   ).
       CATCH cx_xco_gen_put_exception INTO DATA(put_exception).
+
+        DATA(put_exception_text) = put_exception->get_text(  ).
+
+
+        CLEAR log_entries.
+        log_entry-text = put_exception_text.
+        log_entry-detaillevel = 1.
+        log_entry-severity = 'E'.
+        APPEND log_entry TO log_entries.
+        add_log_entries_for_rap_bo(
+                                       EXPORTING
+                                         i_rap_bo_name = rap_bo_name
+                                         i_log_entries = log_entries
+                                     ).
+
         put_exception_occured = abap_true.
         lo_findings = put_exception->findings.
         lt_findings = lo_findings->get( ).
@@ -5250,9 +5265,20 @@ CLASS zdmo_cl_rap_generator IMPLEMENTATION.
             framework_message-message = ls_findings->message->get_text(  ).
             APPEND framework_message TO framework_messages.
 
+            CLEAR log_entries.
+            log_entry-text = ls_findings->message->get_text(  ).
+            log_entry-detaillevel = 1.
+            log_entry-severity = ls_findings->message->value-msgty.
+            APPEND log_entry TO log_entries.
+            add_log_entries_for_rap_bo(
+                                           EXPORTING
+                                             i_rap_bo_name = rap_bo_name
+                                             i_log_entries = log_entries
+                                         ).
+
           ENDLOOP.
         ENDIF.
-
+        EXIT.
       CATCH cx_root INTO DATA(lx_root_exception).  "if nothing else has been catched so far
 
         CLEAR framework_message.

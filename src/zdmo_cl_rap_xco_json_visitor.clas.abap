@@ -471,6 +471,8 @@ CLASS zdmo_cl_rap_xco_json_visitor IMPLEMENTATION.
           root_node->set_create_table( iv_value ).
         WHEN 'mimicadtwizard'.
           root_node->set_mimic_adt_wizard( iv_value ).
+        when 'addsapobjecttype'  .
+          root_node->set_add_sap_object_type( iv_value ).
         WHEN OTHERS.
 
           error_message = |{ last_visited_member } in entity { root_node->entityname }| ##NO_TEXT.

@@ -126,7 +126,7 @@ CLASS zdmo_cl_rap_gen_build_json_2 IMPLEMENTATION.
       lo_json_data_builder->add_member( 'publishservice' )->add_boolean( rap_bo-PublishService ).
       lo_json_data_builder->add_member( 'addbasiciviews' )->add_boolean( rap_bo-AddIViewBasic ).
       lo_json_data_builder->add_member( 'isextensible' )->add_boolean( rap_bo-isExtensible ).
-*      lo_json_data_builder->add_member( 'sapobjecttype' )->add_string( rap_bo-SAPObjectType ).
+      lo_json_data_builder->add_member( 'addsapobjecttype' )->add_boolean( rap_bo-addsapobjecttype ).
       "set this string on entity level
       "lo_json_data_builder->add_member( 'extensibilityElementSuffix' )->add_string( CONV string( rap_bo-extensibilityElementSuffix ) ).
 

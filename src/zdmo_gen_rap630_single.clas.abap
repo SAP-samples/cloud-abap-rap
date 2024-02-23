@@ -217,8 +217,8 @@ CLASS zdmo_gen_rap630_single IMPLEMENTATION.
 |    "isextensible":true,\r\n| &
 *|    "extensibilityElementSuffix":"ZAA",\r\n| &
 
-|     "addbasiciviews":false,\r\n| &
-
+"|     "addbasiciviews":false,\r\n| &
+|     "addbasiciviews":true,\r\n| &
 |    "multiInlineEdit":false,\r\n| &
 |    "isCustomizingTable":false,\r\n| &
 |    "addBusinessConfigurationRegistration":false,\r\n| &

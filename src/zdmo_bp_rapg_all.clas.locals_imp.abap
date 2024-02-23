@@ -207,7 +207,8 @@ CLASS lhc_Project IMPLEMENTATION.
                                 BindingType = ls_key-%param-BindingType
                                 TransportRequest = node->transport_request
                                 "boolean fields to hide / show fields in the UI
-                                AddIViewBasic = abap_true
+                                AddIViewBasic = abap_false
+                                AddSAPObjectType = abap_false
                                 hasSematicKey    = has_semantic_key
                                 doesNotUseUnmanagedQuery = does_not_use_unmanaged_query
                                 isManaged = is_managed
@@ -226,6 +227,9 @@ CLASS lhc_Project IMPLEMENTATION.
                                                                hierarchydistancefromroot = 0
                                                                ) ) ) .
 
+      IF create_rapbo_line-isExtensible = abap_true.
+        create_rapbo_line-AddSAPObjectType = abap_true.
+      ENDIF.
 
       APPEND create_rapbo_line TO create_rapbo.
       APPEND create_rapbonode_cba_line TO create_rapbonode_cba.
@@ -238,7 +242,7 @@ CLASS lhc_Project IMPLEMENTATION.
                             abaplanguageversion PackageLanguageVersion
                             draftenabled isExtensible implementationtype datasourcetype bindingtype
                             hasSematicKey doesNotUseUnmanagedQuery isManaged
-                            TransportRequest PublishService AddIViewBasic )
+                            TransportRequest PublishService AddIViewBasic AddSAPObjectType )
                   WITH create_rapbo
                   CREATE BY \_Node
                   FIELDS ( entityname isrootnode hierarchydistancefromroot DataSource )
@@ -1731,9 +1735,9 @@ CLASS lhc_Node IMPLEMENTATION.
                                               ELSE if_abap_behv=>fc-o-disabled )
 
 
-*                              %field-fieldnameuuid         = COND #( WHEN rapbo-implementationtype = zdmo_cl_rap_node=>implementation_type-managed_uuid
-*                                                               THEN if_abap_behv=>fc-f-mandatory
-*                                                               ELSE if_abap_behv=>fc-f-read_only )
+                              %field-fieldnameuuid         = COND #( WHEN rapbo-implementationtype = zdmo_cl_rap_node=>implementation_type-managed_uuid
+                                                               THEN if_abap_behv=>fc-f-mandatory
+                                                               ELSE if_abap_behv=>fc-f-read_only )
 
                               %field-fieldnamerootuuid     = COND #( WHEN ( rapbo-implementationtype = zdmo_cl_rap_node=>implementation_type-managed_uuid
                                                                       AND rapbo_node-hierarchydistancefromroot > 1 )
@@ -1779,10 +1783,6 @@ CLASS lhc_Node IMPLEMENTATION.
                                                                THEN if_abap_behv=>fc-f-mandatory
                                                                ELSE if_abap_behv=>fc-f-read_only )
 
-                             %field-sapobjecttype      = COND #( WHEN rapbo_node-isrootnode = abap_true
-                                                               THEN if_abap_behv=>fc-f-mandatory
-                                                               ELSE if_abap_behv=>fc-f-read_only )
-
                              %field-fieldnametotaletag      = COND #( WHEN ( rapbo_node-isrootnode = abap_true AND rapbo-draftenabled = abap_true )
                                                                THEN if_abap_behv=>fc-f-mandatory
                                                                ELSE if_abap_behv=>fc-f-read_only )
@@ -1817,6 +1817,16 @@ CLASS lhc_Node IMPLEMENTATION.
                                                                THEN if_abap_behv=>fc-f-mandatory
                                                                ELSE if_abap_behv=>fc-f-read_only )
                              %field-draftqueryview   = COND #( WHEN rapbo-isExtensible = abap_true
+                                                               THEN if_abap_behv=>fc-f-mandatory
+                                                               ELSE if_abap_behv=>fc-f-read_only )
+
+"fields to store SAPObjectType and SAPObjectNodeTypes
+
+                             %field-sapobjecttype      = COND #( WHEN rapbo-AddSAPObjectType = abap_true
+                                                               THEN if_abap_behv=>fc-f-mandatory
+                                                               ELSE if_abap_behv=>fc-f-read_only )
+
+                             %field-sapobjectnodetype      = COND #( WHEN rapbo-AddSAPObjectType = abap_true
                                                                THEN if_abap_behv=>fc-f-mandatory
                                                                ELSE if_abap_behv=>fc-f-read_only )
 
@@ -1941,11 +1951,16 @@ CLASS lhc_Node IMPLEMENTATION.
 
               my_node->set_name_service_definition(  ).
               my_node->set_name_service_binding(  ).
-              my_node->set_name_sap_object_type(  ).
+
+              IF rapbo-AddSAPObjectType = abap_true.
+                my_node->set_name_sap_object_type(  ).
+                update_line-SAPObjectType = my_node->rap_root_node_objects-sap_object_type.
+              ELSE.
+                update_line-SAPObjectType  = ''.
+              ENDIF.
 
               update_line-servicebinding = my_node->rap_root_node_objects-service_binding.
               update_line-servicedefinition = my_node->rap_root_node_objects-service_definition.
-              update_line-SAPObjectType = my_node->rap_root_node_objects-sap_object_type.
 
             ELSE.
 
@@ -1989,8 +2004,12 @@ CLASS lhc_Node IMPLEMENTATION.
             my_node->set_name_behavior_impl(  ).
             my_node->set_name_mde(  ).
 
-            my_node->set_name_sap_node_object_type(  ).
-
+            IF rapbo-AddSAPObjectType = abap_true.
+              my_node->set_name_sap_node_object_type(  ).
+              update_line-SAPObjectNodeType  = my_node->rap_node_objects-sap_object_node_type.
+            ELSE.
+              update_line-SAPObjectNodeType  = ''.
+            ENDIF.
             update_line-cdsiview   = my_node->rap_node_objects-cds_view_i.
             update_line-cdsrview   = my_node->rap_node_objects-cds_view_r.
             update_line-cdspview   = my_node->rap_node_objects-cds_view_p.

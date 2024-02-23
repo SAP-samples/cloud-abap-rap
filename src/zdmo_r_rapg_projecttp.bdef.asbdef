@@ -78,7 +78,16 @@ authorization master ( global )
   determination createJsonString on save { create; }
 
   determination CalculateBoName on save { create; }
-  determination SetRepositoryObjectNames on modify { field Suffix, Prefix, AddIViewBasic, PublishService; }
+  determination SetRepositoryObjectNames on modify { field Suffix, Prefix, AddIViewBasic, PublishService, AddSAPObjectType; }
+
+  side effects
+  {
+    field Suffix affects field * , entity _Node ;
+    field Prefix affects field * , entity _Node;
+    field AddIViewBasic affects field * , entity _Node;
+    field PublishService affects field * , entity _Node;
+    field AddSAPObjectType affects field * , entity _Node;
+  }
 
   validation generated_objects_are_deleted on save { delete; }
   validation mandatory_fields_check on save { create; }
@@ -196,7 +205,7 @@ authorization dependent by _Project
   IsRootNode,
   DataSource,
   ParentDataSource,
-//  FieldNameUUID,
+  //  FieldNameUUID,
   MdeView,
   //Hierarchy information (to be adapted)
   HierarchyDescendantCount,
@@ -209,7 +218,7 @@ authorization dependent by _Project
 
   field ( features : instance )
   FieldNameRootUUID,
-  //  FieldNameUUID,
+  FieldNameUUID,
   FieldNameParentUUID,
   ControlStructure,
   DraftTableName,
@@ -228,7 +237,8 @@ authorization dependent by _Project
   DraftQueryView,
   ExtensionInclude,
   ExtensionIncludeView,
-  SAPObjectType
+  SAPObjectType,
+  SAPObjectNodeType
   ;
 
   //  ExtensionInclude;
@@ -261,9 +271,9 @@ authorization dependent by _Project
 
   side effects
   {
-    action addChildDataSourceTable affects entity _Project._Node ;
-    action addChildDataSourceCDSview affects entity _Project._Node ;
-    action addChildDataSourceAbsEntity affects entity _Project._Node ;
+    action addChildDataSourceTable affects entity _Project._Node;
+    action addChildDataSourceCDSview affects entity _Project._Node;
+    action addChildDataSourceAbsEntity affects entity _Project._Node;
   }
 
   determination CalculateEntityName on save { create; }

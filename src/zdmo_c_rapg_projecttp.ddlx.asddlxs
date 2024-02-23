@@ -98,7 +98,7 @@ annotate view ZDMO_C_RAPG_ProjectTP with
        parentId : 'Facet_3',
        type     : #FIELDGROUP_REFERENCE,
        targetQualifier: 'FieldGroup_3',
-       isPartOfPreview: false,
+       isPartOfPreview: true,
        position : 40   },
 
   //Facet and field group for optional parameters
@@ -189,9 +189,9 @@ annotate view ZDMO_C_RAPG_ProjectTP with
   @EndUserText.label: 'RAP BO Name'
   BoName;
 
- @UI.fieldGroup: [{ qualifier: 'FieldGroup_0', position: 10, label: 'SAP Object Type' }
+  @UI.fieldGroup: [{ qualifier: 'FieldGroup_0', position: 10, label: 'SAP Object Type' }
 
-  ]
+   ]
   @UI.selectionField: [ {
     position: 20
   } ]
@@ -300,7 +300,8 @@ annotate view ZDMO_C_RAPG_ProjectTP with
   @UI.fieldGroup: [{ qualifier: 'FieldGroup_4', position: 10, label: 'Multi Inline Edit' }]
   MultiInlineEdit;
 
-  @UI.fieldGroup: [{ qualifier: 'FieldGroup_4', position: 10, label: 'Record customizing' }]
+//  @UI.fieldGroup: [{ qualifier: 'FieldGroup_4', position: 10, label: 'Record customizing' }]
+  @UI.hidden: true
   CustomizingTable;
 
   @UI.fieldGroup: [{ qualifier: 'FieldGroup_4', position: 10, label: 'Add to manage business configuration' }]
@@ -311,6 +312,9 @@ annotate view ZDMO_C_RAPG_ProjectTP with
 
   @UI.fieldGroup: [{ qualifier: 'FieldGroup_4', position: 20, label: 'Add basic i-views' }]
   AddIViewBasic;
+
+  @UI.fieldGroup: [{ qualifier: 'FieldGroup_4', position: 30, label: 'Add SAPObjectType' }]
+  AddSAPObjectType;
 
   @UI.fieldGroup: [{ qualifier: 'FieldGroup_1', position: 30, label: 'is extensible' }]
   isExtensible;

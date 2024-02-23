@@ -2170,6 +2170,10 @@ CLASS zdmo_cl_rap_node IMPLEMENTATION.
       me->set_ext_element_suffix( extensibility_suffix_child ).
     ENDIF.
 
+    "extensible RAP BO's the generator enforces the use of SAPObjectTypes and SAPObjectNodeTypes
+    IF me->is_extensible(  ) = abap_true.
+      me->set_add_sap_object_type( abap_true ) .
+    ENDIF.
 
     DATA manage_business_cfg_identifier TYPE if_mbc_cp_api_business_config=>ty_identifier.
 
@@ -5962,6 +5966,7 @@ CLASS zdmo_cl_rap_node IMPLEMENTATION.
 
     set_name_cds_r_view( rap_node_objects-cds_view_r ).
     set_name_cds_i_view( rap_node_objects-cds_view_i ).
+    set_name_cds_i_view_basic( rap_node_objects-cds_view_i_basic ).
     "we are using view entities as of 2008 and don't need to generate DDIC views anymore
     "set_ddic_view_i_name(  ).
     set_name_custom_entity( rap_node_objects-cds_view_r ).

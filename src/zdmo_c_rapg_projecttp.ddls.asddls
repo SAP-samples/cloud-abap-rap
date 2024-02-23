@@ -53,7 +53,7 @@ define root view entity ZDMO_C_RAPG_ProjectTP
            isExtensible,
            extensibilityElementSuffix,
            SAPObjectType,
-
+           AddSAPObjectType,
            @EndUserText.label: 'Hide ADT Link'
            @ObjectModel.virtualElementCalculatedBy: 'ABAP:ZDMO_CL_RAP_GEN_GET_JOB_STATUS'
   virtual  HideADTLink            : abap_boolean,
