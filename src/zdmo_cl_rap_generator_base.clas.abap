@@ -3,44 +3,44 @@ CLASS zdmo_cl_rap_generator_base DEFINITION ABSTRACT
   CREATE PUBLIC .
 
   PUBLIC SECTION.
-    DATA : mo_environment               TYPE REF TO if_xco_cp_gen_env_dev_system,
-           mo_put_operation             TYPE REF TO if_xco_cp_gen_d_o_put,
-           mo_draft_tabl_put_operation  TYPE REF TO if_xco_cp_gen_d_o_put,
-           mo_put_operation1            TYPE REF TO if_xco_cp_gen_d_o_put,
-           mo_put_operation2            TYPE REF TO if_xco_cp_gen_d_o_put,
-           mo_srvb_put_operation        TYPE REF TO if_xco_cp_gen_d_o_put,
-           mo_patch_operation           TYPE REF TO if_xco_cp_gen_o_patch_mass,
-           mo_bdef_specification        TYPE REF TO if_xco_cp_gen_bdef_s_form,
-           mo_table_specification       TYPE REF TO if_xco_cp_gen_tabl_dbt_s_form,
-           mo_struct_specification      TYPE REF TO if_xco_cp_gen_tabl_str_s_form,
-           mo_service_def_specification TYPE REF TO if_xco_cp_gen_srvd_s_form.
-    METHODS get_environment IMPORTING i_transport          TYPE sxco_transport OPTIONAL
-                            RETURNING VALUE(r_environment) TYPE REF TO if_xco_cp_gen_env_dev_system.
-    METHODS get_put_operation IMPORTING i_environment          TYPE REF TO if_xco_cp_gen_env_dev_system
-                              RETURNING VALUE(r_put_operation) TYPE REF TO if_xco_cp_gen_d_o_put .
-    METHODS get_put_operation_for_devc IMPORTING i_environment          TYPE REF TO if_xco_cp_gen_env_dev_system
-                                       RETURNING VALUE(r_put_operation) TYPE REF TO if_xco_cp_gen_devc_d_o_put  .
-    METHODS get_patch_operation IMPORTING i_environment            TYPE REF TO if_xco_cp_gen_env_dev_system
-                                RETURNING VALUE(r_patch_operation) TYPE REF TO if_xco_cp_gen_o_patch_mass.
-*    DATA : mo_environment             TYPE REF TO if_xco_gen_environment,
-*           mo_put_operation           TYPE REF TO if_xco_gen_o_mass_put,
-*           mo_put_operation1          TYPE REF TO if_xco_gen_o_mass_put,
-*           mo_put_operation2          TYPE REF TO if_xco_gen_o_mass_put,
-*           mo_draft_tabl_put_operation TYPE REF TO if_xco_gen_o_mass_put,
-*           mo_srvb_put_operation      TYPE REF TO if_xco_gen_o_mass_put,
-*           mo_patch_operation         type ref to if_xco_gen_o_patch_mass,
-*           mo_bdef_specification       TYPE REF TO if_xco_gen_bdef_s_form,
-*           mo_table_specification       TYPE REF TO if_xco_gen_tabl_dbt_s_form,
-*           mo_struct_specification      TYPE REF TO if_xco_gen_tabl_str_s_form,
-*           mo_service_def_specification TYPE REF TO if_xco_gen_srvd_s_form.
+*    DATA : mo_environment               TYPE REF TO if_xco_cp_gen_env_dev_system,
+*           mo_put_operation             TYPE REF TO if_xco_cp_gen_d_o_put,
+*           mo_draft_tabl_put_operation  TYPE REF TO if_xco_cp_gen_d_o_put,
+*           mo_put_operation1            TYPE REF TO if_xco_cp_gen_d_o_put,
+*           mo_put_operation2            TYPE REF TO if_xco_cp_gen_d_o_put,
+*           mo_srvb_put_operation        TYPE REF TO if_xco_cp_gen_d_o_put,
+*           mo_patch_operation           TYPE REF TO if_xco_cp_gen_o_patch_mass,
+*           mo_bdef_specification        TYPE REF TO if_xco_cp_gen_bdef_s_form,
+*           mo_table_specification       TYPE REF TO if_xco_cp_gen_tabl_dbt_s_form,
+*           mo_struct_specification      TYPE REF TO if_xco_cp_gen_tabl_str_s_form,
+*           mo_service_def_specification TYPE REF TO if_xco_cp_gen_srvd_s_form.
 *    METHODS get_environment IMPORTING i_transport          TYPE sxco_transport OPTIONAL
-*                            RETURNING VALUE(r_environment) TYPE REF TO if_xco_gen_environment.
-*    METHODS get_put_operation_for_devc IMPORTING i_environment          TYPE REF TO if_xco_gen_environment
-*                                       RETURNING VALUE(r_put_operation) TYPE REF TO if_xco_gen_devc_o_put     .
-*    METHODS get_put_operation IMPORTING i_environment          TYPE REF TO if_xco_gen_environment
-*                              RETURNING VALUE(r_put_operation) TYPE REF TO if_xco_gen_o_mass_put  .
-*    METHODS get_patch_operation IMPORTING i_environment            TYPE REF TO if_xco_gen_environment
-*                                RETURNING VALUE(r_patch_operation) TYPE REF TO if_xco_gen_o_patch_mass.
+*                            RETURNING VALUE(r_environment) TYPE REF TO if_xco_cp_gen_env_dev_system.
+*    METHODS get_put_operation IMPORTING i_environment          TYPE REF TO if_xco_cp_gen_env_dev_system
+*                              RETURNING VALUE(r_put_operation) TYPE REF TO if_xco_cp_gen_d_o_put .
+*    METHODS get_put_operation_for_devc IMPORTING i_environment          TYPE REF TO if_xco_cp_gen_env_dev_system
+*                                       RETURNING VALUE(r_put_operation) TYPE REF TO if_xco_cp_gen_devc_d_o_put  .
+*    METHODS get_patch_operation IMPORTING i_environment            TYPE REF TO if_xco_cp_gen_env_dev_system
+*                                RETURNING VALUE(r_patch_operation) TYPE REF TO if_xco_cp_gen_o_patch_mass.
+    DATA : mo_environment             TYPE REF TO if_xco_gen_environment,
+           mo_put_operation           TYPE REF TO if_xco_gen_o_mass_put,
+           mo_put_operation1          TYPE REF TO if_xco_gen_o_mass_put,
+           mo_put_operation2          TYPE REF TO if_xco_gen_o_mass_put,
+           mo_draft_tabl_put_operation TYPE REF TO if_xco_gen_o_mass_put,
+           mo_srvb_put_operation      TYPE REF TO if_xco_gen_o_mass_put,
+           mo_patch_operation         type ref to if_xco_gen_o_patch_mass,
+           mo_bdef_specification       TYPE REF TO if_xco_gen_bdef_s_form,
+           mo_table_specification       TYPE REF TO if_xco_gen_tabl_dbt_s_form,
+           mo_struct_specification      TYPE REF TO if_xco_gen_tabl_str_s_form,
+           mo_service_def_specification TYPE REF TO if_xco_gen_srvd_s_form.
+    METHODS get_environment IMPORTING i_transport          TYPE sxco_transport OPTIONAL
+                            RETURNING VALUE(r_environment) TYPE REF TO if_xco_gen_environment.
+    METHODS get_put_operation_for_devc IMPORTING i_environment          TYPE REF TO if_xco_gen_environment
+                                       RETURNING VALUE(r_put_operation) TYPE REF TO if_xco_gen_devc_o_put     .
+    METHODS get_put_operation IMPORTING i_environment          TYPE REF TO if_xco_gen_environment
+                              RETURNING VALUE(r_put_operation) TYPE REF TO if_xco_gen_o_mass_put  .
+    METHODS get_patch_operation IMPORTING i_environment            TYPE REF TO if_xco_gen_environment
+                                RETURNING VALUE(r_patch_operation) TYPE REF TO if_xco_gen_o_patch_mass.
 
   PROTECTED SECTION.
     METHODS cds_p_view_set_provider_cntrct IMPORTING i_projection_view_spcification TYPE REF TO if_xco_gen_ddls_s_fo_p_view .
@@ -88,8 +88,8 @@ CLASS zdmo_cl_rap_generator_base IMPLEMENTATION.
       ).
     ELSE.
       "valid only for cloud
-      DATA(lo_change_specification) = mo_patch_operation->for-tabl-for-database_table->add_object( table_name )->create_change_specification( ).
-      lo_change_specification->for-insert->add_include( )->set_structure( extension_include_name ).
+      "DATA(lo_change_specification) = mo_patch_operation->for-tabl-for-database_table->add_object( table_name )->create_change_specification( ).
+      "lo_change_specification->for-insert->add_include( )->set_structure( extension_include_name ).
     ENDIF.
 
   ENDMETHOD.
@@ -155,18 +155,18 @@ CLASS zdmo_cl_rap_generator_base IMPLEMENTATION.
 
 
   METHOD get_environment.
-    r_environment = xco_cp_generation=>environment->dev_system( i_transport )  .
-*    IF i_transport IS NOT INITIAL.
-*      r_environment = xco_generation=>environment->transported( i_transport ).
-*    ELSE.
-*      r_environment = xco_generation=>environment->local.
-*    ENDIF.
+*    r_environment = xco_cp_generation=>environment->dev_system( i_transport )  .
+    IF i_transport IS NOT INITIAL.
+      r_environment = xco_generation=>environment->transported( i_transport ).
+    ELSE.
+      r_environment = xco_generation=>environment->local.
+    ENDIF.
   ENDMETHOD.
 
 
   METHOD get_put_operation.
-    r_put_operation = i_environment->create_put_operation(  ).
-*    r_put_operation = i_environment->create_mass_put_operation( ).
+*    r_put_operation = i_environment->create_put_operation(  ).
+    r_put_operation = i_environment->create_mass_put_operation( ).
   ENDMETHOD.
 
 
@@ -187,8 +187,8 @@ CLASS zdmo_cl_rap_generator_base IMPLEMENTATION.
   ENDMETHOD.
 
   METHOD get_patch_operation.
-    r_patch_operation = i_environment->create_patch_operation(  ).
-*   r_patch_operation = i_environment->create_mass_patch_operation(  ).
+*    r_patch_operation = i_environment->create_patch_operation(  ).
+   r_patch_operation = i_environment->create_mass_patch_operation(  ).
   ENDMETHOD.
 
 ENDCLASS.
