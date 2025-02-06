@@ -42,7 +42,7 @@ ENDCLASS.
 
 
 
-CLASS zdmo_cl_rap_xco_cloud_lib IMPLEMENTATION.
+CLASS ZDMO_CL_RAP_XCO_CLOUD_LIB IMPLEMENTATION.
 
 
   METHOD get_abap_obj_directory_entry.
@@ -116,6 +116,16 @@ CLASS zdmo_cl_rap_xco_cloud_lib IMPLEMENTATION.
     ELSE.
       rt_packages = xco_cp_abap_repository=>objects->devc->all->in( xco_cp_abap=>repository )->get( ).
     ENDIF.
+  ENDMETHOD.
+
+
+  METHOD get_sap_object_node_type.
+    ro_sap_object_node_type = xco_cp_abap_repository=>object->nont->for( iv_name ).
+  ENDMETHOD.
+
+
+  METHOD get_sap_object_type.
+    ro_sap_object_type = xco_cp_abap_repository=>object->ront->for( iv_name ).
   ENDMETHOD.
 
 
@@ -253,13 +263,4 @@ CLASS zdmo_cl_rap_xco_cloud_lib IMPLEMENTATION.
       lo_operation->execute( ).
     ENDIF.
   ENDMETHOD.
-
-  METHOD get_sap_object_node_type.
-    ro_sap_object_node_type = xco_cp_abap_repository=>object->nont->for( iv_name ).
-  ENDMETHOD.
-
-  METHOD get_sap_object_type.
-    ro_sap_object_type = xco_cp_abap_repository=>object->ront->for( iv_name ).
-  ENDMETHOD.
-
 ENDCLASS.

@@ -353,7 +353,7 @@ ENDCLASS.
 
 
 
-CLASS zdmo_cl_rap_generator IMPLEMENTATION.
+CLASS ZDMO_CL_RAP_GENERATOR IMPLEMENTATION.
 
 
   METHOD add_annotation_ui_facets.
@@ -881,6 +881,34 @@ CLASS zdmo_cl_rap_generator IMPLEMENTATION.
 
   METHOD cds_p_view_set_provider_cntrct.
     super->cds_p_view_set_provider_cntrct( i_projection_view_spcification  ).
+  ENDMETHOD.
+
+
+  METHOD check_and_add_ext_incl_struc.
+
+    DATA has_extension_include TYPE abap_bool.
+    DATA(database_table) = xco_api->get_database_table( iv_name = to_upper( i_node->data_source_name ) ).
+    DATA include_structure_name TYPE sxco_ad_object_name  .
+    include_structure_name = i_node->rap_node_objects-extension_include.
+
+    DATA(database_table_content) = database_table->content( ).
+    DATA(enhancement_category) = database_table_content->get_enhancement_category( )->value.
+    IF enhancement_category EQ zdmo_cl_rap_node=>enhancement_category-can_be_enhanced_deep.
+      DATA(include_structures_of_table) = database_table_content->get_includes( ).
+      LOOP AT include_structures_of_table INTO DATA(my_include_struc).
+*        DATA(include_structure) = xco_api->get_structure( iv_name = to_upper( my_include_struc-structure->name ) ).
+*        DATA(struc_content) = include_structure->content( ).
+*        IF struc_content->get_enhancement_category(  )->value EQ zdmo_cl_rap_node=>enhancement_category-can_be_enhanced_deep.
+        IF my_include_struc-structure->name = include_structure_name.
+          has_extension_include = abap_true.
+*          DATA(field_suffix)  = struc_content->get_field_suffix( ).
+        ENDIF.
+      ENDLOOP.
+      IF has_extension_include = abap_false.
+        DATA(inlcude_was_added) = add_include_structure_to_table( i_node ).
+      ENDIF.
+    ENDIF.
+
   ENDMETHOD.
 
 
@@ -4359,6 +4387,45 @@ CLASS zdmo_cl_rap_generator IMPLEMENTATION.
   ENDMETHOD.
 
 
+  METHOD create_sap_object_node_type.
+
+    DATA(lo_specification) = mo_put_operation->for-nont->add_object( io_rap_bo_node->rap_node_objects-sap_object_node_type
+       )->set_package( mo_package
+       )->create_form_specification( ).
+
+    lo_specification->set_short_description( 'Generated SAP Object Node Type' ).
+
+    lo_specification->set_name( io_rap_bo_node->rap_node_objects-sap_object_node_type
+      )->set_sap_object_type( io_rap_bo_node->root_node->rap_root_node_objects-sap_object_type ).
+
+    lo_specification->set_root_node( io_rap_bo_node->is_root(  )  ).
+
+    "add object name and type to list of generated repository objects
+    CLEAR generated_repository_object.
+    generated_repository_object-object_name = io_rap_bo_node->rap_node_objects-sap_object_node_type.
+    generated_repository_object-object_type = 'NONT'.
+    APPEND generated_repository_object TO generated_repository_objects.
+
+
+
+  ENDMETHOD.
+
+
+  METHOD create_sap_object_type.
+
+    DATA(lo_specification) = mo_put_operation->for-ront->add_object( io_rap_bo_node->rap_root_node_objects-sap_object_type
+      )->set_package( io_rap_bo_node->package
+      )->create_form_specification( ).
+    lo_specification->set_short_description( 'Generated SAP Object Type' ).
+
+    DATA(lo_type_category) = xco_cp_sap_object_type=>type_category->business_object.
+
+    lo_specification->set_type_category( lo_type_category
+      )->set_name( io_rap_bo_node->rap_root_node_objects-sap_object_type ).
+
+  ENDMETHOD.
+
+
   METHOD create_service_binding.
 **********************************************************************
 ** Begin of deletion 2020
@@ -5751,121 +5818,6 @@ CLASS zdmo_cl_rap_generator IMPLEMENTATION.
   ENDMETHOD.
 
 
-  METHOD zz_add_business_configuration.
-
-    DATA framework_message TYPE zdmo_cl_rap_node=>t_framework_message_fields.
-
-    TRY.
-        CLEAR framework_message.
-        framework_message-message = 'Messages from business configuration registration'.
-        framework_message-severity = 'I'.
-        APPEND framework_message TO c_framework_messages.
-
-
-        DATA(lo_business_configuration) = mbc_cp_api=>business_configuration(
-          iv_identifier = root_node->manage_business_config_names-identifier
-          iv_namespace  = root_node->manage_business_config_names-namespace
-        ).
-
-        lo_business_configuration->create(
-          iv_name                      = root_node->manage_business_config_names-name
-          iv_description               = root_node->manage_business_config_names-description
-          iv_service_binding           = CONV #( to_upper( root_node->rap_root_node_objects-service_binding ) )
-          iv_service_name              = CONV #( to_upper( root_node->rap_root_node_objects-service_binding ) )
-          iv_service_version           = 0001
-          iv_root_entity_set           = root_node->entityname
-          iv_transport                 = CONV #( mo_transport )
-          iv_skip_root_entity_list_rep = root_node->is_virtual_root( )
-        ).
-
-        CLEAR framework_message.
-        framework_message-severity = 'S'.
-        framework_message-message = |{ root_node->manage_business_config_names-identifier } registered successfully.| .
-        APPEND framework_message TO  c_framework_messages.
-
-      CATCH cx_mbc_api_exception INTO DATA(lx_mbc_api_exception).
-
-        put_exception_occured = abap_true.
-
-        DATA(lt_messages) = lx_mbc_api_exception->if_xco_news~get_messages( ).
-
-        CLEAR framework_message.
-        LOOP AT lt_messages INTO DATA(lo_message).
-          framework_message-severity = lo_message->value-msgty.
-          framework_message-message =  lo_message->get_text( ).
-          APPEND framework_message TO c_framework_messages.
-        ENDLOOP.
-    ENDTRY.
-
-  ENDMETHOD.
-
-
-
-
-  METHOD check_and_add_ext_incl_struc.
-
-    DATA has_extension_include TYPE abap_bool.
-    DATA(database_table) = xco_api->get_database_table( iv_name = to_upper( i_node->data_source_name ) ).
-    DATA include_structure_name TYPE sxco_ad_object_name  .
-    include_structure_name = i_node->rap_node_objects-extension_include.
-
-    DATA(database_table_content) = database_table->content( ).
-    DATA(enhancement_category) = database_table_content->get_enhancement_category( )->value.
-    IF enhancement_category EQ zdmo_cl_rap_node=>enhancement_category-can_be_enhanced_deep.
-      DATA(include_structures_of_table) = database_table_content->get_includes( ).
-      LOOP AT include_structures_of_table INTO DATA(my_include_struc).
-*        DATA(include_structure) = xco_api->get_structure( iv_name = to_upper( my_include_struc-structure->name ) ).
-*        DATA(struc_content) = include_structure->content( ).
-*        IF struc_content->get_enhancement_category(  )->value EQ zdmo_cl_rap_node=>enhancement_category-can_be_enhanced_deep.
-        IF my_include_struc-structure->name = include_structure_name.
-          has_extension_include = abap_true.
-*          DATA(field_suffix)  = struc_content->get_field_suffix( ).
-        ENDIF.
-      ENDLOOP.
-      IF has_extension_include = abap_false.
-        DATA(inlcude_was_added) = add_include_structure_to_table( i_node ).
-      ENDIF.
-    ENDIF.
-
-  ENDMETHOD.
-
-  METHOD create_sap_object_node_type.
-
-    DATA(lo_specification) = mo_put_operation->for-nont->add_object( io_rap_bo_node->rap_node_objects-sap_object_node_type
-       )->set_package( mo_package
-       )->create_form_specification( ).
-
-    lo_specification->set_short_description( 'Generated SAP Object Node Type' ).
-
-    lo_specification->set_name( io_rap_bo_node->rap_node_objects-sap_object_node_type
-      )->set_sap_object_type( io_rap_bo_node->root_node->rap_root_node_objects-sap_object_type ).
-
-    lo_specification->set_root_node( io_rap_bo_node->is_root(  )  ).
-
-    "add object name and type to list of generated repository objects
-    CLEAR generated_repository_object.
-    generated_repository_object-object_name = io_rap_bo_node->rap_node_objects-sap_object_node_type.
-    generated_repository_object-object_type = 'NONT'.
-    APPEND generated_repository_object TO generated_repository_objects.
-
-
-
-  ENDMETHOD.
-
-  METHOD create_sap_object_type.
-
-    DATA(lo_specification) = mo_put_operation->for-ront->add_object( io_rap_bo_node->rap_root_node_objects-sap_object_type
-      )->set_package( io_rap_bo_node->package
-      )->create_form_specification( ).
-    lo_specification->set_short_description( 'Generated SAP Object Type' ).
-
-    DATA(lo_type_category) = xco_cp_sap_object_type=>type_category->business_object.
-
-    lo_specification->set_type_category( lo_type_category
-      )->set_name( io_rap_bo_node->rap_root_node_objects-sap_object_type ).
-
-  ENDMETHOD.
-
   METHOD store_bo.
 
     " data is stored in root_node
@@ -6177,4 +6129,52 @@ CLASS zdmo_cl_rap_generator IMPLEMENTATION.
 
   ENDMETHOD.
 
+
+  METHOD zz_add_business_configuration.
+
+    DATA framework_message TYPE zdmo_cl_rap_node=>t_framework_message_fields.
+
+    TRY.
+        CLEAR framework_message.
+        framework_message-message = 'Messages from business configuration registration'.
+        framework_message-severity = 'I'.
+        APPEND framework_message TO c_framework_messages.
+
+
+        DATA(lo_business_configuration) = mbc_cp_api=>business_configuration(
+          iv_identifier = root_node->manage_business_config_names-identifier
+          iv_namespace  = root_node->manage_business_config_names-namespace
+        ).
+
+        lo_business_configuration->create(
+          iv_name                      = root_node->manage_business_config_names-name
+          iv_description               = root_node->manage_business_config_names-description
+          iv_service_binding           = CONV #( to_upper( root_node->rap_root_node_objects-service_binding ) )
+          iv_service_name              = CONV #( to_upper( root_node->rap_root_node_objects-service_binding ) )
+          iv_service_version           = 0001
+          iv_root_entity_set           = root_node->entityname
+          iv_transport                 = CONV #( mo_transport )
+          iv_skip_root_entity_list_rep = root_node->is_virtual_root( )
+        ).
+
+        CLEAR framework_message.
+        framework_message-severity = 'S'.
+        framework_message-message = |{ root_node->manage_business_config_names-identifier } registered successfully.| .
+        APPEND framework_message TO  c_framework_messages.
+
+      CATCH cx_mbc_api_exception INTO DATA(lx_mbc_api_exception).
+
+        put_exception_occured = abap_true.
+
+        DATA(lt_messages) = lx_mbc_api_exception->if_xco_news~get_messages( ).
+
+        CLEAR framework_message.
+        LOOP AT lt_messages INTO DATA(lo_message).
+          framework_message-severity = lo_message->value-msgty.
+          framework_message-message =  lo_message->get_text( ).
+          APPEND framework_message TO c_framework_messages.
+        ENDLOOP.
+    ENDTRY.
+
+  ENDMETHOD.
 ENDCLASS.

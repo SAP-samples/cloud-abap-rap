@@ -36,7 +36,8 @@ ENDCLASS.
 
 
 
-CLASS zdmo_cl_rap_generator_strtbgpf IMPLEMENTATION.
+CLASS ZDMO_CL_RAP_GENERATOR_STRTBGPF IMPLEMENTATION.
+
 
   METHOD constructor.
 
@@ -51,15 +52,18 @@ CLASS zdmo_cl_rap_generator_strtbgpf IMPLEMENTATION.
 
   ENDMETHOD.
 
+
   METHOD create_for_bgpf.
     result = NEW #( i_bgpf_operation =  i_bgpf_operation
                     i_operation_text = i_operation_text ).
   ENDMETHOD.
 
+
   METHOD create_for_del_bgpf.
     result = NEW #( i_bgpf_del_operation =  i_bgpf_del_operation
                     i_operation_text = i_operation_text ).
   ENDMETHOD.
+
 
   METHOD start_execution.
     TRY.
@@ -78,5 +82,4 @@ CLASS zdmo_cl_rap_generator_strtbgpf IMPLEMENTATION.
         assert 1 = 2.
     ENDTRY.
   ENDMETHOD.
-
 ENDCLASS.

@@ -80,6 +80,21 @@ INHERITING FROM zdmo_cl_rap_generator_base
     DATA create_mde_files       TYPE abap_bool.
     DATA data_generator_class_name TYPE sxco_ad_object_name.
 
+
+    DATA cdsinterfaceviewbasic_travel  TYPE sxco_cds_object_name.
+    DATA cdsrestrictedreuseview_travel  TYPE sxco_cds_object_name.
+    DATA cdsinterfaceview_travel TYPE sxco_cds_object_name.
+    DATA cdsprojectionview_travel TYPE sxco_cds_object_name.
+    DATA metadataextensionview_travel TYPE sxco_cds_object_name.
+
+    DATA cdsinterfaceviewbasic_book  TYPE sxco_cds_object_name.
+    DATA cdsrestrictedreuseview_book  TYPE sxco_cds_object_name.
+    DATA cdsinterfaceview_book TYPE sxco_cds_object_name.
+    DATA cdsprojectionview_book TYPE sxco_cds_object_name.
+    DATA metadataextensionview_book TYPE sxco_cds_object_name.
+
+    DATA show_findings TYPE abap_boolean VALUE abap_false.
+
     TYPES: BEGIN OF t_table_fields,
              field                  TYPE sxco_ad_field_name,
              is_key                 TYPE abap_bool,
@@ -199,6 +214,17 @@ CLASS ZDMO_CL_FE_TRAVEL_GENERATOR IMPLEMENTATION.
     data_generator_class_name = |ZFE_DATA_GENERATOR_{ unique_suffix }|.
     create_mde_files       = abap_false.
 
+    cdsinterfaceviewbasic_travel = |ZI_FE_TRAVEL_B_{ unique_suffix }|.
+    cdsrestrictedreuseview_travel = |ZI_FE_TRAVEL_{ unique_suffix }|.
+    cdsinterfaceview_travel = |ZI_FE_TRAVEL_TP_{ unique_suffix }|.
+    cdsprojectionview_travel = |ZC_FE_TRAVEL_{ unique_suffix }|.
+    metadataextensionview_travel = |ZC_FE_TRAVEL_{ unique_suffix }|.
+
+    cdsinterfaceviewbasic_book = |ZI_FE_BOOKING_B_{ unique_suffix }|.
+    cdsrestrictedreuseview_book = |ZI_FE_BOOKING_{ unique_suffix }|.
+    cdsinterfaceview_book = |ZI_FE_BOOKING_TP_{ unique_suffix }|.
+    cdsprojectionview_book = |ZC_FE_BOOKING_{ unique_suffix }|.
+    metadataextensionview_book = |ZC_FE_BOOKING_{ unique_suffix }|.
 
 
 
@@ -1157,6 +1183,16 @@ CLASS ZDMO_CL_FE_TRAVEL_GENERATOR IMPLEMENTATION.
     ' "totalEtag":"LAST_CHANGED_AT",' && |\r\n| &&
     ' "localInstanceLastChangedAt":"LOCAL_LAST_CHANGED_AT",' && |\r\n| &&
     '"etagMaster":"LOCAL_LAST_CHANGED_AT",' && |\r\n| &&
+
+    | "cdsinterfaceviewbasic" : "{ cdsinterfaceviewbasic_travel }",| && |\r\n| &&
+    | "cdsrestrictedreuseview": "{ cdsrestrictedreuseview_travel }",| && |\r\n| &&
+    | "cdsinterfaceview"      : "{ cdsinterfaceview_travel }",| && |\r\n| &&
+    | "cdsprojectionview"     : "{ cdsprojectionview_travel }",| && |\r\n| &&
+    | "metadataextensionview" : "{ metadataextensionview_travel }",| && |\r\n| &&
+
+
+
+
     " value help definitions
     ' "valueHelps": [' && |\r\n| &&
     ' {' && |\r\n| &&
@@ -1229,6 +1265,16 @@ CLASS ZDMO_CL_FE_TRAVEL_GENERATOR IMPLEMENTATION.
     ' "parentUuid": "travel_uuid",' && |\r\n| &&
     ' "localInstanceLastChangedAt":"LOCAL_LAST_CHANGED_AT",' && |\r\n| &&
     '"etagMaster":"LOCAL_LAST_CHANGED_AT",' && |\r\n| &&
+
+
+    | "cdsinterfaceviewbasic" : "{ cdsinterfaceviewbasic_book }",| && |\r\n| &&
+    | "cdsrestrictedreuseview": "{ cdsrestrictedreuseview_book }",| && |\r\n| &&
+    | "cdsinterfaceview"      : "{ cdsinterfaceview_book }",| && |\r\n| &&
+    | "cdsprojectionview"     : "{ cdsprojectionview_book }",| && |\r\n| &&
+    | "metadataextensionview" : "{ metadataextensionview_book }",| && |\r\n| &&
+
+
+
     ' "valueHelps": [' && |\r\n| &&
     ' {' && |\r\n| &&
     ' "alias": "Flight",' && |\r\n| &&
@@ -1571,14 +1617,26 @@ CLASS ZDMO_CL_FE_TRAVEL_GENERATOR IMPLEMENTATION.
 *        io_put_operation        = put_operation
     ).
 
-    DATA(lo_result) = mo_put_operation->execute( ).
+    TRY.
+        DATA(lo_result) = mo_put_operation->execute( ).
 
-    " handle findings
-    DATA(lo_findings) = lo_result->findings.
-    DATA(lt_findings) = lo_findings->get( ).
-    IF lt_findings IS NOT INITIAL.
-      out->write( lt_findings ).
-    ENDIF.
+
+
+      CATCH cx_xco_gen_put_exception  INTO DATA(exc_XCO_GEN_PUT_EXCEPTION).
+        " handle findings
+        IF show_findings = abap_true.
+
+          DATA(lo_findings) = lo_result->findings.
+          DATA(lt_findings) = lo_findings->get( ).
+          IF lt_findings IS NOT INITIAL.
+            out->write( lt_findings ).
+          ENDIF.
+          LOOP AT exc_xco_gen_put_exception->findings->get(  ) INTO DATA(put_Finding).
+            out->write( put_Finding->message->get_text(  ) ).
+          ENDLOOP.
+          EXIT.
+        ENDIF.
+    ENDTRY.
 
 *   Create data generator class
 
@@ -1590,19 +1648,20 @@ CLASS ZDMO_CL_FE_TRAVEL_GENERATOR IMPLEMENTATION.
     ).
     lo_result = mo_draft_tabl_put_operation->execute( ).
     " handle findings
-    lo_findings = lo_result->findings.
-    lt_findings = lo_findings->get( ).
-    IF lt_findings IS NOT INITIAL.
-      out->write( lt_findings ).
+    IF show_findings = abap_true.
+      lo_findings = lo_result->findings.
+      lt_findings = lo_findings->get( ).
+      IF lt_findings IS NOT INITIAL.
+        out->write( lt_findings ).
+      ENDIF.
     ENDIF.
 
-
-        IF xco_lib->on_premise_branch_is_used(  ) = abap_false.
-    release_data_generator_class(
-        EXPORTING
-            lo_transport            = transport
-    ).
-        ENDIF.
+    IF xco_lib->on_premise_branch_is_used(  ) = abap_false.
+      release_data_generator_class(
+          EXPORTING
+              lo_transport            = transport
+      ).
+    ENDIF.
 
     DATA lo_object TYPE REF TO if_oo_adt_classrun.
     CREATE OBJECT lo_object TYPE (data_generator_class_name).
@@ -1613,13 +1672,14 @@ CLASS ZDMO_CL_FE_TRAVEL_GENERATOR IMPLEMENTATION.
     DATA(rap_bo_generator) = zdmo_cl_rap_generator=>create_for_cloud_development( json_string ).
     DATA(lt_todos)         = rap_bo_generator->generate_bo(  ).
 
-    " handle findings
-    lo_findings = lo_result->findings.
-    lt_findings = lo_findings->get( ).
-    IF lt_findings IS NOT INITIAL.
-      out->write( lt_findings ).
+    IF show_findings = abap_true.
+      " handle findings
+      lo_findings = lo_result->findings.
+      lt_findings = lo_findings->get( ).
+      IF lt_findings IS NOT INITIAL.
+        out->write( lt_findings ).
+      ENDIF.
     ENDIF.
-
     TRY.
 *    Delete mde files to start with annotations from scratch
         IF create_mde_files = abap_false.
@@ -1640,12 +1700,21 @@ CLASS ZDMO_CL_FE_TRAVEL_GENERATOR IMPLEMENTATION.
           ENDIF.
           DATA(mo_environment2) = get_environment( lv_del_transport ).
           mo_environment2 = get_environment( lv_del_transport ). "xco_cp_generation=>environment->dev_system( lv_del_transport ).
-          DATA(lo_delete_operation) = mo_environment2->for-ddlx->create_delete_operation( ).
-          lo_delete_operation->add_object( rap_bo_generator->root_node->rap_node_objects-meta_data_extension ).
+          DATA(lo_delete_ddlx_operation) = mo_environment2->for-ddlx->create_delete_operation( ).
+          DATA(lo_delete_ddls_operation) = mo_environment2->for-ddls->create_delete_operation( ).
+          DATA(lo_delete_bdef_operation) = mo_environment2->for-bdef->create_delete_operation( ).
+          lo_delete_ddlx_operation->add_object( rap_bo_generator->root_node->rap_node_objects-meta_data_extension ).
+          "delete i-tp view and corresponding bdef
+          lo_delete_ddls_operation->add_object( rap_bo_generator->root_node->rap_node_objects-cds_view_i ).
+          lo_delete_bdef_operation->add_object( rap_bo_generator->root_node->rap_root_node_objects-behavior_definition_i ).
+
           LOOP AT rap_bo_generator->root_node->all_childnodes INTO DATA(ls_childnode).
-            lo_delete_operation->add_object( ls_childnode->rap_node_objects-meta_data_extension ).
+            lo_delete_ddlx_operation->add_object( ls_childnode->rap_node_objects-meta_data_extension ).
+            lo_delete_ddls_operation->add_object( ls_childnode->rap_node_objects-cds_view_i ).
           ENDLOOP.
-          lo_delete_operation->execute( ).
+          lo_delete_bdef_operation->execute(  ).
+          lo_delete_ddls_operation->execute(  ).
+          lo_delete_ddlx_operation->execute( ).
           out->write( |Success: deleting objects| ).
         ENDIF.
       CATCH cx_root INTO DATA(delete_exception).
@@ -1662,19 +1731,23 @@ CLASS ZDMO_CL_FE_TRAVEL_GENERATOR IMPLEMENTATION.
 *        io_put_operation2        = lo_objects_put_op_analytics2
     ).
     DATA(lo_result_alp) = mo_put_operation1->execute( ).
-    lo_findings = lo_result->findings.
-    lt_findings = lo_findings->get( ).
-    IF lt_findings IS NOT INITIAL.
-      out->write( lt_findings ).
+
+    IF show_findings = abap_true.
+      lo_findings = lo_result->findings.
+      lt_findings = lo_findings->get( ).
+      IF lt_findings IS NOT INITIAL.
+        out->write( lt_findings ).
+      ENDIF.
     ENDIF.
 
     lo_result_alp = mo_put_operation2->execute( ).
-    lo_findings = lo_result->findings.
-    lt_findings = lo_findings->get( ).
-    IF lt_findings IS NOT INITIAL.
-      out->write( lt_findings ).
+    IF show_findings = abap_true.
+      lo_findings = lo_result->findings.
+      lt_findings = lo_findings->get( ).
+      IF lt_findings IS NOT INITIAL.
+        out->write( lt_findings ).
+      ENDIF.
     ENDIF.
-
     out->write( | Enjoy your SAP Fiori elements exercise :) | ).
   ENDMETHOD.
 

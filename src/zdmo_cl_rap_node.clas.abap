@@ -1829,86 +1829,99 @@ CLASS zdmo_cl_rap_node IMPLEMENTATION.
 
     rv_object_already_exists = abap_false.
 
-    CASE iv_type.
-      WHEN 'BDEF' .
-        IF  xco_lib->get_behavior_definition( CONV #( iv_name ) )->exists( ).
-          rv_object_already_exists = abap_true.
-        ENDIF.
-      WHEN 'DDLS' .
-        IF  xco_lib->get_data_definition( CONV #( iv_name ) )->exists( ).
-          rv_object_already_exists = abap_true.
-        ENDIF.
-      WHEN 'DDLX' .
-        IF  xco_lib->get_metadata_extension( CONV #( iv_name ) )->exists( ).
-          rv_object_already_exists = abap_true.
-        ENDIF.
-      WHEN 'SRVD' .
-        IF  xco_lib->get_service_definition( CONV #( iv_name ) )->if_xco_ar_object~exists(  ).
-          rv_object_already_exists = abap_true.
-        ENDIF.
-      WHEN 'SRVB'.
-        IF  xco_lib->get_service_binding( CONV #( iv_name ) )->if_xco_ar_object~exists(  ).
-          rv_object_already_exists = abap_true.
-        ENDIF.
-      WHEN 'CLAS'.
-        IF  xco_lib->get_class( CONV #( iv_name ) )->exists( ).
-          rv_object_already_exists = abap_true.
-        ENDIF.
-      WHEN 'DEVC'.
-        IF  xco_lib->get_package( CONV #( iv_name ) )->exists( ).
-          rv_object_already_exists = abap_true.
-        ENDIF.
-      WHEN 'TABL'.
-        IF  xco_lib->get_database_table( CONV #( iv_name ) )->exists( ).
-          rv_object_already_exists = abap_true.
-        ENDIF.
-      WHEN 'STRU'.
-        IF  xco_lib->get_structure( CONV #( iv_name ) )->exists( ).
-          rv_object_already_exists = abap_true.
-        ENDIF.
 
-      WHEN 'RONT'.
-        "todo xco_lib
-        IF  xco_lib->get_sap_object_type( CONV #( iv_name ) )->exists( ).
-          rv_object_already_exists = abap_true.
-        ENDIF.
-      WHEN 'NONT'.
-        "todo xco_lib
-        IF  xco_lib->get_sap_object_node_type( CONV #( iv_name ) )->exists( ).
-          rv_object_already_exists = abap_true.
-        ENDIF.
+    TRY.
+        CASE iv_type.
+          WHEN 'BDEF' .
+            IF  xco_lib->get_behavior_definition( CONV #( iv_name ) )->exists( ).
+              rv_object_already_exists = abap_true.
+            ENDIF.
+          WHEN 'DDLS' .
+            IF  xco_lib->get_data_definition( CONV #( iv_name ) )->exists( ).
+              rv_object_already_exists = abap_true.
+            ENDIF.
+          WHEN 'DDLX' .
+            IF  xco_lib->get_metadata_extension( CONV #( iv_name ) )->exists( ).
+              rv_object_already_exists = abap_true.
+            ENDIF.
+          WHEN 'SRVD' .
+            IF  xco_lib->get_service_definition( CONV #( iv_name ) )->if_xco_ar_object~exists(  ).
+              rv_object_already_exists = abap_true.
+            ENDIF.
+          WHEN 'SRVB'.
+            IF  xco_lib->get_service_binding( CONV #( iv_name ) )->if_xco_ar_object~exists(  ).
+              rv_object_already_exists = abap_true.
+            ENDIF.
+          WHEN 'CLAS'.
+            IF  xco_lib->get_class( CONV #( iv_name ) )->exists( ).
+              rv_object_already_exists = abap_true.
+            ENDIF.
+          WHEN 'DEVC'.
+            IF  xco_lib->get_package( CONV #( iv_name ) )->exists( ).
+              rv_object_already_exists = abap_true.
+            ENDIF.
+          WHEN 'TABL'.
+            IF  xco_lib->get_database_table( CONV #( iv_name ) )->exists( ).
+              rv_object_already_exists = abap_true.
+            ENDIF.
+          WHEN 'STRU'.
+            IF  xco_lib->get_structure( CONV #( iv_name ) )->exists( ).
+              rv_object_already_exists = abap_true.
+            ENDIF.
 
-      WHEN 'SMBC'.
+          WHEN 'RONT'.
+            "todo xco_lib
+            IF  xco_lib->get_sap_object_type( CONV #( iv_name ) )->exists( ).
+              rv_object_already_exists = abap_true.
+            ENDIF.
+          WHEN 'NONT'.
+            "todo xco_lib
+            IF  xco_lib->get_sap_object_node_type( CONV #( iv_name ) )->exists( ).
+              rv_object_already_exists = abap_true.
+            ENDIF.
+
+          WHEN 'SMBC'.
 *        IF  xco_lib->get_structure( CONV #( lv_name ) )->exists( ).
 *          lv_object_already_exists = abap_true.
 *        ENDIF.
 
 
-        DATA(first_letter_mbc_namespace) = substring( val = me->namespace  len = 1 ).
+            DATA(first_letter_mbc_namespace) = substring( val = me->namespace  len = 1 ).
 
-        "The MBC registration API uses a namespace only if it is a "real" namespace.
-        "If a customer namespace 'Y' or 'Z' is used or if
-        "SAP objects are created such as I_Test that also do not have a namespace
-        "then the MBC namespace must be initial.
+            "The MBC registration API uses a namespace only if it is a "real" namespace.
+            "If a customer namespace 'Y' or 'Z' is used or if
+            "SAP objects are created such as I_Test that also do not have a namespace
+            "then the MBC namespace must be initial.
 
-        CASE first_letter_mbc_namespace.
-          WHEN '/' .
-            DATA(abap_object_mbc_name) = namespace && iv_name.
-          WHEN 'Y' OR 'Z'.
-            abap_object_mbc_name = namespace && iv_name.
+            CASE first_letter_mbc_namespace.
+              WHEN '/' .
+                DATA(abap_object_mbc_name) = namespace && iv_name.
+              WHEN 'Y' OR 'Z'.
+                abap_object_mbc_name = namespace && iv_name.
+              WHEN OTHERS.
+                abap_object_mbc_name = iv_name.
+            ENDCASE.
+
+            SELECT * FROM i_custabapobjdirectoryentry WHERE
+            abapobject = @abap_object_mbc_name AND abapobjectcategory = 'R3TR' AND abapobjecttype = 'SMBC' INTO TABLE @DATA(lt_smbc).
+
+            IF lines( lt_smbc ) = 1.
+              rv_object_already_exists = abap_true.
+            ENDIF.
+
           WHEN OTHERS.
-            abap_object_mbc_name = iv_name.
         ENDCASE.
 
-        SELECT * FROM i_custabapobjdirectoryentry WHERE
-        abapobject = @abap_object_mbc_name AND abapobjectcategory = 'R3TR' AND abapobjecttype = 'SMBC' INTO TABLE @DATA(lt_smbc).
+      CATCH cx_root INTO DATA(catch_xco_exc).
 
-        IF lines( lt_smbc ) = 1.
-          rv_object_already_exists = abap_true.
-        ENDIF.
-
-      WHEN OTHERS.
-    ENDCASE.
+        DATA(text) = catch_xco_exc->get_text(  ).
+        "in certain edge cases (clas could not be deleted completely)
+        "the xco libraries raise an error message
+        "CX_XCO_DEP_FM_CALL_EXCEPTION
+        "in case xco runs into an exception
+        "we assume that the object exists to be on the safe side
+        rv_object_already_exists = abap_true.
+    ENDTRY.
 
   ENDMETHOD.
 
@@ -2664,6 +2677,65 @@ CLASS zdmo_cl_rap_node IMPLEMENTATION.
       APPEND table_fields TO et_fields.
 
     ENDLOOP.
+  ENDMETHOD.
+
+
+  METHOD get_extensib_element_suffix.
+
+    DATA alphabet TYPE string.
+    DATA test TYPE string.
+    DATA base TYPE i .
+    DATA number TYPE i.
+    DATA pos1 TYPE i.
+    DATA pos2 TYPE i.
+    DATA pos3 TYPE i.
+
+    alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.
+    base = strlen( alphabet ).
+
+    pos1 = i_number DIV base.
+    pos2 = i_number - pos1 * base.
+
+
+    CASE namespace.
+
+      WHEN 'Z' OR 'Y'.
+
+        IF i_number < base * base.
+          DATA(character_1) = substring( val = alphabet off = pos1 len = 1 ).
+          DATA(character_2) = substring( val = alphabet off = pos2 len = 1 ).
+          r_extensibility_element_suffix = namespace && character_1 && character_2.
+        ELSE.
+          RAISE EXCEPTION TYPE ZDMO_cx_rap_generator
+            EXPORTING
+              textid    = ZDMO_cx_rap_generator=>too_many_nodes
+              mv_value  = | { i_number } |
+              mv_entity = | 'Z.' & Max { base } x { base } possible.|.
+        ENDIF.
+
+      WHEN OTHERS.
+
+        IF i_number < base * base * base.
+          character_1 = substring( val = alphabet off = pos1 len = 1 ).
+          character_2 = substring( val = alphabet off = pos2 len = 1 ).
+          "For SAP or partner objects more than 625 nodes can
+          "be used ;-)
+          r_extensibility_element_suffix = 'Z' && character_1 && character_2.
+        ELSE.
+          RAISE EXCEPTION TYPE ZDMO_cx_rap_generator
+            EXPORTING
+              textid    = ZDMO_cx_rap_generator=>too_many_nodes
+              mv_value  = | { i_number } |
+              mv_entity = | Max { base } x { base } x { base } possible.|.
+        ENDIF.
+
+    ENDCASE.
+*if namespace
+*r_extensibility_element_suffix =
+
+
+
+
   ENDMETHOD.
 
 
@@ -3790,37 +3862,12 @@ CLASS zdmo_cl_rap_node IMPLEMENTATION.
   ENDMETHOD.
 
 
-  METHOD set_name_behavior_def_i.
-    IF iv_name IS INITIAL.
-*      DATA(lv_name) = |{ namespace }I_{ prefix }{ entityname }{ suffix }|.
-      DATA(lv_name) = get_unique_repository_obj_name( i_repository_object_type = root_node_repository_objects-behavior_definition_i ).
-    ELSE.
-      lv_name = iv_name.
+  METHOD is_alphabetical_character_only.
+    rv_is_alphabetical_char_only = abap_true.
+    FIND ALL OCCURRENCES OF REGEX '[^a-zA-Z]' IN iv_string RESULTS DATA(non_alphabetical_characters).
+    IF non_alphabetical_characters IS NOT INITIAL.
+      rv_is_alphabetical_char_only = abap_false.
     ENDIF.
-
-    check_repository_object_name(
-          EXPORTING
-            iv_type = 'BDEF'
-            iv_name = lv_name
-        ).
-
-
-    IF is_root( ).
-      rap_root_node_objects-behavior_definition_i = lv_name.
-      rv_behavior_dev_i_name = lv_name.
-    ELSEIF is_test_run = abap_true.
-      rap_root_node_objects-behavior_definition_i = lv_name.
-      rv_behavior_dev_i_name = lv_name.
-    ELSE.
-      APPEND | { me->entityname } is not a root node. BDEF for an interface view is only generated for the root node| TO lt_messages.
-      bo_node_is_consistent = abap_false.
-      RAISE EXCEPTION TYPE ZDMO_cx_rap_generator
-        EXPORTING
-          textid    = ZDMO_cx_rap_generator=>is_not_a_root_node
-          mv_entity = me->entityname.
-    ENDIF.
-
-
   ENDMETHOD.
 
 
@@ -4231,6 +4278,11 @@ CLASS zdmo_cl_rap_node IMPLEMENTATION.
   ENDMETHOD.
 
 
+  METHOD set_add_sap_object_type.
+    add_sap_object_type = iv_value.
+  ENDMETHOD.
+
+
   METHOD set_binding_type.
     IF iv_binding_type = binding_type_name-odata_v2_ui OR iv_binding_type = binding_type_name-odata_v4_ui
     OR iv_binding_type = binding_type_name-odata_v2_web_api OR iv_binding_type = binding_type_name-odata_v4_web_api
@@ -4383,12 +4435,66 @@ CLASS zdmo_cl_rap_node IMPLEMENTATION.
   ENDMETHOD.
 
 
-  METHOD is_alphabetical_character_only.
-    rv_is_alphabetical_char_only = abap_true.
-    FIND ALL OCCURRENCES OF REGEX '[^a-zA-Z]' IN iv_string RESULTS DATA(non_alphabetical_characters).
-    IF non_alphabetical_characters IS NOT INITIAL.
-      rv_is_alphabetical_char_only = abap_false.
+  METHOD set_ext_element_suffix.
+
+    DATA lt_all_childnodes  TYPE STANDARD TABLE OF REF TO zdmo_cl_rap_node .
+
+    IF iv_ext_element_suffix IS NOT INITIAL.
+
+      IF strlen( iv_ext_element_suffix ) NE 3.
+        bo_node_is_consistent = abap_false.
+        RAISE EXCEPTION TYPE ZDMO_cx_rap_generator
+          EXPORTING
+            textid   = ZDMO_cx_rap_generator=>invalid_ext_element_Suffix
+            mv_value = |{ iv_ext_element_suffix } |.
+      ENDIF.
+
+      IF is_alphabetical_character_only( iv_ext_element_suffix ) = abap_false.
+        bo_node_is_consistent = abap_false.
+        RAISE EXCEPTION TYPE ZDMO_cx_rap_generator
+          EXPORTING
+            textid   = ZDMO_cx_rap_generator=>invalid_ext_element_Suffix
+            mv_value = |{ iv_ext_element_suffix } |.
+      ENDIF.
+
+      IF me->root_node IS NOT INITIAL.
+
+        lt_all_childnodes = me->root_node->all_childnodes.
+
+        IF me->root_node->extensibility_element_suffix = iv_ext_element_suffix.
+          RAISE EXCEPTION TYPE ZDMO_cx_rap_generator
+            EXPORTING
+              textid    = ZDMO_cx_rap_generator=>ext_elem_suffix_is_not_unique
+              mv_value  = me->root_node->extensibility_element_Suffix
+              mv_entity = me->root_node->entityname.
+        ENDIF.
+
+        LOOP AT lt_all_childnodes INTO DATA(ls_childnode).
+          IF ls_childnode->extensibility_element_Suffix = iv_ext_element_suffix.
+            RAISE EXCEPTION TYPE ZDMO_cx_rap_generator
+              EXPORTING
+                textid    = ZDMO_cx_rap_generator=>ext_elem_suffix_is_not_unique
+                mv_value  = ls_childnode->extensibility_element_Suffix
+                mv_entity = ls_childnode->entityname.
+          ENDIF.
+        ENDLOOP.
+
+      ENDIF.
+
+
+      extensibility_element_Suffix = iv_ext_element_suffix.
+    ELSE.
+
+*       IF bo_is_extensible = abap_true.
+*        RAISE EXCEPTION TYPE ZDMO_cx_rap_generator
+*          EXPORTING
+*            textid = ZDMO_cx_rap_generator=>no_ext_element_suffix_set.
+      extensibility_element_Suffix = get_extensib_element_suffix( node_number ).
+
+*      ENDIF.
+
     ENDIF.
+
   ENDMETHOD.
 
 
@@ -5310,6 +5416,40 @@ CLASS zdmo_cl_rap_node IMPLEMENTATION.
   ENDMETHOD.
 
 
+  METHOD set_name_behavior_def_i.
+    IF iv_name IS INITIAL.
+*      DATA(lv_name) = |{ namespace }I_{ prefix }{ entityname }{ suffix }|.
+      DATA(lv_name) = get_unique_repository_obj_name( i_repository_object_type = root_node_repository_objects-behavior_definition_i ).
+    ELSE.
+      lv_name = iv_name.
+    ENDIF.
+
+    check_repository_object_name(
+          EXPORTING
+            iv_type = 'BDEF'
+            iv_name = lv_name
+        ).
+
+
+    IF is_root( ).
+      rap_root_node_objects-behavior_definition_i = lv_name.
+      rv_behavior_dev_i_name = lv_name.
+    ELSEIF is_test_run = abap_true.
+      rap_root_node_objects-behavior_definition_i = lv_name.
+      rv_behavior_dev_i_name = lv_name.
+    ELSE.
+      APPEND | { me->entityname } is not a root node. BDEF for an interface view is only generated for the root node| TO lt_messages.
+      bo_node_is_consistent = abap_false.
+      RAISE EXCEPTION TYPE ZDMO_cx_rap_generator
+        EXPORTING
+          textid    = ZDMO_cx_rap_generator=>is_not_a_root_node
+          mv_entity = me->entityname.
+    ENDIF.
+
+
+  ENDMETHOD.
+
+
   METHOD set_name_behavior_def_p.
 
     IF iv_name IS INITIAL.
@@ -5401,49 +5541,6 @@ CLASS zdmo_cl_rap_node IMPLEMENTATION.
 
   ENDMETHOD.
 
-  METHOD set_name_sap_node_object_type.
-
-    IF iv_name IS INITIAL.
-*      DATA(lv_name) = |{ namespace }I_{ prefix }{ entityname }{ suffix }|.
-      DATA(lv_name) = get_unique_repository_obj_name( i_repository_object_type = node_repository_objects-sap_object_node_type ).
-*                      CATCH zdmo_cx_rap_generator.
-    ELSE.
-      lv_name = iv_name.
-    ENDIF.
-
-    check_repository_object_name(
-      EXPORTING
-        iv_type = 'NONT'
-        iv_name = lv_name
-    ).
-
-    rap_node_objects-sap_object_node_type = lv_name.
-
-    rv_sap_object_node_type_name = lv_name.
-
-  ENDMETHOD.
-
-  METHOD set_name_sap_object_type.
-
-    IF iv_name IS INITIAL.
-*      DATA(lv_name) = |{ namespace }I_{ prefix }{ entityname }{ suffix }|.
-      DATA(lv_name) = get_unique_repository_obj_name( i_repository_object_type = root_node_repository_objects-sap_object_type ).
-*                      CATCH zdmo_cx_rap_generator.
-    ELSE.
-      lv_name = iv_name.
-    ENDIF.
-
-    check_repository_object_name(
-      EXPORTING
-        iv_type = 'RONT'
-        iv_name = lv_name
-    ).
-
-    rap_root_node_objects-sap_object_type = lv_name.
-
-    rv_sap_object_type_name = lv_name.
-
-  ENDMETHOD.
 
   METHOD set_name_cds_i_view.
 
@@ -5719,6 +5816,52 @@ CLASS zdmo_cl_rap_node IMPLEMENTATION.
     rap_node_objects-meta_data_extension = lv_name.
 
     rv_mde_name  = lv_name.
+
+  ENDMETHOD.
+
+
+  METHOD set_name_sap_node_object_type.
+
+    IF iv_name IS INITIAL.
+*      DATA(lv_name) = |{ namespace }I_{ prefix }{ entityname }{ suffix }|.
+      DATA(lv_name) = get_unique_repository_obj_name( i_repository_object_type = node_repository_objects-sap_object_node_type ).
+*                      CATCH zdmo_cx_rap_generator.
+    ELSE.
+      lv_name = iv_name.
+    ENDIF.
+
+    check_repository_object_name(
+      EXPORTING
+        iv_type = 'NONT'
+        iv_name = lv_name
+    ).
+
+    rap_node_objects-sap_object_node_type = lv_name.
+
+    rv_sap_object_node_type_name = lv_name.
+
+  ENDMETHOD.
+
+
+  METHOD set_name_sap_object_type.
+
+    IF iv_name IS INITIAL.
+*      DATA(lv_name) = |{ namespace }I_{ prefix }{ entityname }{ suffix }|.
+      DATA(lv_name) = get_unique_repository_obj_name( i_repository_object_type = root_node_repository_objects-sap_object_type ).
+*                      CATCH zdmo_cx_rap_generator.
+    ELSE.
+      lv_name = iv_name.
+    ENDIF.
+
+    check_repository_object_name(
+      EXPORTING
+        iv_type = 'RONT'
+        iv_name = lv_name
+    ).
+
+    rap_root_node_objects-sap_object_type = lv_name.
+
+    rv_sap_object_type_name = lv_name.
 
   ENDMETHOD.
 
@@ -6127,7 +6270,6 @@ CLASS zdmo_cl_rap_node IMPLEMENTATION.
   ENDMETHOD.
 
 
-
   METHOD set_suffix.
 
     check_parameter(
@@ -6346,6 +6488,20 @@ CLASS zdmo_cl_rap_node IMPLEMENTATION.
           mv_value   = | { iv_abap_type_name } |
           mv_entity  = entityname
           mv_value_2 = | { abap_type_name } not found in class { abap_class_name } |.
+    ENDIF.
+
+  ENDMETHOD.
+
+
+  METHOD table_is_locked_by_transport.
+
+    DATA(lo_database_table) = xco_lib->get_database_table( iv_name = iv_table_name  ).
+
+    DATA(lo_lock) = lo_database_table->if_xco_cts_changeable~get_object(
+        )->get_lock( ).
+
+    IF lo_lock->exists( ) EQ abap_true.
+      rv_transport = lo_lock->get_transport( ).
     ENDIF.
 
   ENDMETHOD.
@@ -6938,145 +7094,4 @@ CLASS zdmo_cl_rap_node IMPLEMENTATION.
     ENDIF.
 
   ENDMETHOD.
-
-
-  METHOD set_ext_element_suffix.
-
-    DATA lt_all_childnodes  TYPE STANDARD TABLE OF REF TO zdmo_cl_rap_node .
-
-    IF iv_ext_element_suffix IS NOT INITIAL.
-
-      IF strlen( iv_ext_element_suffix ) NE 3.
-        bo_node_is_consistent = abap_false.
-        RAISE EXCEPTION TYPE ZDMO_cx_rap_generator
-          EXPORTING
-            textid   = ZDMO_cx_rap_generator=>invalid_ext_element_Suffix
-            mv_value = |{ iv_ext_element_suffix } |.
-      ENDIF.
-
-      IF is_alphabetical_character_only( iv_ext_element_suffix ) = abap_false.
-        bo_node_is_consistent = abap_false.
-        RAISE EXCEPTION TYPE ZDMO_cx_rap_generator
-          EXPORTING
-            textid   = ZDMO_cx_rap_generator=>invalid_ext_element_Suffix
-            mv_value = |{ iv_ext_element_suffix } |.
-      ENDIF.
-
-      IF me->root_node IS NOT INITIAL.
-
-        lt_all_childnodes = me->root_node->all_childnodes.
-
-        IF me->root_node->extensibility_element_suffix = iv_ext_element_suffix.
-          RAISE EXCEPTION TYPE ZDMO_cx_rap_generator
-            EXPORTING
-              textid    = ZDMO_cx_rap_generator=>ext_elem_suffix_is_not_unique
-              mv_value  = me->root_node->extensibility_element_Suffix
-              mv_entity = me->root_node->entityname.
-        ENDIF.
-
-        LOOP AT lt_all_childnodes INTO DATA(ls_childnode).
-          IF ls_childnode->extensibility_element_Suffix = iv_ext_element_suffix.
-            RAISE EXCEPTION TYPE ZDMO_cx_rap_generator
-              EXPORTING
-                textid    = ZDMO_cx_rap_generator=>ext_elem_suffix_is_not_unique
-                mv_value  = ls_childnode->extensibility_element_Suffix
-                mv_entity = ls_childnode->entityname.
-          ENDIF.
-        ENDLOOP.
-
-      ENDIF.
-
-
-      extensibility_element_Suffix = iv_ext_element_suffix.
-    ELSE.
-
-*       IF bo_is_extensible = abap_true.
-*        RAISE EXCEPTION TYPE ZDMO_cx_rap_generator
-*          EXPORTING
-*            textid = ZDMO_cx_rap_generator=>no_ext_element_suffix_set.
-      extensibility_element_Suffix = get_extensib_element_suffix( node_number ).
-
-*      ENDIF.
-
-    ENDIF.
-
-  ENDMETHOD.
-
-  METHOD get_extensib_element_suffix.
-
-    DATA alphabet TYPE string.
-    DATA test TYPE string.
-    DATA base TYPE i .
-    DATA number TYPE i.
-    DATA pos1 TYPE i.
-    DATA pos2 TYPE i.
-    DATA pos3 TYPE i.
-
-    alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.
-    base = strlen( alphabet ).
-
-    pos1 = i_number DIV base.
-    pos2 = i_number - pos1 * base.
-
-
-    CASE namespace.
-
-      WHEN 'Z' OR 'Y'.
-
-        IF i_number < base * base.
-          DATA(character_1) = substring( val = alphabet off = pos1 len = 1 ).
-          DATA(character_2) = substring( val = alphabet off = pos2 len = 1 ).
-          r_extensibility_element_suffix = namespace && character_1 && character_2.
-        ELSE.
-          RAISE EXCEPTION TYPE ZDMO_cx_rap_generator
-            EXPORTING
-              textid    = ZDMO_cx_rap_generator=>too_many_nodes
-              mv_value  = | { i_number } |
-              mv_entity = | 'Z.' & Max { base } x { base } possible.|.
-        ENDIF.
-
-      WHEN OTHERS.
-
-        IF i_number < base * base * base.
-          character_1 = substring( val = alphabet off = pos1 len = 1 ).
-          character_2 = substring( val = alphabet off = pos2 len = 1 ).
-          "For SAP or partner objects more than 625 nodes can
-          "be used ;-)
-          r_extensibility_element_suffix = 'Z' && character_1 && character_2.
-        ELSE.
-          RAISE EXCEPTION TYPE ZDMO_cx_rap_generator
-            EXPORTING
-              textid    = ZDMO_cx_rap_generator=>too_many_nodes
-              mv_value  = | { i_number } |
-              mv_entity = | Max { base } x { base } x { base } possible.|.
-        ENDIF.
-
-    ENDCASE.
-*if namespace
-*r_extensibility_element_suffix =
-
-
-
-
-  ENDMETHOD.
-
-  METHOD table_is_locked_by_transport.
-
-    DATA(lo_database_table) = xco_lib->get_database_table( iv_name = iv_table_name  ).
-
-    DATA(lo_lock) = lo_database_table->if_xco_cts_changeable~get_object(
-        )->get_lock( ).
-
-    IF lo_lock->exists( ) EQ abap_true.
-      rv_transport = lo_lock->get_transport( ).
-    ENDIF.
-
-  ENDMETHOD.
-
-
-
-  METHOD set_add_sap_object_type.
-    add_sap_object_type = iv_value.
-  ENDMETHOD.
-
 ENDCLASS.

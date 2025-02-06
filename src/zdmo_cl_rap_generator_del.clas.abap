@@ -165,120 +165,7 @@ ENDCLASS.
 
 
 
-CLASS zdmo_cl_rap_generator_del IMPLEMENTATION.
-
-
-  METHOD constructor.
-    super->constructor( ).
-    boname = i_boname.
-    SELECT SINGLE *  FROM ZDMO_R_RAPG_ProjectTP WHERE BoName = @i_boname
-                                                    INTO @bo_data .
-    DATA(xco_on_prem_library) = NEW zdmo_cl_rap_xco_on_prem_lib(  ).
-    IF xco_on_prem_library->on_premise_branch_is_used( ) = abap_true.
-      xco_lib = NEW zdmo_cl_rap_xco_on_prem_lib(  ).
-    ELSE.
-      xco_lib = NEW zdmo_cl_rap_xco_cloud_lib(  ).
-    ENDIF.
-  ENDMETHOD.
-
-
-  METHOD start_deletion.
-
-    TRY.
-*        IF application_log IS INITIAL.
-*          create_application_log(  ).
-*        ENDIF.
-
-        add_text_to_app_log_or_console( 'start method start_deletion( )' ).
-
-
-        add_text_to_app_log_or_console( |checking rap bo { BoName }| ).
-
-        DATA(objects_to_be_deleted_1) = get_objects_from_rap_generator( BoName ).
-
-
-        "remove objects that have been deleted from the list
-
-        generated_objects_are_deleted(
-          EXPORTING
-*            i_rap_bo_name                 = rap_generator_bo-BoName
-            i_repository_objects          = objects_to_be_deleted_1
-          IMPORTING
-            r_existing_repository_objects = DATA(objects_to_be_deleted)
-          RECEIVING
-            r_objects_have_been_deleted   = DATA(objects_have_been_deleted)
-        ).
-
-
-        LOOP AT objects_to_be_deleted INTO DATA(object_to_be_deleted).
-          add_text_to_app_log_or_console( | Type: { object_to_be_deleted-object_type } Name: { object_to_be_deleted-object_name } locked by cts: { object_to_be_deleted-transport_request }| ).
-*        ENDLOOP.
-
-          "unpublish service binding
-*        IF line_exists( objects_to_be_deleted[ object_type = zdmo_cl_rap_node=>root_node_object_types-service_binding ]  ).
-          IF object_to_be_deleted-object_type = zdmo_cl_rap_node=>root_node_object_types-service_binding.
-            DATA(service_binding_to_be_deleted) = objects_to_be_deleted[ object_type = zdmo_cl_rap_node=>root_node_object_types-service_binding ].
-
-            "in cloud we have a validation that checks whether the service binding is still published
-            IF xco_lib->service_binding_is_published( CONV sxco_srvb_object_name(  service_binding_to_be_deleted-object_name ) ).
-              add_text_to_app_log_or_console( |Service binding { service_binding_to_be_deleted-object_name } is published. | ).
-              IF demo_mode = abap_false.
-                add_text_to_app_log_or_console( |unpublishing { service_binding_to_be_deleted-object_name }  | ).
-                xco_lib->un_publish_service_binding( CONV sxco_srvb_object_name(  service_binding_to_be_deleted-object_name ) ).
-              ENDIF.
-            ENDIF.
-
-            IF xco_lib->service_binding_is_published( CONV sxco_srvb_object_name(  service_binding_to_be_deleted-object_name ) ) = abap_false.
-              add_text_to_app_log_or_console( |Service binding { service_binding_to_be_deleted-object_name } is not published.| ).
-            ENDIF.
-
-          ENDIF.
-        ENDLOOP.
-        "start deletion
-        add_text_to_app_log_or_console( |Start deleting generated objects| ).
-
-        IF demo_mode = abap_false.
-
-          delete_generated_objects(
-            i_rap_bo_name        = BoName
-            i_repository_objects = objects_to_be_deleted
-          ).
-
-
-
-          IF generated_objects_are_deleted(
-*                   i_rap_bo_name        = rap_generator_bo-BoName
-                 i_repository_objects = objects_to_be_deleted
-               ) = abap_true.
-
-            add_text_to_app_log_or_console(
-              i_text     = |All objects of { BoName } have been deleted. |
-              i_severity = if_bali_constants=>c_severity_status
-            ).
-
-*                  Delete_RAP_Generator_Project( rap_generator_bo-BoName ).
-
-          ELSE.
-            add_text_to_app_log_or_console(
-              i_text     = |Not all objects of { BoName } have been deleted. |
-              i_severity = if_bali_constants=>c_severity_error
-            ).
-          ENDIF.
-        ENDIF.
-
-
-*      CATCH cx_bali_runtime INTO DATA(application_log_exception).
-      CATCH cx_root INTO DATA(application_log_exception).
-
-        DATA(exception_text) = application_log_exception->get_text(  ).
-        exception_text = |Exception was raised: { exception_text }|.
-        add_text_to_app_log_or_console(
-          i_text     = CONV #( exception_text )
-          i_severity = if_bali_constants=>c_severity_error
-        ).
-
-    ENDTRY.
-  ENDMETHOD.
+CLASS ZDMO_CL_RAP_GENERATOR_DEL IMPLEMENTATION.
 
 
   METHOD add_findings_to_output.
@@ -434,6 +321,20 @@ CLASS zdmo_cl_rap_generator_del IMPLEMENTATION.
 
 *    ELSE.
 
+  ENDMETHOD.
+
+
+  METHOD constructor.
+    super->constructor( ).
+    boname = i_boname.
+    SELECT SINGLE *  FROM ZDMO_R_RAPG_ProjectTP WHERE BoName = @i_boname
+                                                    INTO @bo_data .
+    DATA(xco_on_prem_library) = NEW zdmo_cl_rap_xco_on_prem_lib(  ).
+    IF xco_on_prem_library->on_premise_branch_is_used( ) = abap_true.
+      xco_lib = NEW zdmo_cl_rap_xco_on_prem_lib(  ).
+    ELSE.
+      xco_lib = NEW zdmo_cl_rap_xco_cloud_lib(  ).
+    ENDIF.
   ENDMETHOD.
 
 
@@ -937,6 +838,101 @@ CLASS zdmo_cl_rap_generator_del IMPLEMENTATION.
 
   METHOD Delete_RAP_Generator_Project.
 
+
+  ENDMETHOD.
+
+
+  METHOD delete_release_state.
+
+    DATA release_contract TYPE if_abap_api_state=>ty_release_contract.
+    DATA log_entry TYPE t_log_entry.
+    DATA log_entries TYPE t_log_entries.
+
+    TRY.
+
+        CASE object_type.
+
+          WHEN 'DDLS'.
+            DATA(api_state_handler) = cl_abap_api_state=>create_instance( api_key = VALUE #(
+                 object_type     = object_type
+                 object_name     = to_upper( object_name ) "'ZRAP630E_Shop_051' )
+                 sub_object_type = 'CDS_STOB'
+                 sub_object_name     = to_upper( object_name ) "'ZRAP630E_Shop_051' )
+                 ) ).
+
+          WHEN 'STRU'.
+            "internally we use object_type 'STRU' to be able to choose the correct
+            "xco generation api ->for->structure vs. ->for->table
+
+            api_state_handler = cl_abap_api_state=>create_instance( api_key = VALUE #(
+                            object_type     = 'TABL'
+                            object_name     = to_upper( object_name ) "'zrap630sshop_051' )
+                            ) ).
+
+          WHEN OTHERS.
+
+            api_state_handler = cl_abap_api_state=>create_instance( api_key = VALUE #(
+                  object_type     = object_type
+                  object_name     = to_upper( object_name ) "'zrap630sshop_051' )
+                  ) ).
+
+        ENDCASE.
+
+        release_contract = zdmo_cl_rap_node=>release_contract_c1.
+
+        IF api_state_handler->is_released(
+                    EXPORTING
+                      release_contract         = release_contract
+                      use_in_cloud_development = abap_true
+                      use_in_key_user_apps     = abap_false
+                  ).
+          r_release_state_is_deleted = abap_false.
+          api_state_handler->delete_release_state(
+                 release_contract = zdmo_cl_rap_node=>release_contract_c1
+                 request   = request
+               ).
+          r_release_state_is_deleted = abap_true.
+        ELSE.
+          r_release_state_is_deleted = abap_true.
+        ENDIF.
+
+        release_contract = zdmo_cl_rap_node=>release_contract_c0.
+
+        IF api_state_handler->is_released(
+                    EXPORTING
+                      release_contract         = release_contract
+                      use_in_cloud_development = abap_true
+                      use_in_key_user_apps     = abap_false
+                  ).
+          r_release_state_is_deleted = abap_false.
+          api_state_handler->delete_release_state(
+                 release_contract = zdmo_cl_rap_node=>release_contract_c0
+                 request   = request
+               ).
+          r_release_state_is_deleted = abap_true.
+        ELSE.
+          r_release_state_is_deleted = abap_true.
+        ENDIF.
+
+
+      CATCH cx_abap_api_state INTO DATA(bdef_del_rel_state_exception).
+
+
+        log_entry-text = |Delete release state - { release_contract } of { object_type } { object_name } .|.
+        log_entry-severity = 'E'.
+        log_entry-detaillevel = 1.
+        APPEND log_entry TO log_entries.
+
+        log_entry-text = | { bdef_del_rel_state_exception->get_text( ) }.|.
+        log_entry-detaillevel = 2.
+        APPEND log_entry TO log_entries.
+
+        add_log_entries_for_rap_bo(
+                   i_rap_bo_name = CONV #( boname )
+                   i_log_entries = log_entries
+                 ).
+
+    ENDTRY.
 
   ENDMETHOD.
 
@@ -1640,98 +1636,102 @@ CLASS zdmo_cl_rap_generator_del IMPLEMENTATION.
 
   ENDMETHOD.
 
-  METHOD delete_release_state.
 
-    DATA release_contract TYPE if_abap_api_state=>ty_release_contract.
-    DATA log_entry TYPE t_log_entry.
-    DATA log_entries TYPE t_log_entries.
+  METHOD start_deletion.
 
     TRY.
+*        IF application_log IS INITIAL.
+*          create_application_log(  ).
+*        ENDIF.
 
-        CASE object_type.
+        add_text_to_app_log_or_console( 'start method start_deletion( )' ).
 
-          WHEN 'DDLS'.
-            DATA(api_state_handler) = cl_abap_api_state=>create_instance( api_key = VALUE #(
-                 object_type     = object_type
-                 object_name     = to_upper( object_name ) "'ZRAP630E_Shop_051' )
-                 sub_object_type = 'CDS_STOB'
-                 sub_object_name     = to_upper( object_name ) "'ZRAP630E_Shop_051' )
-                 ) ).
 
-          WHEN 'STRU'.
-            "internally we use object_type 'STRU' to be able to choose the correct
-            "xco generation api ->for->structure vs. ->for->table
+        add_text_to_app_log_or_console( |checking rap bo { BoName }| ).
 
-            api_state_handler = cl_abap_api_state=>create_instance( api_key = VALUE #(
-                            object_type     = 'TABL'
-                            object_name     = to_upper( object_name ) "'zrap630sshop_051' )
-                            ) ).
+        DATA(objects_to_be_deleted_1) = get_objects_from_rap_generator( BoName ).
 
-          WHEN OTHERS.
 
-            api_state_handler = cl_abap_api_state=>create_instance( api_key = VALUE #(
-                  object_type     = object_type
-                  object_name     = to_upper( object_name ) "'zrap630sshop_051' )
-                  ) ).
+        "remove objects that have been deleted from the list
 
-        ENDCASE.
+        generated_objects_are_deleted(
+          EXPORTING
+*            i_rap_bo_name                 = rap_generator_bo-BoName
+            i_repository_objects          = objects_to_be_deleted_1
+          IMPORTING
+            r_existing_repository_objects = DATA(objects_to_be_deleted)
+          RECEIVING
+            r_objects_have_been_deleted   = DATA(objects_have_been_deleted)
+        ).
 
-        release_contract = zdmo_cl_rap_node=>release_contract_c1.
 
-        IF api_state_handler->is_released(
-                    EXPORTING
-                      release_contract         = release_contract
-                      use_in_cloud_development = abap_true
-                      use_in_key_user_apps     = abap_false
-                  ).
-          r_release_state_is_deleted = abap_false.
-          api_state_handler->delete_release_state(
-                 release_contract = zdmo_cl_rap_node=>release_contract_c1
-                 request   = request
-               ).
-          r_release_state_is_deleted = abap_true.
-        ELSE.
-          r_release_state_is_deleted = abap_true.
+        LOOP AT objects_to_be_deleted INTO DATA(object_to_be_deleted).
+          add_text_to_app_log_or_console( | Type: { object_to_be_deleted-object_type } Name: { object_to_be_deleted-object_name } locked by cts: { object_to_be_deleted-transport_request }| ).
+*        ENDLOOP.
+
+          "unpublish service binding
+*        IF line_exists( objects_to_be_deleted[ object_type = zdmo_cl_rap_node=>root_node_object_types-service_binding ]  ).
+          IF object_to_be_deleted-object_type = zdmo_cl_rap_node=>root_node_object_types-service_binding.
+            DATA(service_binding_to_be_deleted) = objects_to_be_deleted[ object_type = zdmo_cl_rap_node=>root_node_object_types-service_binding ].
+
+            "in cloud we have a validation that checks whether the service binding is still published
+            IF xco_lib->service_binding_is_published( CONV sxco_srvb_object_name(  service_binding_to_be_deleted-object_name ) ).
+              add_text_to_app_log_or_console( |Service binding { service_binding_to_be_deleted-object_name } is published. | ).
+              IF demo_mode = abap_false.
+                add_text_to_app_log_or_console( |unpublishing { service_binding_to_be_deleted-object_name }  | ).
+                xco_lib->un_publish_service_binding( CONV sxco_srvb_object_name(  service_binding_to_be_deleted-object_name ) ).
+              ENDIF.
+            ENDIF.
+
+            IF xco_lib->service_binding_is_published( CONV sxco_srvb_object_name(  service_binding_to_be_deleted-object_name ) ) = abap_false.
+              add_text_to_app_log_or_console( |Service binding { service_binding_to_be_deleted-object_name } is not published.| ).
+            ENDIF.
+
+          ENDIF.
+        ENDLOOP.
+        "start deletion
+        add_text_to_app_log_or_console( |Start deleting generated objects| ).
+
+        IF demo_mode = abap_false.
+
+          delete_generated_objects(
+            i_rap_bo_name        = BoName
+            i_repository_objects = objects_to_be_deleted
+          ).
+
+
+
+          IF generated_objects_are_deleted(
+*                   i_rap_bo_name        = rap_generator_bo-BoName
+                 i_repository_objects = objects_to_be_deleted
+               ) = abap_true.
+
+            add_text_to_app_log_or_console(
+              i_text     = |All objects of { BoName } have been deleted. |
+              i_severity = if_bali_constants=>c_severity_status
+            ).
+
+*                  Delete_RAP_Generator_Project( rap_generator_bo-BoName ).
+
+          ELSE.
+            add_text_to_app_log_or_console(
+              i_text     = |Not all objects of { BoName } have been deleted. |
+              i_severity = if_bali_constants=>c_severity_error
+            ).
+          ENDIF.
         ENDIF.
 
-        release_contract = zdmo_cl_rap_node=>release_contract_c0.
 
-        IF api_state_handler->is_released(
-                    EXPORTING
-                      release_contract         = release_contract
-                      use_in_cloud_development = abap_true
-                      use_in_key_user_apps     = abap_false
-                  ).
-          r_release_state_is_deleted = abap_false.
-          api_state_handler->delete_release_state(
-                 release_contract = zdmo_cl_rap_node=>release_contract_c0
-                 request   = request
-               ).
-          r_release_state_is_deleted = abap_true.
-        ELSE.
-          r_release_state_is_deleted = abap_true.
-        ENDIF.
+*      CATCH cx_bali_runtime INTO DATA(application_log_exception).
+      CATCH cx_root INTO DATA(application_log_exception).
 
-
-      CATCH cx_abap_api_state INTO DATA(bdef_del_rel_state_exception).
-
-
-        log_entry-text = |Delete release state - { release_contract } of { object_type } { object_name } .|.
-        log_entry-severity = 'E'.
-        log_entry-detaillevel = 1.
-        APPEND log_entry TO log_entries.
-
-        log_entry-text = | { bdef_del_rel_state_exception->get_text( ) }.|.
-        log_entry-detaillevel = 2.
-        APPEND log_entry TO log_entries.
-
-        add_log_entries_for_rap_bo(
-                   i_rap_bo_name = CONV #( boname )
-                   i_log_entries = log_entries
-                 ).
+        DATA(exception_text) = application_log_exception->get_text(  ).
+        exception_text = |Exception was raised: { exception_text }|.
+        add_text_to_app_log_or_console(
+          i_text     = CONV #( exception_text )
+          i_severity = if_bali_constants=>c_severity_error
+        ).
 
     ENDTRY.
-
   ENDMETHOD.
-
 ENDCLASS.

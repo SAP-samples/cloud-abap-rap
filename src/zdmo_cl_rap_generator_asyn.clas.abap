@@ -29,8 +29,10 @@ ENDCLASS.
 CLASS ZDMO_CL_RAP_GENERATOR_ASYN IMPLEMENTATION.
 
 
-  METHOD if_bgmc_op_single_tx_uncontr~execute.
-    start_generator(  ).
+  METHOD constructor.
+    json_string = i_json_string.
+    package_language_version = i_package_language_version.
+    rap_bo_uuid              = i_rap_bo_uuid.
   ENDMETHOD.
 
 
@@ -39,10 +41,8 @@ CLASS ZDMO_CL_RAP_GENERATOR_ASYN IMPLEMENTATION.
   ENDMETHOD.
 
 
-  METHOD constructor.
-    json_string = i_json_string.
-    package_language_version = i_package_language_version.
-    rap_bo_uuid              = i_rap_bo_uuid.
+  METHOD if_bgmc_op_single_tx_uncontr~execute.
+    start_generator(  ).
   ENDMETHOD.
 
 

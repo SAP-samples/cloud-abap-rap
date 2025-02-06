@@ -68,6 +68,7 @@ CLASS ZDMO_CL_RAP_GEN_GET_PACKAGE IMPLEMENTATION.
 
           LOOP AT filter_condition_range-range INTO DATA(range).
             REPLACE ALL OCCURRENCES OF '*' IN range-low WITH '%'.
+
             DATA(lo_filter) = xco_cp_abap_repository=>object_name->get_filter(
               xco_cp_abap_sql=>constraint->contains_pattern( range-low )
                ).
@@ -80,7 +81,8 @@ CLASS ZDMO_CL_RAP_GEN_GET_PACKAGE IMPLEMENTATION.
 
         ELSEIF search_string IS NOT INITIAL.
 *          search_string = substring( val = search_string  off = 1 len = strlen( search_string ) - 2  ) .
-          search_string = '%' && search_string && '%'.
+*          search_string = '%' && search_string && '%'.
+           REPLACE ALL OCCURRENCES OF '"' IN search_string WITH '%'.
           search_string = to_upper( search_string ).
           lo_filter = xco_cp_abap_repository=>object_name->get_filter(
                  xco_cp_abap_sql=>constraint->contains_pattern( search_string  )

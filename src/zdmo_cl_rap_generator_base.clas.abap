@@ -68,7 +68,7 @@ ENDCLASS.
 
 
 
-CLASS zdmo_cl_rap_generator_base IMPLEMENTATION.
+CLASS ZDMO_CL_RAP_GENERATOR_BASE IMPLEMENTATION.
 
 
   METHOD add_include_structure_to_table.
@@ -94,6 +94,7 @@ CLASS zdmo_cl_rap_generator_base IMPLEMENTATION.
 
   ENDMETHOD.
 
+
   METHOD cds_i_view_set_provider_cntrct.
     "valid as of 2022
     i_interface_view_spcification->set_provider_contract( io_provider_contract = xco_cp_cds=>provider_contract->transactional_interface ).
@@ -105,54 +106,6 @@ CLASS zdmo_cl_rap_generator_base IMPLEMENTATION.
     i_projection_view_spcification->set_provider_contract( io_provider_contract = xco_cp_cds=>provider_contract->transactional_query ).
   ENDMETHOD.
 
-  METHOD set_service_definition_annos.
-    "valid as of 2023
-    IF io_rap_bo_node->is_extensible(  ) = abap_true.
-      "add @AbapCatalog.extensibility.extensible: true
-      io_specification->add_annotation( 'AbapCatalog.extensibility.extensible' )->value->build( )->add_boolean( abap_true ).
-    ENDIF.
-
-    "check if custom entities will be generated.
-    "if yes the leading entity is an r-view rather than a p-view
-    IF io_rap_bo_node->data_source_type = zdmo_cl_rap_node=>data_source_types-abstract_entity OR
-       io_rap_bo_node->data_source_type = zdmo_cl_rap_node=>data_source_types-abap_type .
-      io_specification->add_annotation( 'ObjectModel.leadingEntity.name' )->value->build( )->add_string( CONV #( io_rap_bo_node->rap_node_objects-cds_view_r ) ).
-    ELSE.
-      io_specification->add_annotation( 'ObjectModel.leadingEntity.name' )->value->build( )->add_string( CONV #( io_rap_bo_node->rap_node_objects-cds_view_p ) ).
-    ENDIF.
-
-  ENDMETHOD.
-
-  METHOD set_bdef_extensible_options.
-    "valid as of 2023
-    io_specification->set_extensible_options(
-                        VALUE #(
-                        ( xco_cp_behavior_definition=>extensible_option->with_additional_save  )
-                        ( xco_cp_behavior_definition=>extensible_option->with_determinations_on_modify  )
-                        ( xco_cp_behavior_definition=>extensible_option->with_determinations_on_save  )
-                        ( xco_cp_behavior_definition=>extensible_option->with_validations_on_save  )
-                        )
-                         ).
-  ENDMETHOD.
-
-
-  METHOD set_extensible_for_mapping.
-    "valid as of 2023
-    io_mapping->set_extensible(  )->set_corresponding(  ).
-  ENDMETHOD.
-
-
-  METHOD set_struct_enhancement_cat_any.
-    "valid as of 2402
-    io_specification->set_enhancement_category( xco_cp_table=>enhancement_category->extensible_any ).
-  ENDMETHOD.
-
-
-  METHOD set_table_enhancement_cat_any.
-    "valid as of 2402
-    io_specification->set_enhancement_category( xco_cp_table=>enhancement_category->extensible_any ).
-  ENDMETHOD.
-
 
   METHOD get_environment.
     r_environment = xco_cp_generation=>environment->dev_system( i_transport )  .
@@ -161,6 +114,12 @@ CLASS zdmo_cl_rap_generator_base IMPLEMENTATION.
 *    ELSE.
 *      r_environment = xco_generation=>environment->local.
 *    ENDIF.
+  ENDMETHOD.
+
+
+  METHOD get_patch_operation.
+    r_patch_operation = i_environment->create_patch_operation(  ).
+*   r_patch_operation = i_environment->create_mass_patch_operation(  ).
   ENDMETHOD.
 
 
@@ -186,9 +145,53 @@ CLASS zdmo_cl_rap_generator_base IMPLEMENTATION.
     r_result =  i_put_operation->execute( ).
   ENDMETHOD.
 
-  METHOD get_patch_operation.
-    r_patch_operation = i_environment->create_patch_operation(  ).
-*   r_patch_operation = i_environment->create_mass_patch_operation(  ).
+
+  METHOD set_bdef_extensible_options.
+    "valid as of 2023
+    io_specification->set_extensible_options(
+                        VALUE #(
+                        ( xco_cp_behavior_definition=>extensible_option->with_additional_save  )
+                        ( xco_cp_behavior_definition=>extensible_option->with_determinations_on_modify  )
+                        ( xco_cp_behavior_definition=>extensible_option->with_determinations_on_save  )
+                        ( xco_cp_behavior_definition=>extensible_option->with_validations_on_save  )
+                        )
+                         ).
   ENDMETHOD.
 
+
+  METHOD set_extensible_for_mapping.
+    "valid as of 2023
+    io_mapping->set_extensible(  )->set_corresponding(  ).
+  ENDMETHOD.
+
+
+  METHOD set_service_definition_annos.
+    "valid as of 2023
+    IF io_rap_bo_node->is_extensible(  ) = abap_true.
+      "add @AbapCatalog.extensibility.extensible: true
+      io_specification->add_annotation( 'AbapCatalog.extensibility.extensible' )->value->build( )->add_boolean( abap_true ).
+    ENDIF.
+
+    "check if custom entities will be generated.
+    "if yes the leading entity is an r-view rather than a p-view
+    IF io_rap_bo_node->data_source_type = zdmo_cl_rap_node=>data_source_types-abstract_entity OR
+       io_rap_bo_node->data_source_type = zdmo_cl_rap_node=>data_source_types-abap_type .
+      io_specification->add_annotation( 'ObjectModel.leadingEntity.name' )->value->build( )->add_string( CONV #( io_rap_bo_node->rap_node_objects-cds_view_r ) ).
+    ELSE.
+      io_specification->add_annotation( 'ObjectModel.leadingEntity.name' )->value->build( )->add_string( CONV #( io_rap_bo_node->rap_node_objects-cds_view_p ) ).
+    ENDIF.
+
+  ENDMETHOD.
+
+
+  METHOD set_struct_enhancement_cat_any.
+    "valid as of 2402
+    io_specification->set_enhancement_category( xco_cp_table=>enhancement_category->extensible_any ).
+  ENDMETHOD.
+
+
+  METHOD set_table_enhancement_cat_any.
+    "valid as of 2402
+    io_specification->set_enhancement_category( xco_cp_table=>enhancement_category->extensible_any ).
+  ENDMETHOD.
 ENDCLASS.

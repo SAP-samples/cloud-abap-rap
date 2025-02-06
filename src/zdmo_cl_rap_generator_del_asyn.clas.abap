@@ -35,17 +35,7 @@ ENDCLASS.
 
 
 
-CLASS zdmo_cl_rap_generator_del_asyn IMPLEMENTATION.
-
-
-  METHOD if_bgmc_op_single_tx_uncontr~execute.
-    start_deletion(  ).
-  ENDMETHOD.
-
-
-  METHOD if_abap_parallel~do.
-    start_deletion(  ).
-  ENDMETHOD.
+CLASS ZDMO_CL_RAP_GENERATOR_DEL_ASYN IMPLEMENTATION.
 
 
   METHOD constructor.
@@ -59,6 +49,16 @@ CLASS zdmo_cl_rap_generator_del_asyn IMPLEMENTATION.
     WHILE rx_root->previous IS BOUND.
       rx_root ?= rx_root->previous.
     ENDWHILE.
+  ENDMETHOD.
+
+
+  METHOD if_abap_parallel~do.
+    start_deletion(  ).
+  ENDMETHOD.
+
+
+  METHOD if_bgmc_op_single_tx_uncontr~execute.
+    start_deletion(  ).
   ENDMETHOD.
 
 

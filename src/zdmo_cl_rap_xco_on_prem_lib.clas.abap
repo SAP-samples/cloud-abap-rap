@@ -192,6 +192,303 @@ CLASS ZDMO_CL_RAP_XCO_ON_PREM_LIB IMPLEMENTATION.
   ENDMETHOD.
 
 
+  METHOD add_enh_cat_and_anno_to_struct.
+
+*    DATA: change_structure_name TYPE ddobjname,
+*          lv_return         TYPE syst_subrc,
+*          lt_dd03p          TYPE TABLE OF dd03p,
+*          lt_dd03p_ext_incl TYPE TABLE OF dd03p,
+*          lt_dd12v          TYPE TABLE OF dd12v,
+*          lt_dd17v          TYPE TABLE OF dd17v,
+*          ls_dd02v          TYPE dd02v,
+*          ls_dd09l          TYPE dd09l,
+*          state             TYPE ddgotstate,
+*          position          TYPE i.
+*
+*    FIELD-SYMBOLS:
+*      <ls_dd03p>           TYPE dd03p.
+*
+*    "type must be exactly the type being used by DDIF function modules
+*    change_structure_name = to_upper( ext_include_structure_name ).
+*
+*
+*
+*    "get table information.
+*    CALL FUNCTION 'DDIF_TABL_GET'
+*      EXPORTING
+*        name          = change_structure_name
+*        state         = 'A'
+*      IMPORTING
+*        gotstate      = state
+*        dd02v_wa      = ls_dd02v
+*        dd09l_wa      = ls_dd09l
+*      TABLES
+*        dd03p_tab     = lt_dd03p
+*        dd12v_tab     = lt_dd12v
+*        dd17v_tab     = lt_dd17v
+*      EXCEPTIONS
+*        illegal_input = 1
+*        OTHERS        = 2.
+*
+*    IF sy-subrc <> 0.
+*      ASSERT 1 = 0.
+*    ENDIF.
+*
+*    "for structure change ls_dd02v-EXCLASS = '4' and set quota and extensibility suffix
+*
+*    ls_dd02v-exclass = zdmo_cl_rap_node=>enhancement_category-can_be_enhanced_deep. "'4'.
+*    ls_dd02v-field_suffix =  extensibility_element_suffix.
+*    ls_dd02v-quota_max_fields = zdmo_cl_rap_node=>abapcatalog_enhancement-quotamaximumfields.
+*    ls_dd02v-quota_max_bytes = zdmo_cl_rap_node=>abapcatalog_enhancement-quotamaximumbytes.
+*    ls_dd02v-quota_share_partner = zdmo_cl_rap_node=>abapcatalog_enhancement-quotasharepartner.
+*    ls_dd02v-quota_share_customer = zdmo_cl_rap_node=>abapcatalog_enhancement-quotasharecustomer.
+*
+*    "change table
+*    CALL FUNCTION 'DDIF_TABL_PUT'
+*      EXPORTING
+*        name              = change_structure_name
+*        dd02v_wa          = ls_dd02v
+*        dd09l_wa          = ls_dd09l
+*      TABLES
+*        dd03p_tab         = lt_dd03p
+*      EXCEPTIONS
+*        tabl_not_found    = 1
+*        name_inconsistent = 2
+*        tabl_inconsistent = 3
+*        put_failure       = 4
+*        put_refused       = 5
+*        OTHERS            = 6.
+*
+*    IF sy-subrc <> 0.
+*      ASSERT 1 = 0.
+*    ELSE.
+*
+*      CALL FUNCTION 'DDIF_TABL_ACTIVATE'
+*        EXPORTING
+*          name        = change_structure_name
+*          auth_chk    = ' '
+*        IMPORTING
+*          rc          = lv_return
+*        EXCEPTIONS
+*          not_found   = 1
+*          put_failure = 2
+*          OTHERS      = 3.
+*      IF sy-subrc <> 0.
+*        ASSERT 1 = 0.
+*      ENDIF.
+*    ENDIF.
+
+
+  ENDMETHOD.
+
+
+  METHOD add_enh_cat_to_table.
+
+*    DATA: change_table_name TYPE ddobjname,
+*          lv_return         TYPE syst_subrc,
+*          lt_dd03p          TYPE TABLE OF dd03p,
+*          lt_dd03p_ext_incl TYPE TABLE OF dd03p,
+*          lt_dd12v          TYPE TABLE OF dd12v,
+*          lt_dd17v          TYPE TABLE OF dd17v,
+*          ls_dd02v          TYPE dd02v,
+*          ls_dd09l          TYPE dd09l,
+*          state             TYPE ddgotstate,
+*          position          TYPE i.
+*
+*    FIELD-SYMBOLS:
+*      <ls_dd03p>           TYPE dd03p.
+*
+*    "type must be exactly the type being used by DDIF function modules
+*    change_table_name = to_upper( table_name ).
+*
+*    "get table information.
+*    CALL FUNCTION 'DDIF_TABL_GET'
+*      EXPORTING
+*        name          = change_table_name
+*        state         = 'A'
+*      IMPORTING
+*        gotstate      = state
+*        dd02v_wa      = ls_dd02v
+*        dd09l_wa      = ls_dd09l
+*      TABLES
+*        dd03p_tab     = lt_dd03p
+*        dd12v_tab     = lt_dd12v
+*        dd17v_tab     = lt_dd17v
+*      EXCEPTIONS
+*        illegal_input = 1
+*        OTHERS        = 2.
+*
+*    IF sy-subrc <> 0.
+*      ASSERT 1 = 0.
+*    ENDIF.
+*
+*    "for table change ls_dd02v-EXCLASS = '4'.
+*    ls_dd02v-exclass = '4'.
+*
+*    "change table
+*    CALL FUNCTION 'DDIF_TABL_PUT'
+*      EXPORTING
+*        name              = change_table_name
+*        dd02v_wa          = ls_dd02v
+*        dd09l_wa          = ls_dd09l
+*      TABLES
+*        dd03p_tab         = lt_dd03p
+*      EXCEPTIONS
+*        tabl_not_found    = 1
+*        name_inconsistent = 2
+*        tabl_inconsistent = 3
+*        put_failure       = 4
+*        put_refused       = 5
+*        OTHERS            = 6.
+*
+*    IF sy-subrc <> 0.
+*      ASSERT 1 = 0.
+*    ELSE.
+*
+*      CALL FUNCTION 'DDIF_TABL_ACTIVATE'
+*        EXPORTING
+*          name        = change_table_name
+*          auth_chk    = ' '
+*        IMPORTING
+*          rc          = lv_return
+*        EXCEPTIONS
+*          not_found   = 1
+*          put_failure = 2
+*          OTHERS      = 3.
+*      IF sy-subrc <> 0.
+*        ASSERT 1 = 0.
+*      ENDIF.
+*    ENDIF.
+*
+
+
+  ENDMETHOD.
+
+
+  METHOD add_include_structure_to_table.
+
+*
+*    DATA: change_table_name TYPE ddobjname,
+*          lv_return         TYPE syst_subrc,
+*          lt_dd03p          TYPE TABLE OF dd03p,
+*          lt_dd03p_ext_incl TYPE TABLE OF dd03p,
+*          lt_dd12v          TYPE TABLE OF dd12v,
+*          lt_dd17v          TYPE TABLE OF dd17v,
+*          ls_dd02v          TYPE dd02v,
+*          ls_dd09l          TYPE dd09l,
+*          state             TYPE ddgotstate,
+*          position          TYPE i.
+*
+*    FIELD-SYMBOLS:
+*      <ls_dd03p>           TYPE dd03p.
+*
+*    "type must be exactly the type being used by DDIF function modules
+*    change_table_name = table_name.
+*
+*    "get table information.
+*    CALL FUNCTION 'DDIF_TABL_GET'
+*      EXPORTING
+*        name          = change_table_name
+*        state         = 'A'
+*      IMPORTING
+*        gotstate      = state
+*        dd02v_wa      = ls_dd02v
+*        dd09l_wa      = ls_dd09l
+*      TABLES
+*        dd03p_tab     = lt_dd03p
+*        dd12v_tab     = lt_dd12v
+*        dd17v_tab     = lt_dd17v
+*      EXCEPTIONS
+*        illegal_input = 1
+*        OTHERS        = 2.
+*
+*    IF sy-subrc <> 0.
+*      ASSERT 1 = 0.
+*    ENDIF.
+*
+*    "information about extension include
+*
+*    lt_dd03p_ext_incl = VALUE #(
+*    ( tabname = |{ change_table_name }|  fieldname = '.INCLUDE' ddlanguage = '' position = '0002' keyflag = '' mandatory = ''
+*    rollname = '' checktable = '' adminfield = '0' inttype = '' intlen = '000000' reftable = '' precfield =
+*    |{ extension_include_name }| reffield = '' conrout = '' notnull = '' domname = '' routputlen = '000000' memoryid = '' logflag =
+*    '' headlen = '00' scrlen1 = '00' scrlen2 = '00' scrlen3 = '00' dtelglobal = '' dtelmaster = '' reservedte = '' datatype
+*    = '' leng = '000000' outputlen = '000000' decimals = '000000' lowercase = '' signflag = '' langflag = '' valexi = ''
+*    entitytab = '' convexit = '' mask = '      S' masklen = '0000' actflag = '' ddtext = '' reptext = '' scrtext_s = ''
+*    scrtext_m = '' scrtext_l = '' dommaster = '' reservedom = '' domglobal = '' domname3l = '' shlporigin = '' shlpname =
+*    '' shlpfield = '' tabletype = '' depth = '00' comptype = 'S' deffdname = '' groupname = '' reftype = '' proxytype = ''
+*    languflag = '' exclass = '0' ltrflddis = '' bidictrlc = '' dbposition = '0000' anonymous = '' outputstyle = '00'
+*    nohistory = '' ampmformat = '' streamorloc = '' strorlocpos = '00' sql_passvalue = '' is_virtual = '' is_calculated =
+*    '' extendname = '' srs_id = '0000000000' )
+*    ( tabname = |{ change_table_name }| fieldname = 'DUMMY_FIELD' ddlanguage = '' position = '0003' keyflag = '' mandatory = ''
+*    rollname = '' checktable = '' adminfield = '1' inttype = 'C' intlen = '000002' reftable = '' precfield = '' reffield =
+*    '' conrout = '' notnull = '' domname = '' routputlen = '000000' memoryid = '' logflag = '' headlen = '00' scrlen1 =
+*    '00' scrlen2 = '00' scrlen3 = '00' dtelglobal = '' dtelmaster = '' reservedte = '' datatype = 'CHAR' leng = '000001'
+*    outputlen = '000000' decimals = '000000' lowercase = '' signflag = '' langflag = '' valexi = '' entitytab = '' convexit
+*    = '' mask = '  CHAR' masklen = '0000' actflag = '' ddtext = '' reptext = '' scrtext_s = '' scrtext_m = '' scrtext_l =
+*    '' dommaster = '' reservedom = '' domglobal = '' domname3l = '' shlporigin = '' shlpname = '' shlpfield = '' tabletype
+*    = '' depth = '00' comptype = '' deffdname = '' groupname = '' reftype = '' proxytype = '' languflag = '' exclass = '0'
+*    ltrflddis = '' bidictrlc = '' dbposition = '0000' anonymous = '' outputstyle = '00' nohistory = '' ampmformat = ''
+*    streamorloc = '' strorlocpos = '00' sql_passvalue = '' is_virtual = '' is_calculated = '' extendname = '' srs_id =
+*    '0000000000' )
+*     ) .
+*
+*    "add extension include structure to table
+*    IF lt_dd03p IS NOT INITIAL.
+*
+*      position = lines( lt_dd03p ).
+*
+*      LOOP AT lt_dd03p_ext_incl INTO DATA(ls_dd03p_draft)  .
+*        position += 1.
+*        ls_dd03p_draft-position = position.
+*        APPEND ls_dd03p_draft TO lt_dd03p.
+*      ENDLOOP.
+*
+*    ELSE.
+*      ASSERT 1 = 0.
+*    ENDIF.
+*
+*    "change table
+*    CALL FUNCTION 'DDIF_TABL_PUT'
+*      EXPORTING
+*        name              = change_table_name
+*        dd02v_wa          = ls_dd02v
+*        dd09l_wa          = ls_dd09l
+*      TABLES
+*        dd03p_tab         = lt_dd03p
+*      EXCEPTIONS
+*        tabl_not_found    = 1
+*        name_inconsistent = 2
+*        tabl_inconsistent = 3
+*        put_failure       = 4
+*        put_refused       = 5
+*        OTHERS            = 6.
+*
+*    IF sy-subrc <> 0.
+*      ASSERT 1 = 0.
+*    ELSE.
+*
+*      CALL FUNCTION 'DDIF_TABL_ACTIVATE'
+*        EXPORTING
+*          name        = change_table_name
+*          auth_chk    = ' '
+*        IMPORTING
+*          rc          = lv_return
+*        EXCEPTIONS
+*          not_found   = 1
+*          put_failure = 2
+*          OTHERS      = 3.
+*      IF sy-subrc <> 0.
+*        ASSERT 1 = 0.
+*      ENDIF.
+*    ENDIF.
+
+
+
+
+  ENDMETHOD.
+
+
   METHOD get_abap_language_version.
 *    r_abap_language_version = xco_abap_language_version=>object_type->devc->get_object_language_version( CONV #( iv_name ) )->get_value(  ).
   ENDMETHOD.
@@ -276,6 +573,16 @@ CLASS ZDMO_CL_RAP_XCO_ON_PREM_LIB IMPLEMENTATION.
   ENDMETHOD.
 
 
+  METHOD get_sap_object_node_type.
+*    ro_sap_object_node_type = xco_abap_repository=>object->nont->for( iv_name ).
+  ENDMETHOD.
+
+
+  METHOD get_sap_object_type.
+*    ro_sap_object_type = xco_abap_repository=>object->ront->for( iv_name ).
+  ENDMETHOD.
+
+
   METHOD  get_service_binding.
 *    ro_service_binding = xco_abap_repository=>object->srvb->for( iv_name  ).
   ENDMETHOD.
@@ -285,13 +592,6 @@ CLASS ZDMO_CL_RAP_XCO_ON_PREM_LIB IMPLEMENTATION.
 *    ro_service_definition = xco_abap_repository=>object->srvd->for( iv_name  ).
   ENDMETHOD.
 
-  METHOD get_sap_object_node_type.
-*    ro_sap_object_node_type = xco_abap_repository=>object->nont->for( iv_name ).
-  ENDMETHOD.
-
-  METHOD get_sap_object_type.
-*    ro_sap_object_type = xco_abap_repository=>object->ront->for( iv_name ).
-  ENDMETHOD.
 
   METHOD  get_structure.
 *    ro_structure = xco_abap_repository=>object->tabl->structure->for( iv_name  ).
@@ -604,300 +904,6 @@ CLASS ZDMO_CL_RAP_XCO_ON_PREM_LIB IMPLEMENTATION.
 *      ENDIF.
 *
 *    ENDIF.
-
-  ENDMETHOD.
-
-  METHOD add_include_structure_to_table.
-
-*
-*    DATA: change_table_name TYPE ddobjname,
-*          lv_return         TYPE syst_subrc,
-*          lt_dd03p          TYPE TABLE OF dd03p,
-*          lt_dd03p_ext_incl TYPE TABLE OF dd03p,
-*          lt_dd12v          TYPE TABLE OF dd12v,
-*          lt_dd17v          TYPE TABLE OF dd17v,
-*          ls_dd02v          TYPE dd02v,
-*          ls_dd09l          TYPE dd09l,
-*          state             TYPE ddgotstate,
-*          position          TYPE i.
-*
-*    FIELD-SYMBOLS:
-*      <ls_dd03p>           TYPE dd03p.
-*
-*    "type must be exactly the type being used by DDIF function modules
-*    change_table_name = table_name.
-*
-*    "get table information.
-*    CALL FUNCTION 'DDIF_TABL_GET'
-*      EXPORTING
-*        name          = change_table_name
-*        state         = 'A'
-*      IMPORTING
-*        gotstate      = state
-*        dd02v_wa      = ls_dd02v
-*        dd09l_wa      = ls_dd09l
-*      TABLES
-*        dd03p_tab     = lt_dd03p
-*        dd12v_tab     = lt_dd12v
-*        dd17v_tab     = lt_dd17v
-*      EXCEPTIONS
-*        illegal_input = 1
-*        OTHERS        = 2.
-*
-*    IF sy-subrc <> 0.
-*      ASSERT 1 = 0.
-*    ENDIF.
-*
-*    "information about extension include
-*
-*    lt_dd03p_ext_incl = VALUE #(
-*    ( tabname = |{ change_table_name }|  fieldname = '.INCLUDE' ddlanguage = '' position = '0002' keyflag = '' mandatory = ''
-*    rollname = '' checktable = '' adminfield = '0' inttype = '' intlen = '000000' reftable = '' precfield =
-*    |{ extension_include_name }| reffield = '' conrout = '' notnull = '' domname = '' routputlen = '000000' memoryid = '' logflag =
-*    '' headlen = '00' scrlen1 = '00' scrlen2 = '00' scrlen3 = '00' dtelglobal = '' dtelmaster = '' reservedte = '' datatype
-*    = '' leng = '000000' outputlen = '000000' decimals = '000000' lowercase = '' signflag = '' langflag = '' valexi = ''
-*    entitytab = '' convexit = '' mask = '      S' masklen = '0000' actflag = '' ddtext = '' reptext = '' scrtext_s = ''
-*    scrtext_m = '' scrtext_l = '' dommaster = '' reservedom = '' domglobal = '' domname3l = '' shlporigin = '' shlpname =
-*    '' shlpfield = '' tabletype = '' depth = '00' comptype = 'S' deffdname = '' groupname = '' reftype = '' proxytype = ''
-*    languflag = '' exclass = '0' ltrflddis = '' bidictrlc = '' dbposition = '0000' anonymous = '' outputstyle = '00'
-*    nohistory = '' ampmformat = '' streamorloc = '' strorlocpos = '00' sql_passvalue = '' is_virtual = '' is_calculated =
-*    '' extendname = '' srs_id = '0000000000' )
-*    ( tabname = |{ change_table_name }| fieldname = 'DUMMY_FIELD' ddlanguage = '' position = '0003' keyflag = '' mandatory = ''
-*    rollname = '' checktable = '' adminfield = '1' inttype = 'C' intlen = '000002' reftable = '' precfield = '' reffield =
-*    '' conrout = '' notnull = '' domname = '' routputlen = '000000' memoryid = '' logflag = '' headlen = '00' scrlen1 =
-*    '00' scrlen2 = '00' scrlen3 = '00' dtelglobal = '' dtelmaster = '' reservedte = '' datatype = 'CHAR' leng = '000001'
-*    outputlen = '000000' decimals = '000000' lowercase = '' signflag = '' langflag = '' valexi = '' entitytab = '' convexit
-*    = '' mask = '  CHAR' masklen = '0000' actflag = '' ddtext = '' reptext = '' scrtext_s = '' scrtext_m = '' scrtext_l =
-*    '' dommaster = '' reservedom = '' domglobal = '' domname3l = '' shlporigin = '' shlpname = '' shlpfield = '' tabletype
-*    = '' depth = '00' comptype = '' deffdname = '' groupname = '' reftype = '' proxytype = '' languflag = '' exclass = '0'
-*    ltrflddis = '' bidictrlc = '' dbposition = '0000' anonymous = '' outputstyle = '00' nohistory = '' ampmformat = ''
-*    streamorloc = '' strorlocpos = '00' sql_passvalue = '' is_virtual = '' is_calculated = '' extendname = '' srs_id =
-*    '0000000000' )
-*     ) .
-*
-*    "add extension include structure to table
-*    IF lt_dd03p IS NOT INITIAL.
-*
-*      position = lines( lt_dd03p ).
-*
-*      LOOP AT lt_dd03p_ext_incl INTO DATA(ls_dd03p_draft)  .
-*        position += 1.
-*        ls_dd03p_draft-position = position.
-*        APPEND ls_dd03p_draft TO lt_dd03p.
-*      ENDLOOP.
-*
-*    ELSE.
-*      ASSERT 1 = 0.
-*    ENDIF.
-*
-*    "change table
-*    CALL FUNCTION 'DDIF_TABL_PUT'
-*      EXPORTING
-*        name              = change_table_name
-*        dd02v_wa          = ls_dd02v
-*        dd09l_wa          = ls_dd09l
-*      TABLES
-*        dd03p_tab         = lt_dd03p
-*      EXCEPTIONS
-*        tabl_not_found    = 1
-*        name_inconsistent = 2
-*        tabl_inconsistent = 3
-*        put_failure       = 4
-*        put_refused       = 5
-*        OTHERS            = 6.
-*
-*    IF sy-subrc <> 0.
-*      ASSERT 1 = 0.
-*    ELSE.
-*
-*      CALL FUNCTION 'DDIF_TABL_ACTIVATE'
-*        EXPORTING
-*          name        = change_table_name
-*          auth_chk    = ' '
-*        IMPORTING
-*          rc          = lv_return
-*        EXCEPTIONS
-*          not_found   = 1
-*          put_failure = 2
-*          OTHERS      = 3.
-*      IF sy-subrc <> 0.
-*        ASSERT 1 = 0.
-*      ENDIF.
-*    ENDIF.
-
-
-
-
-  ENDMETHOD.
-
-  METHOD add_enh_cat_and_anno_to_struct.
-
-*    DATA: change_structure_name TYPE ddobjname,
-*          lv_return         TYPE syst_subrc,
-*          lt_dd03p          TYPE TABLE OF dd03p,
-*          lt_dd03p_ext_incl TYPE TABLE OF dd03p,
-*          lt_dd12v          TYPE TABLE OF dd12v,
-*          lt_dd17v          TYPE TABLE OF dd17v,
-*          ls_dd02v          TYPE dd02v,
-*          ls_dd09l          TYPE dd09l,
-*          state             TYPE ddgotstate,
-*          position          TYPE i.
-*
-*    FIELD-SYMBOLS:
-*      <ls_dd03p>           TYPE dd03p.
-*
-*    "type must be exactly the type being used by DDIF function modules
-*    change_structure_name = to_upper( ext_include_structure_name ).
-*
-*
-*
-*    "get table information.
-*    CALL FUNCTION 'DDIF_TABL_GET'
-*      EXPORTING
-*        name          = change_structure_name
-*        state         = 'A'
-*      IMPORTING
-*        gotstate      = state
-*        dd02v_wa      = ls_dd02v
-*        dd09l_wa      = ls_dd09l
-*      TABLES
-*        dd03p_tab     = lt_dd03p
-*        dd12v_tab     = lt_dd12v
-*        dd17v_tab     = lt_dd17v
-*      EXCEPTIONS
-*        illegal_input = 1
-*        OTHERS        = 2.
-*
-*    IF sy-subrc <> 0.
-*      ASSERT 1 = 0.
-*    ENDIF.
-*
-*    "for structure change ls_dd02v-EXCLASS = '4' and set quota and extensibility suffix
-*
-*    ls_dd02v-exclass = zdmo_cl_rap_node=>enhancement_category-can_be_enhanced_deep. "'4'.
-*    ls_dd02v-field_suffix =  extensibility_element_suffix.
-*    ls_dd02v-quota_max_fields = zdmo_cl_rap_node=>abapcatalog_enhancement-quotamaximumfields.
-*    ls_dd02v-quota_max_bytes = zdmo_cl_rap_node=>abapcatalog_enhancement-quotamaximumbytes.
-*    ls_dd02v-quota_share_partner = zdmo_cl_rap_node=>abapcatalog_enhancement-quotasharepartner.
-*    ls_dd02v-quota_share_customer = zdmo_cl_rap_node=>abapcatalog_enhancement-quotasharecustomer.
-*
-*    "change table
-*    CALL FUNCTION 'DDIF_TABL_PUT'
-*      EXPORTING
-*        name              = change_structure_name
-*        dd02v_wa          = ls_dd02v
-*        dd09l_wa          = ls_dd09l
-*      TABLES
-*        dd03p_tab         = lt_dd03p
-*      EXCEPTIONS
-*        tabl_not_found    = 1
-*        name_inconsistent = 2
-*        tabl_inconsistent = 3
-*        put_failure       = 4
-*        put_refused       = 5
-*        OTHERS            = 6.
-*
-*    IF sy-subrc <> 0.
-*      ASSERT 1 = 0.
-*    ELSE.
-*
-*      CALL FUNCTION 'DDIF_TABL_ACTIVATE'
-*        EXPORTING
-*          name        = change_structure_name
-*          auth_chk    = ' '
-*        IMPORTING
-*          rc          = lv_return
-*        EXCEPTIONS
-*          not_found   = 1
-*          put_failure = 2
-*          OTHERS      = 3.
-*      IF sy-subrc <> 0.
-*        ASSERT 1 = 0.
-*      ENDIF.
-*    ENDIF.
-
-
-  ENDMETHOD.
-
-  METHOD add_enh_cat_to_table.
-
-*    DATA: change_table_name TYPE ddobjname,
-*          lv_return         TYPE syst_subrc,
-*          lt_dd03p          TYPE TABLE OF dd03p,
-*          lt_dd03p_ext_incl TYPE TABLE OF dd03p,
-*          lt_dd12v          TYPE TABLE OF dd12v,
-*          lt_dd17v          TYPE TABLE OF dd17v,
-*          ls_dd02v          TYPE dd02v,
-*          ls_dd09l          TYPE dd09l,
-*          state             TYPE ddgotstate,
-*          position          TYPE i.
-*
-*    FIELD-SYMBOLS:
-*      <ls_dd03p>           TYPE dd03p.
-*
-*    "type must be exactly the type being used by DDIF function modules
-*    change_table_name = to_upper( table_name ).
-*
-*    "get table information.
-*    CALL FUNCTION 'DDIF_TABL_GET'
-*      EXPORTING
-*        name          = change_table_name
-*        state         = 'A'
-*      IMPORTING
-*        gotstate      = state
-*        dd02v_wa      = ls_dd02v
-*        dd09l_wa      = ls_dd09l
-*      TABLES
-*        dd03p_tab     = lt_dd03p
-*        dd12v_tab     = lt_dd12v
-*        dd17v_tab     = lt_dd17v
-*      EXCEPTIONS
-*        illegal_input = 1
-*        OTHERS        = 2.
-*
-*    IF sy-subrc <> 0.
-*      ASSERT 1 = 0.
-*    ENDIF.
-*
-*    "for table change ls_dd02v-EXCLASS = '4'.
-*    ls_dd02v-exclass = '4'.
-*
-*    "change table
-*    CALL FUNCTION 'DDIF_TABL_PUT'
-*      EXPORTING
-*        name              = change_table_name
-*        dd02v_wa          = ls_dd02v
-*        dd09l_wa          = ls_dd09l
-*      TABLES
-*        dd03p_tab         = lt_dd03p
-*      EXCEPTIONS
-*        tabl_not_found    = 1
-*        name_inconsistent = 2
-*        tabl_inconsistent = 3
-*        put_failure       = 4
-*        put_refused       = 5
-*        OTHERS            = 6.
-*
-*    IF sy-subrc <> 0.
-*      ASSERT 1 = 0.
-*    ELSE.
-*
-*      CALL FUNCTION 'DDIF_TABL_ACTIVATE'
-*        EXPORTING
-*          name        = change_table_name
-*          auth_chk    = ' '
-*        IMPORTING
-*          rc          = lv_return
-*        EXCEPTIONS
-*          not_found   = 1
-*          put_failure = 2
-*          OTHERS      = 3.
-*      IF sy-subrc <> 0.
-*        ASSERT 1 = 0.
-*      ENDIF.
-*    ENDIF.
-*
-
 
   ENDMETHOD.
 ENDCLASS.

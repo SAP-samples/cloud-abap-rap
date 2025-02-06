@@ -114,10 +114,25 @@ ENDCLASS.
 
 
 
-CLASS zdmo_cl_rap_xco_lib IMPLEMENTATION.
+CLASS ZDMO_CL_RAP_XCO_LIB IMPLEMENTATION.
 
 
   METHOD add_draft_include.
+
+  ENDMETHOD.
+
+
+  METHOD add_enh_cat_and_anno_to_struct.
+
+  ENDMETHOD.
+
+
+  METHOD add_enh_cat_to_table.
+
+  ENDMETHOD.
+
+
+  METHOD add_include_structure_to_table.
 
   ENDMETHOD.
 
@@ -224,6 +239,16 @@ CLASS zdmo_cl_rap_xco_lib IMPLEMENTATION.
   ENDMETHOD.
 
 
+  METHOD get_sap_object_node_type.
+
+  ENDMETHOD.
+
+
+  METHOD get_sap_object_type.
+
+  ENDMETHOD.
+
+
   METHOD get_service_binding.
 
   ENDMETHOD.
@@ -308,25 +333,4 @@ CLASS zdmo_cl_rap_xco_lib IMPLEMENTATION.
 *        textid   = zdmo_cx_rap_generator=>method_not_implemented
 *        mv_value = 'un_publish_service_binding'.
   ENDMETHOD.
-
-  METHOD add_include_structure_to_table.
-
-  ENDMETHOD.
-
-  METHOD add_enh_cat_and_anno_to_struct.
-
-  ENDMETHOD.
-
-  METHOD add_enh_cat_to_table.
-
-  ENDMETHOD.
-
-  METHOD get_sap_object_node_type.
-
-  ENDMETHOD.
-
-  METHOD get_sap_object_type.
-
-  ENDMETHOD.
-
 ENDCLASS.

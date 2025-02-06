@@ -183,36 +183,37 @@ annotate view ZDMO_C_RAPG_NodeTP with
   @UI.hidden: true
   NodeNumber;
 
-  @UI.lineItem: [ {
-    label: 'Is root node',
-    position: 10 ,
-    importance: #HIGH
-  }
-  //  , {
-  //      label: 'Add Child',
-  //      dataAction: 'addChildNode',
-  //      type: #FOR_ACTION,
-  //      position: 10
-  //      }
-      , {
-      label: 'Add Child based on tables',
-      dataAction: 'addChildDataSourceTable',
-      type: #FOR_ACTION,
-      position: 20
-      }
-      , {
-      label: 'Add Child based on CDS',
-      dataAction: 'addChildDataSourceCDSview',
-      type: #FOR_ACTION,
-      position: 30
-      }
-      , {
-      label: 'Add Child based on Abs. Entity',
-      dataAction: 'addChildDataSourceAbsEntity',
-      type: #FOR_ACTION,
-      position: 40
-      }
-  ]
+  @UI.identification:  [ {
+  //  @UI.lineItem: [ {
+      label: 'Is root node',
+      position: 10 ,
+      importance: #HIGH
+    }
+    //  , {
+    //      label: 'Add Child',
+    //      dataAction: 'addChildNode',
+    //      type: #FOR_ACTION,
+    //      position: 10
+    //      }
+        , {
+        label: 'Add Child based on tables',
+        dataAction: 'addChildDataSourceTable',
+        type: #FOR_ACTION,
+        position: 20
+        }
+        , {
+        label: 'Add Child based on CDS',
+        dataAction: 'addChildDataSourceCDSview',
+        type: #FOR_ACTION,
+        position: 30
+        }
+        , {
+        label: 'Add Child based on Abs. Entity',
+        dataAction: 'addChildDataSourceAbsEntity',
+        type: #FOR_ACTION,
+        position: 40
+        }
+    ]
   @UI.fieldGroup: [{ qualifier: 'FieldGroup_05', position: 70, label: 'Is root node' }]
   IsRootNode;
 
@@ -314,11 +315,11 @@ annotate view ZDMO_C_RAPG_NodeTP with
   @UI.fieldGroup: [{ qualifier: 'FieldGroup_4', position: 70, label: 'Service Binding' }]
   ServiceBinding;
 
-  @UI.fieldGroup: [{ qualifier: 'FieldGroup_4', position: 150, label: 'SAP Object Node Type' }]  
+  @UI.fieldGroup: [{ qualifier: 'FieldGroup_4', position: 150, label: 'SAP Object Node Type' }]
   SAPObjectNodeType;
-  @UI.fieldGroup: [{ qualifier: 'FieldGroup_4', position: 160, label: 'SAP Object Type' }]  
+  @UI.fieldGroup: [{ qualifier: 'FieldGroup_4', position: 160, label: 'SAP Object Type' }]
   SAPObjectType;
-  
+
   @UI.fieldGroup: [{ qualifier: 'FieldGroup_4', position: 100, label: 'Control Structure'
   //   , hidden : #(isManaged)
    }]

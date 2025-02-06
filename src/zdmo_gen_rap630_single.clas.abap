@@ -112,7 +112,7 @@ ENDCLASS.
 
 
 
-CLASS zdmo_gen_rap630_single IMPLEMENTATION.
+CLASS ZDMO_GEN_RAP630_SINGLE IMPLEMENTATION.
 
 
   METHOD constructor.
@@ -193,6 +193,142 @@ CLASS zdmo_gen_rap630_single IMPLEMENTATION.
       DATA(lo_transport_request) = xco_cp_cts=>transports->workbench( lv_transport_target )->create_request( '#Generated RAP110 tutorial transport request' ).
       lo_transport = lo_transport_request->value.
     ENDIF.
+  ENDMETHOD.
+
+
+  METHOD generate_vh_custom_entity.
+    DATA(vh_environment) = get_environment( lo_transport ).
+    DATA(lo_put_operation) = get_put_operation( vh_environment ).             ""ZRAP630I_VH_Product_{ unique_suffix }"
+    DATA(lo_interface_specification) = lo_put_operation->for-ddls->add_object( |ZRAP630I_VH_Product_{ unique_suffix }|
+        )->set_package( package_name
+        )->create_form_specification( ).
+    "add entity description
+    DATA(lo_custom_entity) = lo_interface_specification->set_short_description( 'Value help for products'
+    )->add_custom_entity( ).
+
+
+
+    " Annotations can be added to custom entities.
+    lo_custom_entity->add_annotation( 'ObjectModel.query.implementedBy' )->value->build( )->add_string( |ABAP:{ to_upper( data_generator_class_name ) }| ).
+
+
+    "add view annotation
+    lo_custom_entity->add_annotation( 'EndUserText.label' )->value->build( )->add_string( 'Value help for products' ).
+    " Add fields.
+
+
+
+    DATA(lo_identifier) = lo_custom_entity->add_field( xco_cp_ddl=>field( 'Product' )
+    )->set_type( xco_cp_abap_dictionary=>built_in_type->char( 40 ) ).
+    lo_identifier->set_key( ).
+    lo_identifier = lo_custom_entity->add_field( xco_cp_ddl=>field( 'ProductText' )
+    )->set_type( xco_cp_abap_dictionary=>built_in_type->char( 40 )  ).
+
+    lo_identifier = lo_custom_entity->add_field( xco_cp_ddl=>field( 'ProductGroup' )
+    )->set_type( xco_cp_abap_dictionary=>built_in_type->char( 40 )  ).
+    lo_identifier = lo_custom_entity->add_field( xco_cp_ddl=>field( 'Price' )
+    )->set_type( xco_cp_abap_dictionary=>built_in_type->curr(
+                   iv_length   = 15
+                   iv_decimals = 2
+                 )  ).
+    lo_identifier->add_annotation( 'Semantics.amount.currencyCode' )->value->build( )->add_string( 'Currency' ).
+    lo_identifier = lo_custom_entity->add_field( xco_cp_ddl=>field( 'Currency' )
+    )->set_type( xco_cp_abap_dictionary=>built_in_type->cuky ).
+    lo_identifier = lo_custom_entity->add_field( xco_cp_ddl=>field( 'BaseUnit' )
+       )->set_type( xco_cp_abap_dictionary=>built_in_type->unit( 3 ) ).
+
+
+*    DATA(package_environment) = get_environment( lo_transport ).
+*    DATA(lo_put_operation) = get_put_operation( package_environment ).
+
+
+
+    DATA(lo_specification) = lo_put_operation->for-clas->add_object(  data_generator_class_name
+                                          )->set_package( package_name
+                                          )->create_form_specification( ).
+    lo_specification->set_short_description( |This class provide value help data| ).
+
+
+    DATA(lo_public_section) = lo_specification->definition->section-public.
+    lo_public_section->add_type( 't_products'
+      )->for_table_type(
+        io_row_type = xco_cp_abap_dictionary=>table_type( |ZRAP630I_VH_Product_{ unique_suffix }| )
+        io_primary_key = xco_cp_table_type=>primary_key->not_specified( xco_cp_table_type=>key_category->not_specified ) ).
+
+    lo_public_section->add_method( 'get_products'
+      )->add_returning_parameter( 'products'
+      )->set_type( lo_specification->own->type( 't_products' ) ).
+
+    lo_public_section->add_data( 'producty'
+      )->set_type( lo_specification->own->type( 't_products' )
+      )->set_read_only( ).
+
+    lo_specification->implementation->add_method( |get_products|
+          )->set_source( VALUE #(
+         (  |"| )
+         ( |  products = VALUE #( | )
+  ( |  ( Product = 'ZPRINTER01' ProductText = 'Printer Professional ABC' Price = '500.00 ' Currency = 'EUR' ProductGroup = 'L001' BaseUnit = 'ST'  ) | )
+  ( |  ( Product = 'ZPRINTER02' ProductText = 'Printer Platinum' Price = '800.00 ' Currency = 'EUR' ProductGroup = 'L001' BaseUnit = 'ST'  ) | )
+  ( |  ( Product = 'D001' ProductText = 'Mobile Phone' Price = '850.00 ' Currency = 'EUR' ProductGroup = 'L001' BaseUnit = 'ST'  )  | )
+  ( |  ( Product = 'D002' ProductText = 'Table PC' Price = '900.00 ' Currency = 'EUR' ProductGroup = 'L001' BaseUnit = 'ST'  ) | )
+  ( |  ( Product = 'D003' ProductText = 'Office Table' Price = '599.00 ' Currency = 'EUR' ProductGroup = 'L001' BaseUnit = 'ST'  )  | )
+  ( |  ( Product = 'D004' ProductText = 'Office Chair' Price = '449.00 ' Currency = 'EUR' ProductGroup = 'L001' BaseUnit = 'ST'  )  | )
+  ( |  ( Product = 'D005' ProductText = 'Developer Notebook' Price = '3150.00 ' Currency = 'EUR' ProductGroup = 'L001' BaseUnit = 'ST'  ) | )
+  ( |  ( Product = 'D006' ProductText = 'Mouse' Price = '79.00 ' Currency = 'EUR' ProductGroup = 'L001' BaseUnit = 'ST'  )  | )
+  ( |  ( Product = 'D007' ProductText = 'Headset' Price = '159.00 ' Currency = 'EUR' ProductGroup = 'L001' BaseUnit = 'ST'  )  | )
+  ( |  ( Product = 'D008' ProductText = 'Keyboard' Price = '39.00 ' Currency = 'EUR' ProductGroup = 'L001' BaseUnit = 'ST'  ) | )
+  ( |   ). | )
+
+
+
+          )
+           ) .
+
+    lo_specification->set_short_description( 'Value help for products' ).
+    lo_specification->definition->add_interface( 'if_rap_query_provider' ).
+    lo_specification->implementation->add_method( |if_rap_query_provider~select|
+      )->set_source( VALUE #(
+
+        " business logic to fill both tables with demo data
+        ( |  DATA business_data TYPE TABLE OF ZRAP630I_VH_Product_{ unique_suffix }.| )
+        ( |  DATA business_data_line TYPE ZRAP630I_VH_Product_{ unique_suffix } .       | )
+        ( |  DATA(skip)    = io_request->get_paging( )->get_offset( ). | )
+        ( |  DATA(requested_fields)  = io_request->get_requested_elements( ). | )
+        ( |  DATA(sort_order)    = io_request->get_sort_elements( ). | )
+        ( |  TRY. | )
+        ( |    DATA(filter_condition) = io_request->get_filter( )->get_as_sql_string( ). | )
+        ( |    business_data = get_products(  ).| )
+        ( |    SELECT * FROM @business_data AS implementation_types| )
+        ( |       WHERE (filter_condition) INTO TABLE @business_data.| )
+        ( |    io_response->set_total_number_of_records( lines( business_data ) ).| )
+        ( |    io_response->set_data( business_data ).| )
+        ( |    CATCH cx_root INTO DATA(exception).| )
+        ( |    DATA(exception_message) = cl_message_helper=>get_latest_t100_exception( exception )->if_message~get_longtext( ).| )
+        ( |    DATA(exception_t100_key) = cl_message_helper=>get_latest_t100_exception( exception )->t100key.| )
+        ( |    RAISE EXCEPTION TYPE zdmo_cx_rap_gen_custom_entity| )
+        ( |        EXPORTING | )
+        ( |          textid   = VALUE scx_t100key( msgid = exception_t100_key-msgid | )
+        ( |          msgno = exception_t100_key-msgno| )
+        ( |          attr1 = exception_t100_key-attr1| )
+        ( |          attr2 = exception_t100_key-attr2| )
+        ( |          attr3 = exception_t100_key-attr3| )
+        ( |          attr4 = exception_t100_key-attr4 )| )
+        ( |    previous = exception.| )
+        ( |  ENDTRY. | )
+        ( |    | )
+      ) ).
+
+
+
+
+
+
+    DATA(lo_result) = lo_put_operation->execute( ).
+
+
+
+
+
   ENDMETHOD.
 
 
@@ -540,141 +676,5 @@ CLASS zdmo_gen_rap630_single IMPLEMENTATION.
     out->write( | Select both (!) packages "{ package_name }" and { extension_package_name } and click OK. | ).
     out->write( | The generation process has been started asynchronously in the backend | ).
     out->write( | and it will take some minutes to complete. | ).
-  ENDMETHOD.
-
-
-  METHOD generate_vh_custom_entity.
-    DATA(vh_environment) = get_environment( lo_transport ).
-    DATA(lo_put_operation) = get_put_operation( vh_environment ).             ""ZRAP630I_VH_Product_{ unique_suffix }"
-    DATA(lo_interface_specification) = lo_put_operation->for-ddls->add_object( |ZRAP630I_VH_Product_{ unique_suffix }|
-        )->set_package( package_name
-        )->create_form_specification( ).
-    "add entity description
-    DATA(lo_custom_entity) = lo_interface_specification->set_short_description( 'Value help for products'
-    )->add_custom_entity( ).
-
-
-
-    " Annotations can be added to custom entities.
-    lo_custom_entity->add_annotation( 'ObjectModel.query.implementedBy' )->value->build( )->add_string( |ABAP:{ to_upper( data_generator_class_name ) }| ).
-
-
-    "add view annotation
-    lo_custom_entity->add_annotation( 'EndUserText.label' )->value->build( )->add_string( 'Value help for products' ).
-    " Add fields.
-
-
-
-    DATA(lo_identifier) = lo_custom_entity->add_field( xco_cp_ddl=>field( 'Product' )
-    )->set_type( xco_cp_abap_dictionary=>built_in_type->char( 40 ) ).
-    lo_identifier->set_key( ).
-    lo_identifier = lo_custom_entity->add_field( xco_cp_ddl=>field( 'ProductText' )
-    )->set_type( xco_cp_abap_dictionary=>built_in_type->char( 40 )  ).
-
-    lo_identifier = lo_custom_entity->add_field( xco_cp_ddl=>field( 'ProductGroup' )
-    )->set_type( xco_cp_abap_dictionary=>built_in_type->char( 40 )  ).
-    lo_identifier = lo_custom_entity->add_field( xco_cp_ddl=>field( 'Price' )
-    )->set_type( xco_cp_abap_dictionary=>built_in_type->curr(
-                   iv_length   = 15
-                   iv_decimals = 2
-                 )  ).
-    lo_identifier->add_annotation( 'Semantics.amount.currencyCode' )->value->build( )->add_string( 'Currency' ).
-    lo_identifier = lo_custom_entity->add_field( xco_cp_ddl=>field( 'Currency' )
-    )->set_type( xco_cp_abap_dictionary=>built_in_type->cuky ).
-    lo_identifier = lo_custom_entity->add_field( xco_cp_ddl=>field( 'BaseUnit' )
-       )->set_type( xco_cp_abap_dictionary=>built_in_type->unit( 3 ) ).
-
-
-*    DATA(package_environment) = get_environment( lo_transport ).
-*    DATA(lo_put_operation) = get_put_operation( package_environment ).
-
-
-
-    DATA(lo_specification) = lo_put_operation->for-clas->add_object(  data_generator_class_name
-                                          )->set_package( package_name
-                                          )->create_form_specification( ).
-    lo_specification->set_short_description( |This class provide value help data| ).
-
-
-    DATA(lo_public_section) = lo_specification->definition->section-public.
-    lo_public_section->add_type( 't_products'
-      )->for_table_type(
-        io_row_type = xco_cp_abap_dictionary=>table_type( |ZRAP630I_VH_Product_{ unique_suffix }| )
-        io_primary_key = xco_cp_table_type=>primary_key->not_specified( xco_cp_table_type=>key_category->not_specified ) ).
-
-    lo_public_section->add_method( 'get_products'
-      )->add_returning_parameter( 'products'
-      )->set_type( lo_specification->own->type( 't_products' ) ).
-
-    lo_public_section->add_data( 'producty'
-      )->set_type( lo_specification->own->type( 't_products' )
-      )->set_read_only( ).
-
-    lo_specification->implementation->add_method( |get_products|
-          )->set_source( VALUE #(
-         (  |"| )
-         ( |  products = VALUE #( | )
-  ( |  ( Product = 'ZPRINTER01' ProductText = 'Printer Professional ABC' Price = '500.00 ' Currency = 'EUR' ProductGroup = 'L001' BaseUnit = 'ST'  ) | )
-  ( |  ( Product = 'ZPRINTER02' ProductText = 'Printer Platinum' Price = '800.00 ' Currency = 'EUR' ProductGroup = 'L001' BaseUnit = 'ST'  ) | )
-  ( |  ( Product = 'D001' ProductText = 'Mobile Phone' Price = '850.00 ' Currency = 'EUR' ProductGroup = 'L001' BaseUnit = 'ST'  )  | )
-  ( |  ( Product = 'D002' ProductText = 'Table PC' Price = '900.00 ' Currency = 'EUR' ProductGroup = 'L001' BaseUnit = 'ST'  ) | )
-  ( |  ( Product = 'D003' ProductText = 'Office Table' Price = '599.00 ' Currency = 'EUR' ProductGroup = 'L001' BaseUnit = 'ST'  )  | )
-  ( |  ( Product = 'D004' ProductText = 'Office Chair' Price = '449.00 ' Currency = 'EUR' ProductGroup = 'L001' BaseUnit = 'ST'  )  | )
-  ( |  ( Product = 'D005' ProductText = 'Developer Notebook' Price = '3150.00 ' Currency = 'EUR' ProductGroup = 'L001' BaseUnit = 'ST'  ) | )
-  ( |  ( Product = 'D006' ProductText = 'Mouse' Price = '79.00 ' Currency = 'EUR' ProductGroup = 'L001' BaseUnit = 'ST'  )  | )
-  ( |  ( Product = 'D007' ProductText = 'Headset' Price = '159.00 ' Currency = 'EUR' ProductGroup = 'L001' BaseUnit = 'ST'  )  | )
-  ( |  ( Product = 'D008' ProductText = 'Keyboard' Price = '39.00 ' Currency = 'EUR' ProductGroup = 'L001' BaseUnit = 'ST'  ) | )
-  ( |   ). | )
-
-
-
-          )
-           ) .
-
-    lo_specification->set_short_description( 'Value help for products' ).
-    lo_specification->definition->add_interface( 'if_rap_query_provider' ).
-    lo_specification->implementation->add_method( |if_rap_query_provider~select|
-      )->set_source( VALUE #(
-
-        " business logic to fill both tables with demo data
-        ( |  DATA business_data TYPE TABLE OF ZRAP630I_VH_Product_{ unique_suffix }.| )
-        ( |  DATA business_data_line TYPE ZRAP630I_VH_Product_{ unique_suffix } .       | )
-        ( |  DATA(skip)    = io_request->get_paging( )->get_offset( ). | )
-        ( |  DATA(requested_fields)  = io_request->get_requested_elements( ). | )
-        ( |  DATA(sort_order)    = io_request->get_sort_elements( ). | )
-        ( |  TRY. | )
-        ( |    DATA(filter_condition) = io_request->get_filter( )->get_as_sql_string( ). | )
-        ( |    business_data = get_products(  ).| )
-        ( |    SELECT * FROM @business_data AS implementation_types| )
-        ( |       WHERE (filter_condition) INTO TABLE @business_data.| )
-        ( |    io_response->set_total_number_of_records( lines( business_data ) ).| )
-        ( |    io_response->set_data( business_data ).| )
-        ( |    CATCH cx_root INTO DATA(exception).| )
-        ( |    DATA(exception_message) = cl_message_helper=>get_latest_t100_exception( exception )->if_message~get_longtext( ).| )
-        ( |    DATA(exception_t100_key) = cl_message_helper=>get_latest_t100_exception( exception )->t100key.| )
-        ( |    RAISE EXCEPTION TYPE zdmo_cx_rap_gen_custom_entity| )
-        ( |        EXPORTING | )
-        ( |          textid   = VALUE scx_t100key( msgid = exception_t100_key-msgid | )
-        ( |          msgno = exception_t100_key-msgno| )
-        ( |          attr1 = exception_t100_key-attr1| )
-        ( |          attr2 = exception_t100_key-attr2| )
-        ( |          attr3 = exception_t100_key-attr3| )
-        ( |          attr4 = exception_t100_key-attr4 )| )
-        ( |    previous = exception.| )
-        ( |  ENDTRY. | )
-        ( |    | )
-      ) ).
-
-
-
-
-
-
-    DATA(lo_result) = lo_put_operation->execute( ).
-
-
-
-
-
   ENDMETHOD.
 ENDCLASS.

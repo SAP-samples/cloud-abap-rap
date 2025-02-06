@@ -70,7 +70,7 @@ ENDCLASS.
 
 
 
-CLASS zdmo_cl_rap_gen_build_json_2 IMPLEMENTATION.
+CLASS ZDMO_CL_RAP_GEN_BUILD_JSON_2 IMPLEMENTATION.
 
 
   METHOD constructor.

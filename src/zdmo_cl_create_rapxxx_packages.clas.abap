@@ -11,7 +11,9 @@ ENDCLASS.
 
 
 
-CLASS zdmo_cl_create_rapxxx_packages IMPLEMENTATION.
+CLASS ZDMO_CL_CREATE_RAPXXX_PACKAGES IMPLEMENTATION.
+
+
   METHOD if_oo_adt_classrun~main.
 
     DATA group_number_start TYPE i VALUE 1.
@@ -37,5 +39,4 @@ CLASS zdmo_cl_create_rapxxx_packages IMPLEMENTATION.
 
     ENDWHILE.
   ENDMETHOD.
-
 ENDCLASS.
