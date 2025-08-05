@@ -6353,12 +6353,12 @@ CLASS zdmo_cl_rap_node IMPLEMENTATION.
       DATA(record_object_changes) = xco_lib->get_package( me->package  )->read( )-property-record_object_changes.
 
       IF record_object_changes = abap_false AND iv_transport_request IS NOT INITIAL.
-        DATA(error_details) = |{ me->package } does not record changes.|.
-        RAISE EXCEPTION TYPE ZDMO_cx_rap_generator
-          EXPORTING
-            textid     = ZDMO_cx_rap_generator=>invalid_transport_request
-            mv_value   = CONV #( iv_transport_request )
-            mv_value_2 = error_details.
+      "  DATA(error_details) = |{ me->package } does not record changes.|.
+      "  RAISE EXCEPTION TYPE ZDMO_cx_rap_generator
+      "    EXPORTING
+      "      textid     = ZDMO_cx_rap_generator=>invalid_transport_request
+      "      mv_value   = CONV #( iv_transport_request )
+      "      mv_value_2 = error_details.
       ELSEIF record_object_changes = abap_false AND iv_transport_request IS INITIAL..
         EXIT.
       ENDIF.
