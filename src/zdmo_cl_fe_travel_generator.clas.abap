@@ -635,7 +635,16 @@ CLASS ZDMO_CL_FE_TRAVEL_GENERATOR IMPLEMENTATION.
     lo_specification->definition->add_interface( 'if_oo_adt_classrun' ).
     lo_specification->implementation->add_method( |if_oo_adt_classrun~main|
       )->set_source( VALUE #(
-     ( |    INSERT ('{ table_name_root }') FROM ( | )
+
+( |    DELETE FROM ('{ table_name_root }').| )
+( |    DELETE FROM ('{ table_name_child }').| )
+( |    delete from ('{ table_name_status }').| )
+( |    delete from ('{ table_name_carrier }').| )
+( |    delete from ('{ table_name_connection }').| )
+( |    delete from ('{ table_name_flight }').| )
+( |   COMMIT WORK. | )
+
+( |    INSERT ('{ table_name_root }') FROM ( | )
 ( |        SELECT | )
 ( |          FROM /dmo/travel | )
 ( |          FIELDS | )
@@ -1514,9 +1523,9 @@ CLASS ZDMO_CL_FE_TRAVEL_GENERATOR IMPLEMENTATION.
     unique_suffix = to_upper( unique_suffix ).
 
     "create transport
-    IF xco_on_prem_library->on_premise_branch_is_used(  ) = abap_false.
-      transport = create_transport(  ).
-    ENDIF.
+*    IF xco_on_prem_library->on_premise_branch_is_used(  ) = abap_false.
+*      transport = create_transport(  ).
+*    ENDIF.
 
     IF xco_on_prem_library->on_premise_branch_is_used(  ) = abap_true.
       DATA(my_package) = xco_lib->get_package( CONV sxco_package( co_zlocal_package ) ).
@@ -1538,7 +1547,7 @@ CLASS ZDMO_CL_FE_TRAVEL_GENERATOR IMPLEMENTATION.
     create_package( transport ).
     out->write( | The following package got created for you and includes everything you need: { package_name } | ).
     out->write( | In the "Project Explorer" right click on "Favorite Packages" and click on "Add Package...". Enter "{ package_name }" and click OK. | ).
-
+    out->write( | Then run the class { data_generator_class_name } via F9 as a console application| ).
     mo_environment     = get_environment( transport ).
 
     DATA(json_string)              = get_json_string(  ).            " get json document
@@ -1657,17 +1666,17 @@ CLASS ZDMO_CL_FE_TRAVEL_GENERATOR IMPLEMENTATION.
     ENDIF.
 
     IF xco_lib->on_premise_branch_is_used(  ) = abap_false.
-      release_data_generator_class(
-          EXPORTING
-              lo_transport            = transport
-      ).
+*      release_data_generator_class(
+*          EXPORTING
+*              lo_transport            = transport
+*      ).
     ENDIF.
 
-    DATA lo_object TYPE REF TO if_oo_adt_classrun.
-    CREATE OBJECT lo_object TYPE (data_generator_class_name).
-    lo_object->main(
-        EXPORTING out = out "->plain
-    ).
+*    DATA lo_object TYPE REF TO if_oo_adt_classrun.
+*    CREATE OBJECT lo_object TYPE (data_generator_class_name).
+*    lo_object->main(
+*        EXPORTING out = out "->plain
+*    ).
 
     DATA(rap_bo_generator) = zdmo_cl_rap_generator=>create_for_cloud_development( json_string ).
     DATA(lt_todos)         = rap_bo_generator->generate_bo(  ).
