@@ -174,7 +174,7 @@ ENDCLASS.
 
 
 
-CLASS ZDMO_CL_FE_TRAVEL_GENERATOR IMPLEMENTATION.
+CLASS zdmo_cl_fe_travel_generator IMPLEMENTATION.
 
 
   METHOD constructor.
@@ -238,6 +238,13 @@ CLASS ZDMO_CL_FE_TRAVEL_GENERATOR IMPLEMENTATION.
     lo_specification->set_short_description( 'FE tutorial package' ).
     lo_specification->properties->set_super_package( co_zlocal_package )->set_software_component( co_zlocal_package ).
     lo_put_operation->execute( ).
+    DATA(my_package) = xco_lib->get_package(  package_name  ).
+    "fails in 2508 and 2511 in no hotfix is being applied
+    "workaround - run execute method a second time
+    IF my_package->exists(  ) = abap_false.
+      lo_put_operation->execute( ).
+    ENDIF.
+
   ENDMETHOD.
 
 
@@ -1695,20 +1702,27 @@ CLASS ZDMO_CL_FE_TRAVEL_GENERATOR IMPLEMENTATION.
 *      DATA mo_environment TYPE REF TO if_xco_cp_gen_env_dev_system.
 
           DATA lv_del_transport   TYPE sxco_transport.
-          lv_del_transport = rap_bo_generator->root_node->transport_request.
+*          lv_del_transport = rap_bo_generator->root_node->transport_request.
 
 
-          IF lv_del_transport IS INITIAL.
-            DATA(cts_obj) = xco_cp_abap_repository=>object->for(
-            EXPORTING
-            iv_type = 'DDLX'
-            iv_name = to_upper( rap_bo_generator->root_node->rap_node_objects-meta_data_extension )
-            )->if_xco_cts_changeable~get_object( ).
-            lv_del_transport = cts_obj->get_lock( )->get_transport( ).
-            lv_del_transport = xco_cp_cts=>transport->for( lv_del_transport )->get_request( )->value.
-          ENDIF.
+*          IF lv_del_transport IS INITIAL.
+*            DATA(cts_obj) = xco_cp_abap_repository=>object->for(
+*            EXPORTING
+*            iv_type = 'DDLX'
+*            iv_name = to_upper( rap_bo_generator->root_node->rap_node_objects-meta_data_extension )
+*            )->if_xco_cts_changeable~get_object( ).
+*            lv_del_transport = cts_obj->get_lock( )->get_transport( ).
+*            lv_del_transport = xco_cp_cts=>transport->for( lv_del_transport )->get_request( )->value.
+*          ENDIF.
+
+*          IF lv_del_transport IS NOT INITIAL AND co_zlocal_package = 'ZLOCAL'.
+*            CLEAR lv_del_transport.
+*          ENDIF.
+
           DATA(mo_environment2) = get_environment( lv_del_transport ).
           mo_environment2 = get_environment( lv_del_transport ). "xco_cp_generation=>environment->dev_system( lv_del_transport ).
+
+
           DATA(lo_delete_ddlx_operation) = mo_environment2->for-ddlx->create_delete_operation( ).
           DATA(lo_delete_ddls_operation) = mo_environment2->for-ddls->create_delete_operation( ).
           DATA(lo_delete_bdef_operation) = mo_environment2->for-bdef->create_delete_operation( ).
