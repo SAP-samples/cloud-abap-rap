@@ -112,7 +112,7 @@ ENDCLASS.
 
 
 
-CLASS ZDMO_GEN_RAP630_SINGLE IMPLEMENTATION.
+CLASS zdmo_gen_rap630_single IMPLEMENTATION.
 
 
   METHOD constructor.
@@ -143,6 +143,12 @@ CLASS ZDMO_GEN_RAP630_SINGLE IMPLEMENTATION.
     lo_specification->set_short_description( |#Generated { co_session_name }  extension tutorial package| ).
     lo_specification->properties->set_super_package( co_software_component_ext_bo )->set_software_component( co_software_component_ext_bo ).
     DATA(lo_result) = lo_put_operation->execute( ).
+    DATA(my_package) = xco_lib->get_package(  package_name  ).
+    "fails in 2508 and 2511 in no hotfix is being applied
+    "workaround - run execute method a second time
+    IF my_package->exists(  ) = abap_false.
+      lo_put_operation->execute( ).
+    ENDIF.
   ENDMETHOD.
 
 
@@ -154,6 +160,12 @@ CLASS ZDMO_GEN_RAP630_SINGLE IMPLEMENTATION.
     lo_specification->properties->set_super_package( co_software_component_base_bo )->set_software_component( co_software_component_base_bo ).
 *    lo_specification->properties->set_super_package( 'ZRAP630' )->set_software_component( co_software_component_base_bo ).
     DATA(lo_result) = lo_put_operation->execute( ).
+    DATA(my_package) = xco_lib->get_package(  package_name  ).
+    "fails in 2508 and 2511 in no hotfix is being applied
+    "workaround - run execute method a second time
+    IF my_package->exists(  ) = abap_false.
+      lo_put_operation->execute( ).
+    ENDIF.
   ENDMETHOD.
 
 
@@ -584,6 +596,13 @@ CLASS ZDMO_GEN_RAP630_SINGLE IMPLEMENTATION.
     out->write( | { co_session_name } exercise generator | ).
     out->write( | ------------------------------------- | ).
     .
+
+    IF co_software_component_base_bo = 'ZLOCAL'.
+      CLEAR transport.
+    ENDIF.
+    IF co_software_component_ext_bo = 'ZLOCAL'.
+      CLEAR transport_extensions.
+    ENDIF.
 
     "database tables
     table_name_root               = to_upper( |{ co_prefix }ashop{ unique_suffix }| ).
