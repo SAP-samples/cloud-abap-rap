@@ -141,7 +141,7 @@ CLASS zdmo_gen_rap630_single IMPLEMENTATION.
     DATA(lo_put_operation) = get_put_operation_for_devc( package_environment ).
     DATA(lo_specification) = lo_put_operation->add_object( extension_package_name )->create_form_specification( ).
     lo_specification->set_short_description( |#Generated { co_session_name }  extension tutorial package| ).
-    lo_specification->properties->set_super_package( co_software_component_ext_bo )->set_software_component( co_software_component_ext_bo ).
+    lo_specification->properties->set_super_package( co_super_package_ext_bo )->set_software_component( co_software_component_ext_bo ).
     DATA(lo_result) = lo_put_operation->execute( ).
     DATA(my_package) = xco_lib->get_package(  package_name  ).
     "fails in 2508 and 2511 in no hotfix is being applied
@@ -157,7 +157,7 @@ CLASS zdmo_gen_rap630_single IMPLEMENTATION.
     DATA(lo_put_operation) = get_put_operation_for_devc( package_environment ).
     DATA(lo_specification) = lo_put_operation->add_object( package_name )->create_form_specification( ).
     lo_specification->set_short_description( |#Generated { co_session_name }  tutorial package| ).
-    lo_specification->properties->set_super_package( co_software_component_base_bo )->set_software_component( co_software_component_base_bo ).
+    lo_specification->properties->set_super_package( co_super_package_base_bo )->set_software_component( co_software_component_base_bo ).
 *    lo_specification->properties->set_super_package( 'ZRAP630' )->set_software_component( co_software_component_base_bo ).
     DATA(lo_result) = lo_put_operation->execute( ).
     DATA(my_package) = xco_lib->get_package(  package_name  ).

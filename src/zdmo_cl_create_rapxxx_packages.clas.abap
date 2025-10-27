@@ -16,7 +16,7 @@ CLASS ZDMO_CL_CREATE_RAPXXX_PACKAGES IMPLEMENTATION.
 
   METHOD if_oo_adt_classrun~main.
 
-    DATA group_number_start TYPE i VALUE 1.
+    DATA group_number_start TYPE i VALUE 2.
     DATA group_number_end TYPE i.
     DATA number_of_groups TYPE i VALUE 1.
     DATA group_number TYPE i.
