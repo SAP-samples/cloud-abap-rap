@@ -816,6 +816,7 @@ CLASS zdmo_cl_fe_travel_generator IMPLEMENTATION.
 ( |    UPDATE ('{ table_name_root }') SET total_price = division( total_price, 2, 2 )  where currency_code = 'SGD'. | )
 ( |    UPDATE ('{ table_name_root }') SET currency_code = 'EUR'. | )
 ( |    UPDATE ('{ table_name_child }') SET currency_code = 'EUR'. | )
+( |    out->write( 'data generation finished' ). | )
     ) ).
 
   ENDMETHOD.
