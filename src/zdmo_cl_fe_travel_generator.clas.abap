@@ -41,7 +41,8 @@ INHERITING FROM zdmo_cl_rap_generator_base
 
   PUBLIC SECTION.
     INTERFACES if_oo_adt_classrun.
-    METHODS constructor.
+    METHODS constructor
+      IMPORTING i_unique_suffix TYPE string OPTIONAL.
 
   PROTECTED SECTION.
 *    METHODS main REDEFINITION.
@@ -189,7 +190,13 @@ CLASS zdmo_cl_fe_travel_generator IMPLEMENTATION.
       xco_lib = NEW zdmo_cl_rap_xco_cloud_lib(  ).
     ENDIF.
 
-    unique_suffix          = get_unique_suffix( co_prefix ).
+    IF i_unique_suffix IS INITIAL.
+      unique_suffix          = get_unique_suffix( co_prefix ).
+    ELSE.
+      unique_suffix = i_unique_suffix.
+    ENDIF.
+
+*    unique_suffix          = get_unique_suffix( co_prefix ).
     package_name           = co_prefix && unique_suffix. " your package name
 
     table_name_root        = |zfe_atrav_{ unique_suffix }|.
@@ -1505,7 +1512,7 @@ CLASS zdmo_cl_fe_travel_generator IMPLEMENTATION.
 
     s_unique_suffix = ''.
     is_valid_package = abap_false.
-    li_counter = 1000.
+    li_counter = 0101.
     ls_counter = li_counter.
     ls_package_name = s_prefix && ls_counter.
 
