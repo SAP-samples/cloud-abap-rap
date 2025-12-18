@@ -1143,7 +1143,11 @@ CLASS zdmo_cl_fe_travel_generator IMPLEMENTATION.
                   ( field         = 'arrival_time'
                     data_element  = '/dmo/flight_arrival_time' )
                   ( field         = 'distance'
-                    data_element  = '/dmo/distance_fe' )
+*                    data_element  = '/dmo/distance_fe' )
+                     built_in_type = 'dec'
+                     built_in_type_decimals = 2
+                     built_in_type_length = 12
+                     )
                   ( field         = 'distance_unit'
                     data_element  = 'msehi' )
     ).
@@ -1761,24 +1765,37 @@ CLASS zdmo_cl_fe_travel_generator IMPLEMENTATION.
 *        io_put_operation1        = lo_objects_put_op_analytics1
 *        io_put_operation2        = lo_objects_put_op_analytics2
     ).
-    DATA(lo_result_alp) = mo_put_operation1->execute( ).
 
-    IF show_findings = abap_true.
-      lo_findings = lo_result->findings.
-      lt_findings = lo_findings->get( ).
-      IF lt_findings IS NOT INITIAL.
-        out->write( lt_findings ).
-      ENDIF.
-    ENDIF.
+    TRY.
+        DATA(lo_result_alp) = mo_put_operation1->execute( ).
 
-    lo_result_alp = mo_put_operation2->execute( ).
-    IF show_findings = abap_true.
-      lo_findings = lo_result->findings.
-      lt_findings = lo_findings->get( ).
-      IF lt_findings IS NOT INITIAL.
-        out->write( lt_findings ).
-      ENDIF.
-    ENDIF.
+
+        IF show_findings = abap_true.
+          lo_findings = lo_result_alp->findings.
+          lt_findings = lo_findings->get( ).
+          LOOP AT lt_findings INTO DATA(finding).
+            out->write( Finding->message->get_text(  ) ).
+          ENDLOOP.
+        ENDIF.
+
+        lo_result_alp = mo_put_operation2->execute( ).
+        IF show_findings = abap_true.
+          lo_findings = lo_result_alp->findings.
+          lt_findings = lo_findings->get( ).
+          LOOP AT lt_findings INTO finding.
+            out->write( Finding->message->get_text(  ) ).
+          ENDLOOP.
+        ENDIF.
+      CATCH cx_xco_gen_put_exception INTO DATA(put_exception).
+
+        lt_findings = put_exception->findings->get(  ).
+
+        LOOP AT lt_findings INTO DATA(put_finding2).
+          out->write( put_Finding2->message->get_text(  ) ).
+        ENDLOOP.
+
+    ENDTRY.
+
     out->write( | Enjoy your SAP Fiori elements exercise :) | ).
   ENDMETHOD.
 
