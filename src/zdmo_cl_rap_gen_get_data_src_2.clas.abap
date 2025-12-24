@@ -135,8 +135,8 @@ CLASS ZDMO_CL_RAP_GEN_GET_DATA_SRC_2 IMPLEMENTATION.
         "start search only if more than minimal_search_string_length characters are provided
 
         "search string also contains a leading and a trailing quotation mark
-        DATA(length_of_search_string) = numofchar( search_string ) - 2.
-
+*        DATA(length_of_search_string) = numofchar( search_string ) - 2.
+DATA(length_of_search_string) = numofchar( search_string ).
 
         IF length_of_search_string < ZDMO_cl_rap_node=>minimal_search_string_length.
 *          CLEAR business_data.
@@ -233,8 +233,8 @@ CLASS ZDMO_CL_RAP_GEN_GET_DATA_SRC_2 IMPLEMENTATION.
 
         IF search_string IS NOT INITIAL.
 *          search_string = substring( val = search_string  off = 1 len = strlen( search_string ) - 2  ) .
-*          search_string = '%' && search_string && '%'.
-          REPLACE ALL OCCURRENCES OF '"' IN search_string WITH '%'.
+          search_string = '%' && search_string && '%'.
+*          REPLACE ALL OCCURRENCES OF '"' IN search_string WITH '%'.
           "search_string = to_upper( search_string ).
           lo_name_filter = xco_cp_abap_repository=>object_name->get_filter(
                  xco_cp_abap_sql=>constraint->contains_pattern( search_string  )
