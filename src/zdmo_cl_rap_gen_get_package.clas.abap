@@ -11,7 +11,7 @@ ENDCLASS.
 
 
 
-CLASS zdmo_cl_rap_gen_get_package IMPLEMENTATION.
+CLASS ZDMO_CL_RAP_GEN_GET_PACKAGE IMPLEMENTATION.
 
 
   METHOD if_rap_query_provider~select.

@@ -532,10 +532,10 @@ CLASS zdmo_gen_dt261_single IMPLEMENTATION.
 
   METHOD get_unique_suffix.
 
-    DATA: ls_package_name  TYPE sxco_package,
-
-          is_valid_package TYPE abap_bool,
-          step_number      TYPE i.
+    DATA: ls_package_name           TYPE sxco_package,
+          ls_extension_package_name TYPE sxco_package,
+          is_valid_package          TYPE abap_bool,
+          step_number               TYPE i.
 
 *    DATA: ascii_hex TYPE x LENGTH 3.
 *    DATA ascii_hex_string TYPE string.
@@ -552,6 +552,7 @@ CLASS zdmo_gen_dt261_single IMPLEMENTATION.
 
       "check package name(s)
       ls_package_name = s_prefix && location_letter && group_id.
+      ls_extension_package_name = ls_package_name && '_EXT' .
 
       DATA(lo_package) = xco_lib->get_package( ls_package_name ). "  xco_cp_abap_repository=>object->devc->for( ls_package_name ).
       DATA(extension_package) = xco_lib->get_package( extension_package_name ). "  xco_cp_abap_repository=>object->devc->for( ls_package_name ).
@@ -580,6 +581,20 @@ CLASS zdmo_gen_dt261_single IMPLEMENTATION.
   METHOD if_oo_adt_classrun~main.
 
     debug_modus = abap_true.
+
+*     co_super_package_base_bo      TYPE sxco_package     VALUE 'ZDT261',
+*      co_super_package_ext_bo       TYPE sxco_package     VALUE 'ZDT261_EXT'
+
+    IF xco_lib->get_package( co_super_package_base_bo )->exists(  ) = abap_false.
+      out->write( |Super package { co_super_package_base_bo } for base bo does not exist in software component { co_software_component_base_bo } | ).
+      EXIT.
+    ENDIF.
+
+    IF xco_lib->get_package( co_super_package_ext_bo )->exists(  ) = abap_false.
+      out->write( |Super package { co_super_package_ext_bo } for base bo does not exist in software component { co_software_component_ext_bo } | ).
+      EXIT.
+    ENDIF.
+
 
 *    transport = 'D23K900976'. " <-- maintain your transport request here
     package_name           = co_prefix && unique_suffix.
@@ -641,6 +656,9 @@ CLASS zdmo_gen_dt261_single IMPLEMENTATION.
         "create package
         create_package( transport ).
         create_extension_package( transport_extensions ).
+
+*
+
       CATCH cx_xco_gen_put_exception INTO DATA(put_exception).
         out->write( 'error creating packages' ).
         DATA(lt_findings) = put_exception->findings->get( ).
@@ -648,9 +666,12 @@ CLASS zdmo_gen_dt261_single IMPLEMENTATION.
           out->write( finding->message->get_text(  ) ).
         ENDLOOP.
         EXIT.
+*      catch cx_xco_runtime_exception INTO DATA(xco_runtime_exception).
+*        out->write( 'xco runtime exc. error creating packages' ).
+**        xco_runtime_exception->
       CATCH cx_root INTO DATA(package_exception).
         IF debug_modus = abap_true.
-          out->write( | Error during create_package( ). | ).
+          out->write( | Error during create_package( ). { package_exception->get_text(  ) }| ).
         ENDIF.
         EXIT.
     ENDTRY.

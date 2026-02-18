@@ -1202,7 +1202,7 @@ ENDCLASS.
 
 
 
-CLASS zdmo_cl_rap_node IMPLEMENTATION.
+CLASS ZDMO_CL_RAP_NODE IMPLEMENTATION.
 
 
   METHOD add_additional_fields.
