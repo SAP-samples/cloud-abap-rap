@@ -1672,7 +1672,8 @@ CLASS ZDMO_CL_RAP_GENERATOR_DEL IMPLEMENTATION.
           "unpublish service binding
 *        IF line_exists( objects_to_be_deleted[ object_type = zdmo_cl_rap_node=>root_node_object_types-service_binding ]  ).
           IF object_to_be_deleted-object_type = zdmo_cl_rap_node=>root_node_object_types-service_binding.
-            DATA(service_binding_to_be_deleted) = objects_to_be_deleted[ object_type = zdmo_cl_rap_node=>root_node_object_types-service_binding ].
+            DATA(service_binding_to_be_deleted) = objects_to_be_deleted[ object_type = zdmo_cl_rap_node=>root_node_object_types-service_binding
+                                                                         object_name = object_to_be_deleted-object_name ].
 
             "in cloud we have a validation that checks whether the service binding is still published
             IF xco_lib->service_binding_is_published( CONV sxco_srvb_object_name(  service_binding_to_be_deleted-object_name ) ).
