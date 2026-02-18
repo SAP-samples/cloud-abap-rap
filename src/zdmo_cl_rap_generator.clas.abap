@@ -21,6 +21,7 @@ INHERITING FROM zdmo_cl_rap_generator_base
              object_name                  TYPE if_xco_gen_o_finding=>tv_object_name,
              hierarchy_distance_from_root TYPE int4,
              transport_request            TYPE sxco_transport,
+             is_released                  type abap_bool,
            END OF t_generated_repository_object.
 
     TYPES: t_generated_repository_objects TYPE STANDARD TABLE OF t_generated_repository_object WITH EMPTY KEY.
