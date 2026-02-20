@@ -132,7 +132,13 @@ INHERITING FROM zdmo_cl_rap_generator_base
 *      RAISING   cx_bali_runtime
       .
 
-    METHODS add_transport_requests
+    METHODS add_locking_transport_requests
+      IMPORTING i_repository_objects        TYPE zdmo_cl_rap_generator=>t_generated_repository_objects
+      RETURNING VALUE(r_repository_objects) TYPE zdmo_cl_rap_generator=>t_generated_repository_objects
+*      RAISING   cx_bali_runtime
+      .
+
+    METHODS add_missing_transport_requests
       IMPORTING i_repository_objects        TYPE zdmo_cl_rap_generator=>t_generated_repository_objects
       RETURNING VALUE(r_repository_objects) TYPE zdmo_cl_rap_generator=>t_generated_repository_objects
 *      RAISING   cx_bali_runtime
@@ -409,6 +415,7 @@ CLASS zdmo_cl_rap_bo_delete IMPLEMENTATION.
   ( sequence_number = 2 object_TYPE = 'SRVD' )
   ( sequence_number = 3 object_TYPE = 'BDEF' )
   ( sequence_number = 4 object_TYPE = 'DDLX' )
+  ( sequence_number = 4 object_TYPE = 'DCLS' )
   ( sequence_number = 4 object_TYPE = 'DDLS' )
   ( sequence_number = 4 object_TYPE = 'CLAS' )
   ( sequence_number = 4 object_TYPE = 'TABL' )
@@ -793,6 +800,7 @@ CLASS zdmo_cl_rap_bo_delete IMPLEMENTATION.
 *    IF delete_objects_in_package IS NOT INITIAL.
 *      package = delete_objects_in_package.
 *    ENDIF.
+
     IF xco_lib->get_package( package )->exists( ) = abap_true.
       DATA(package_records_changes) = xco_lib->get_package( package )->read( )-property-record_object_changes.
     ELSE.
@@ -1777,21 +1785,36 @@ CLASS zdmo_cl_rap_bo_delete IMPLEMENTATION.
         DATA(objects_to_be_deleted_1) = get_objects_from_package( package ).
 *        DATA(objects_to_be_deleted_1) = get_objects_from_rap_generator( BoName ).
 
+        add_locking_transport_requests(
+          EXPORTING
+            i_repository_objects = objects_to_be_deleted_1
+          RECEIVING
+            r_repository_objects = DATA(objects_to_be_deleted_2)
+        ).
 
+        add_missing_transport_requests(
+                EXPORTING
+                  i_repository_objects = objects_to_be_deleted_2
+                RECEIVING
+                  r_repository_objects = DATA(objects_to_be_deleted_2a)
+              ).
 
         "remove objects that have been deleted from the list
 
         generated_objects_are_deleted(
           EXPORTING
 *            i_rap_bo_name                 = rap_generator_bo-BoName
-            i_repository_objects          = objects_to_be_deleted_1
+            i_repository_objects          = objects_to_be_deleted_2a
           IMPORTING
             r_existing_repository_objects = DATA(objects_to_be_deleted)
           RECEIVING
             r_objects_have_been_deleted   = DATA(objects_have_been_deleted)
         ).
 
-
+        IF objects_have_been_deleted = abap_true.
+          EXIT.
+        ENDIF.
+*        ASSERT 1 = 2.
         LOOP AT objects_to_be_deleted INTO DATA(object_to_be_deleted).
           add_text_to_app_log_or_console( | Type: { object_to_be_deleted-object_type } Name: { object_to_be_deleted-object_name } locked by cts: { object_to_be_deleted-transport_request } is released { object_to_be_deleted-is_released }| ).
 *        ENDLOOP.
@@ -1903,16 +1926,34 @@ CLASS zdmo_cl_rap_bo_delete IMPLEMENTATION.
   ENDMETHOD.
 
   METHOD delete_generated_objects_2.
+    TYPES : BEGIN OF t_environment_by_transport,
+              transport_request TYPE sxco_transport,
+              environment       TYPE REF TO if_xco_cp_gen_env_dev_system,
+            END OF  t_environment_by_transport.
+
+    TYPES tt_environment_by_transport TYPE STANDARD TABLE OF t_environment_by_transport.
+    DATA environment_line         TYPE t_environment_by_transport.
+    DATA environment_list         TYPE tt_environment_by_transport.
+    DATA environment_by_transport TYPE t_environment_by_transport.
+
     DATA findings               TYPE REF TO if_xco_gen_o_findings.
     DATA del_repository_objects TYPE zdmo_cl_rap_generator=>t_generated_repository_objects.
     DATA del_repository_object  TYPE zdmo_cl_rap_generator=>t_generated_repository_object.
+    DATA distinct_transports    TYPE STANDARD TABLE OF sxco_transport.
+
+    LOOP AT i_repository_objects INTO DATA(repository_helper_object).
+      APPEND repository_helper_object-transport_request TO distinct_transports.
+    ENDLOOP.
+    " Sort and remove duplicates
+    SORT distinct_transports.
+    DELETE ADJACENT DUPLICATES FROM distinct_transports.
 
     " get a transport request for objects that are not locked by a transport request
     IF xco_lib->get_package( package )->exists( ) = abap_true.
       DATA(package_records_changes) = xco_lib->get_package( package )->read( )-property-record_object_changes.
     ELSE.
       add_text_to_app_log_or_console( |Package { package } does not exist.| ).
-*      EXIT.
+      RETURN.
     ENDIF.
 
     " generate a new transport request
@@ -1930,17 +1971,21 @@ CLASS zdmo_cl_rap_bo_delete IMPLEMENTATION.
 
 *    DATA(mo_environment) = xco_cp_generation=>environment->dev_system( transport_request )  .
 
-********************************************************************************
-    "cloud
-    "Only for ZLOCAL
-    "todo: Create a list of environments in case several transports are being used
-    mo_environment = get_environment(  ) .
+    " -------------------------------------------------------------------------------
+    " cloud
+    " Only for ZLOCAL
+    " todo: Create a list of environments in case several transports are being used
+*    mo_environment = get_environment(  ) .
+    LOOP AT distinct_transports INTO DATA(distinct_transport).
 
-*    mo_environment = xco_cp_generation=>environment->dev_system( transport_request )  .
-********************************************************************************
+      environment_line-transport_request = distinct_transport.
+      environment_line-environment       = xco_cp_generation=>environment->dev_system( distinct_transport ).
+      APPEND environment_line TO environment_list.
+    ENDLOOP.
+    " -------------------------------------------------------------------------------
 
-**********************************************************************
-    "on premise
+    " ---------------------------------------------------------------------
+    " on premise
 *    IF xco_lib->get_package( package  )->read( )-property-record_object_changes = abap_true.
 *      mo_environment = xco_generation=>environment->transported( transport_request ).
 *    ELSE.
@@ -1948,9 +1993,7 @@ CLASS zdmo_cl_rap_bo_delete IMPLEMENTATION.
 *    ENDIF.
 **********************************************************************
 
-
-
-
+    "delete objects in a specific order based on their object type
     LOOP AT deletion_sequence INTO DATA(deletion_sequence_entry).
 
       " get list of objects of a specific type that are going to be deleted
@@ -1986,81 +2029,111 @@ CLASS zdmo_cl_rap_bo_delete IMPLEMENTATION.
 
           CASE deletion_sequence_entry-object_type.
             WHEN 'SRVB'.
-              "to do. Select an environment from the list above by selecting the transport that
-              "is assigned to the object
-              DATA(delete_operation_srvb) = mo_environment->for-srvb->create_delete_operation( ).
-              LOOP AT del_repository_objects INTO del_repository_object.
-                delete_operation_srvb->add_object( CONV #( del_repository_object-object_name ) ).
+              " to do. Select an environment from the list above by selecting the transport that
+              " is assigned to the object
+              LOOP AT environment_list INTO environment_by_transport.
+                mo_environment = environment_by_transport-environment.
+                DATA(delete_operation_srvb) = mo_environment->for-srvb->create_delete_operation( ).
+                LOOP AT del_repository_objects INTO del_repository_object WHERE transport_request = environment_by_transport-transport_request.
+                  delete_operation_srvb->add_object( CONV #( del_repository_object-object_name ) ).
+                ENDLOOP.
+                findings = delete_operation_srvb->execute( )->findings.
+                add_findings_to_app_log_cons( i_findings                = findings
+                                              i_deletion_sequence_entry = deletion_sequence_entry ).
               ENDLOOP.
-              findings = delete_operation_srvb->execute( )->findings.
             WHEN 'SRVD'.
-              DATA(delete_operation_srvd) = mo_environment->for-srvd->create_delete_operation( ).
-              LOOP AT del_repository_objects INTO del_repository_object.
-                delete_operation_srvd->add_object( CONV #( del_repository_object-object_name ) ).
+              LOOP AT environment_list INTO environment_by_transport.
+                mo_environment = environment_by_transport-environment.
+                DATA(delete_operation_srvd) = mo_environment->for-srvd->create_delete_operation( ).
+                LOOP AT del_repository_objects INTO del_repository_object WHERE transport_request = environment_by_transport-transport_request..
+                  delete_operation_srvd->add_object( CONV #( del_repository_object-object_name ) ).
+                ENDLOOP.
+                findings = delete_operation_srvd->execute( )->findings.
+                add_findings_to_app_log_cons( i_findings                = findings
+                                              i_deletion_sequence_entry = deletion_sequence_entry ).
               ENDLOOP.
-              findings = delete_operation_srvd->execute( )->findings.
             WHEN 'BDEF'.
-              DATA(delete_operation_bdef) = mo_environment->for-bdef->create_delete_operation( ).
-              LOOP AT del_repository_objects INTO del_repository_object.
-                delete_operation_bdef->add_object( CONV #( del_repository_object-object_name ) ).
+              LOOP AT environment_list INTO environment_by_transport.
+                mo_environment = environment_by_transport-environment.
+                DATA(delete_operation_bdef) = mo_environment->for-bdef->create_delete_operation( ).
+                LOOP AT del_repository_objects INTO del_repository_object WHERE transport_request = environment_by_transport-transport_request..
+                  delete_operation_bdef->add_object( CONV #( del_repository_object-object_name ) ).
+                ENDLOOP.
+                findings = delete_operation_bdef->execute( )->findings.
+                add_findings_to_app_log_cons( i_findings                = findings
+                                              i_deletion_sequence_entry = deletion_sequence_entry ).
               ENDLOOP.
-              findings = delete_operation_bdef->execute( )->findings.
             WHEN 'DDLX'.
-              DATA(delete_operation_ddlx) = mo_environment->for-ddlx->create_delete_operation( ).
-              LOOP AT del_repository_objects INTO del_repository_object.
-                delete_operation_ddlx->add_object( CONV #( del_repository_object-object_name ) ).
+              LOOP AT environment_list INTO environment_by_transport.
+                mo_environment = environment_by_transport-environment.
+                DATA(delete_operation_ddlx) = mo_environment->for-ddlx->create_delete_operation( ).
+                LOOP AT del_repository_objects INTO del_repository_object WHERE transport_request = environment_by_transport-transport_request.
+                  delete_operation_ddlx->add_object( CONV #( del_repository_object-object_name ) ).
+                ENDLOOP.
+                findings = delete_operation_ddlx->execute( )->findings.
+                add_findings_to_app_log_cons( i_findings                = findings
+                                              i_deletion_sequence_entry = deletion_sequence_entry ).
               ENDLOOP.
-              findings = delete_operation_ddlx->execute( )->findings.
             WHEN 'DCLS'.
-              DATA(delete_operation_dcls) = mo_environment->for-dcls->create_delete_operation( ).
-              LOOP AT del_repository_objects INTO del_repository_object.
-                delete_operation_dcls->add_object( CONV #( del_repository_object-object_name ) ).
+              LOOP AT environment_list INTO environment_by_transport.
+                mo_environment = environment_by_transport-environment.
+                DATA(delete_operation_dcls) = mo_environment->for-dcls->create_delete_operation( ).
+                LOOP AT del_repository_objects INTO del_repository_object WHERE transport_request = environment_by_transport-transport_request.
+                  delete_operation_dcls->add_object( CONV #( del_repository_object-object_name ) ).
+                ENDLOOP.
+                findings = delete_operation_dcls->execute( )->findings.
               ENDLOOP.
-              findings = delete_operation_dcls->execute( )->findings.
             WHEN 'DDLS'.
-              DATA(delete_operation_ddls) = mo_environment->for-ddls->create_delete_operation( ).
-              LOOP AT del_repository_objects INTO del_repository_object.
-                delete_operation_ddls->add_object( CONV #( del_repository_object-object_name ) ).
+              LOOP AT environment_list INTO environment_by_transport.
+                mo_environment = environment_by_transport-environment.
+                DATA(delete_operation_ddls) = mo_environment->for-ddls->create_delete_operation( ).
+                LOOP AT del_repository_objects INTO del_repository_object WHERE transport_request = environment_by_transport-transport_request.
+                  delete_operation_ddls->add_object( CONV #( del_repository_object-object_name ) ).
+                ENDLOOP.
+                findings = delete_operation_ddls->execute( )->findings.
               ENDLOOP.
-              findings = delete_operation_ddls->execute( )->findings.
             WHEN 'CLAS'.
-              DATA(delete_operation_clas) = mo_environment->for-clas->create_delete_operation( ).
-              LOOP AT del_repository_objects INTO del_repository_object.
-                delete_operation_clas->add_object( CONV #( del_repository_object-object_name ) ).
+              LOOP AT environment_list INTO environment_by_transport.
+                mo_environment = environment_by_transport-environment.
+                DATA(delete_operation_clas) = mo_environment->for-clas->create_delete_operation( ).
+                LOOP AT del_repository_objects INTO del_repository_object WHERE transport_request = environment_by_transport-transport_request.
+                  delete_operation_clas->add_object( CONV #( del_repository_object-object_name ) ).
+                ENDLOOP.
+                findings = delete_operation_clas->execute( )->findings.
               ENDLOOP.
-              findings = delete_operation_clas->execute( )->findings.
             WHEN 'INTF'.
-              DATA(delete_operation_intf) = mo_environment->for-intf->create_delete_operation( ).
-              LOOP AT del_repository_objects INTO del_repository_object.
-                delete_operation_intf->add_object( CONV #( del_repository_object-object_name ) ).
+              LOOP AT environment_list INTO environment_by_transport.
+                mo_environment = environment_by_transport-environment.
+                DATA(delete_operation_intf) = mo_environment->for-intf->create_delete_operation( ).
+                LOOP AT del_repository_objects INTO del_repository_object WHERE transport_request = environment_by_transport-transport_request.
+                  delete_operation_intf->add_object( CONV #( del_repository_object-object_name ) ).
+                ENDLOOP.
+                findings = delete_operation_intf->execute( )->findings.
               ENDLOOP.
-              findings = delete_operation_intf->execute( )->findings.
             WHEN 'TABL'.
-              " here we have to distinguish between tables and structures --> split the list del_repository_objects
-              " into two lists. One with tables and one with structures.
-              DATA(delete_operation_db_table) = mo_environment->for-tabl-for-database_table->create_delete_operation( ).
-              DATA(delete_operation_structure) = mo_environment->for-tabl-for-structure->create_delete_operation( ).
-              LOOP AT del_repository_objects INTO del_repository_object.
-                DATA(structure) = xco_lib->get_structure( CONV #( del_repository_object-object_name ) ).
-                DATA(db_table) = xco_lib->get_database_table( CONV #( del_repository_object-object_name ) ).
-                IF structure->exists( ).
-                  delete_operation_structure->add_object( CONV #( del_repository_object-object_name ) ).
-                ELSEIF db_table->exists( ).
-                  delete_operation_db_table->add_object( CONV #( del_repository_object-object_name ) ).
-                ELSE.
-                  " neither table nor db table exists.
-                  " must not happen
-                  ASSERT 1 = 2.
-                ENDIF.
+              LOOP AT environment_list INTO environment_by_transport.
+                " here we have to distinguish between tables and structures --> split the list del_repository_objects
+                " into two lists. One with tables and one with structures.
+                mo_environment = environment_by_transport-environment.
+                DATA(delete_operation_db_table) = mo_environment->for-tabl-for-database_table->create_delete_operation( ).
+                DATA(delete_operation_structure) = mo_environment->for-tabl-for-structure->create_delete_operation( ).
+                LOOP AT del_repository_objects INTO del_repository_object  WHERE transport_request = environment_by_transport-transport_request.
+                  DATA(structure) = xco_lib->get_structure( CONV #( del_repository_object-object_name ) ).
+                  DATA(db_table) = xco_lib->get_database_table( CONV #( del_repository_object-object_name ) ).
+                  IF structure->exists( ).
+                    delete_operation_structure->add_object( CONV #( del_repository_object-object_name ) ).
+                  ENDIF.
+                  IF db_table->exists( ).
+                    delete_operation_db_table->add_object( CONV #( del_repository_object-object_name ) ).
+                  ENDIF.
+                ENDLOOP.
+                DATA(findings_db_table) = delete_operation_db_table->execute( )->findings.
+                add_findings_to_app_log_cons( i_findings                = findings_db_table
+                                              i_deletion_sequence_entry = deletion_sequence_entry ).
+                DATA(findings_structure) = delete_operation_structure->execute( )->findings.
+                add_findings_to_app_log_cons( i_findings                = findings_structure
+                                              i_deletion_sequence_entry = deletion_sequence_entry ).
               ENDLOOP.
-              DATA(findings_db_table) = delete_operation_db_table->execute( )->findings.
-              add_findings_to_app_log_cons( i_findings                = findings_db_table
-                                            i_deletion_sequence_entry = deletion_sequence_entry ).
-              DATA(findings_structure) = delete_operation_structure->execute( )->findings.
-              add_findings_to_app_log_cons( i_findings                = findings_structure
-                                            i_deletion_sequence_entry = deletion_sequence_entry ).
-
-
           ENDCASE.
 
           add_findings_to_app_log_cons( i_findings                = findings
@@ -2089,32 +2162,55 @@ CLASS zdmo_cl_rap_bo_delete IMPLEMENTATION.
     ENDLOOP.
   ENDMETHOD.
 
-  METHOD add_transport_requests.
+  METHOD add_missing_transport_requests.
 
+    CHECK i_repository_objects IS NOT INITIAL.
+
+    DATA(count) = 0.
+    LOOP AT i_repository_objects INTO DATA(line) WHERE transport_request IS INITIAL.
+      count += 1.
+    ENDLOOP.
+
+    CHECK count > 0.
+
+
+    IF xco_lib->get_package( package )->exists( ) = abap_true.
+      DATA(package_records_changes) = xco_lib->get_package( package )->read( )-property-record_object_changes.
+    ELSE.
+      add_text_to_app_log_or_console( |Package { package } does not exist.| ).
+*      EXIT.
+    ENDIF.
+
+    "generate a new transport request
+    IF package_records_changes = abap_true.
+      DATA(lo_transport_target) = xco_lib->get_package( package
+                )->read( )-property-transport_layer->get_transport_target( ).
+      DATA(new_transport_object) = xco_cp_cts=>transports->workbench( lo_transport_target->value )->create_request( |Delete content of package: { package } | ).
+      DATA(new_transport_request) = new_transport_object->value.
+    ENDIF.
+
+    LOOP AT i_repository_objects INTO DATA(del_repository_object).
+      IF del_repository_object-transport_request IS INITIAL.
+        del_repository_object-transport_request = new_transport_request.
+      ENDIF.
+      APPEND del_repository_object TO r_repository_objects.
+    ENDLOOP.
+
+
+  ENDMETHOD.
+
+  METHOD add_locking_transport_requests.
     CHECK i_repository_objects IS NOT INITIAL.
 
     LOOP AT i_repository_objects INTO DATA(del_repository_object).
 
-      CASE del_repository_object-object_type.
-
-        WHEN 'TABL'.
-
-          DATA(lo_database_table) = xco_lib->get_database_table( iv_name = CONV #( del_repository_object-object_name ) ).
-
-          DATA(lo_lock) = lo_database_table->if_xco_cts_changeable~get_object(
-              )->get_lock( ).
-
-          IF lo_lock->exists( ) EQ abap_true.
-            del_repository_object-transport_request = lo_lock->get_transport( ).
-          ENDIF.
-
-
-      ENDCASE.
+      del_repository_object-transport_request = get_locking_transport(
+                                                    i_object_type = del_repository_object-object_type
+                                                    i_object_name = del_repository_object-object_name ).
 
       APPEND del_repository_object TO r_repository_objects.
 
     ENDLOOP.
-
   ENDMETHOD.
 
 
@@ -2149,5 +2245,7 @@ CLASS zdmo_cl_rap_bo_delete IMPLEMENTATION.
     ENDIF.
 
   ENDMETHOD.
+
+
 
 ENDCLASS.
