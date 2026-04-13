@@ -1,0 +1,14 @@
+{
+  "formatVersion": "1",
+  "header": {
+    "description": "ZDMO_RAP_GEN_LOG",
+    "originalLanguage": "en",
+    "abapLanguageVersion": "cloudDevelopment"
+  },
+  "subobjects": [
+    {
+      "name": "ZDMO_RAP_GEN_SUBLOG",
+      "description": "ZDMO_RAP_GEN_SUBLOG"
+    }
+  ]
+}

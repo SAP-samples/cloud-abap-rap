@@ -1,0 +1,25 @@
+{
+  "formatVersion": "1",
+  "header": {
+    "description": "Delete generated RAP Business objects",
+    "originalLanguage": "en",
+    "abapLanguageVersion": "cloudDevelopment"
+  },
+  "generalInformation": {
+    "className": "ZDMO_CL_RAP_BO_DELETE"
+  },
+  "parameters": [
+    {
+      "name": "DELETE_PACKAGES",
+      "title": "Delete packages"
+    },
+    {
+      "name": "DEMO_MODE",
+      "title": "Demo mode"
+    },
+    {
+      "name": "PACKAGE_NAMES",
+      "title": "Package Names"
+    }
+  ]
+}

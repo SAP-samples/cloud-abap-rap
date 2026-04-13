@@ -1,0 +1,29 @@
+{
+  "formatVersion": "1",
+  "header": {
+    "description": "Delete generated RAP BOs",
+    "originalLanguage": "en",
+    "abapLanguageVersion": "cloudDevelopment"
+  },
+  "generalInformation": {
+    "catalogName": "ZDMO_APJ_RAP_BO_DELETE"
+  },
+  "parameters": {
+    "singleValueParameters": [
+      {
+        "name": "DELETE_PACKAGES",
+        "value": "X"
+      },
+      {
+        "name": "DEMO_MODE",
+        "value": "X"
+      }
+    ],
+    "valueRangesParameters": [
+      {
+        "name": "PACKAGE_NAMES",
+        "valueRanges": []
+      }
+    ]
+  }
+}

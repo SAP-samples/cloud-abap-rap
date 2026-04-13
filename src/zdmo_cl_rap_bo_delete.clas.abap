@@ -6,11 +6,32 @@ INHERITING FROM zdmo_cl_rap_generator_base
 
   PUBLIC SECTION.
 
+    INTERFACES if_apj_rt_run.
+    INTERFACES if_apj_dt_defaults.
+
+    TYPES:
+      BEGIN OF ty_package_range,
+        sign   TYPE c LENGTH 1,
+        option TYPE c LENGTH 2,
+        low    TYPE sxco_package,
+        high   TYPE sxco_package,
+      END OF ty_package_range.
+    TYPES: ty_package_ranges TYPE STANDARD TABLE OF ty_package_range WITH EMPTY KEY.
+
+    "! <p class="shorttext synchronized" lang="en">Packages</p>
+    DATA package_names TYPE ty_package_ranges.
+
+    "! <p class="shorttext synchronized" lang="en">Delete packages</p>
+    DATA delete_packages TYPE abap_bool VALUE abap_true.
+
+    "! <p class="shorttext synchronized" lang="en">Demo mode</p>
+    DATA demo_mode TYPE abap_bool VALUE abap_true.
+
     METHODS constructor
       IMPORTING
         i_demo_mode TYPE abap_bool OPTIONAL
         i_out       TYPE REF TO if_oo_adt_classrun_out OPTIONAL
-        i_package   TYPE sxco_package.
+        i_package   TYPE sxco_package OPTIONAL.
 
 
     METHODS rap_gen_project_objects_exist
@@ -54,7 +75,7 @@ INHERITING FROM zdmo_cl_rap_generator_base
     DATA xco_lib TYPE REF TO ZDMO_cl_rap_xco_lib.
 
     DATA delete_objects_in_package TYPE sxco_package.
-    DATA demo_mode TYPE abap_boolean VALUE abap_false.
+*    DATA demo_mode TYPE abap_boolean VALUE abap_false.
 
 
 
@@ -211,6 +232,41 @@ ENDCLASS.
 
 CLASS zdmo_cl_rap_bo_delete IMPLEMENTATION.
 
+  METHOD if_apj_dt_defaults~fill_attribute_defaults.
+
+*    numbers = VALUE #( ( sign = 'I' option = 'BT' low = '1' high = '10' )
+*                       ( sign = 'I' option = 'BT' low = '91' high = '100' ) ).
+    demo_mode = abap_true.
+  ENDMETHOD.
+
+  METHOD if_apj_rt_run~execute.
+
+    TRY.
+        DATA(l_log) = cl_bali_log=>create_with_header(
+                        header = cl_bali_header_setter=>create( object = 'ZDMO_RAP_GEN_LOG'
+                                                                subobject = 'ZDMO_RAP_GEN_SUBLOG'
+                         ) ).
+
+        IF demo_mode = abap_true.
+          l_log->add_item( item = cl_bali_free_text_setter=>create( severity = if_bali_constants=>c_severity_information
+                                                                    text = 'demo mode' ) ).
+        ENDIF.
+
+        IF delete_packages = abap_true AND package_names IS NOT INITIAL.
+          l_log->add_item( item = cl_bali_free_text_setter=>create( severity = if_bali_constants=>c_severity_status
+                                                                    text = 'Packages will be deleted as well' ) ).
+        ENDIF.
+
+        cl_bali_log_db=>get_instance( )->save_log_2nd_db_connection( log = l_log
+                                                                     assign_to_current_appl_job = abap_true ).
+      CATCH cx_bali_runtime INTO DATA(l_runtime_exception).
+        " some error handling
+        ASSERT 1 = 2.
+    ENDTRY.
+
+    package  = package_names[ 1 ]-low.
+    start_deletion(  ).
+  ENDMETHOD.
 
   METHOD add_findings_to_output.
 
@@ -350,26 +406,28 @@ CLASS zdmo_cl_rap_bo_delete IMPLEMENTATION.
       ENDLOOP.
     ENDIF.
 
-*    IF boname IS NOT INITIAL.
-*      add_log_entries_for_rap_bo(
-*             i_rap_bo_name = CONV #( boname )
-*             i_log_entries = log_entries
-*           ).
-*    ENDIF.
+    TRY.
+        DATA(l_log) = cl_bali_log=>create_with_header(
+                        header = cl_bali_header_setter=>create( object = 'ZDMO_RAP_GEN_LOG'
+                                                                subobject = 'ZDMO_RAP_GEN_SUBLOG'
+                         ) ).
 
-*    DATA(application_log_free_text) = cl_bali_free_text_setter=>create(
-*      severity = i_severity " if_bali_constants=>c_severity_status
-*      text     = i_text ).
-*    application_log_free_text->set_detail_level( detail_level = '1' ).
-*    application_log->add_item( item = application_log_free_text ).
-*    cl_bali_log_db=>get_instance( )->save_log(
-*                                               log = application_log
-*                                               assign_to_current_appl_job = abap_true
-*                                               ).
+        LOOP AT log_entries INTO DATA(log_entry_line2).
+
+          l_log->add_item( item = cl_bali_free_text_setter=>create(
+          severity = i_severity
+           text = conv #( log_entry_line2-text ) ) ).
+
+        ENDLOOP.
 
 
+        cl_bali_log_db=>get_instance( )->save_log_2nd_db_connection( log = l_log
+                                                                     assign_to_current_appl_job = abap_true ).
+      CATCH cx_bali_runtime INTO DATA(l_runtime_exception).
+        " some error handling
+        ASSERT 1 = 2.
+    ENDTRY.
 
-*    ELSE.
 
   ENDMETHOD.
 
@@ -383,7 +441,7 @@ CLASS zdmo_cl_rap_bo_delete IMPLEMENTATION.
 *    ENDIF.
     demo_mode = i_demo_mode.
     IF i_out IS INITIAL.
-      ASSERT 1 = 2.
+*      ASSERT 1 = 2.
     ELSE.
       my_out = i_out.
     ENDIF.
@@ -2245,6 +2303,8 @@ CLASS zdmo_cl_rap_bo_delete IMPLEMENTATION.
     ENDIF.
 
   ENDMETHOD.
+
+
 
 
 
