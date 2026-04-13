@@ -22,7 +22,7 @@ CLASS zdmo_cl_test_rap_bo_delete IMPLEMENTATION.
 
   METHOD if_oo_adt_classrun~main.
 
-    package = 'ZDT261_197'.
+    package =  'ZFROMSCRATCH_01' ." 'ZDT261_197'.
 *    data demo_mode type abap_bool VALUE abap_true.
     DATA demo_mode TYPE abap_bool VALUE abap_false.
 
