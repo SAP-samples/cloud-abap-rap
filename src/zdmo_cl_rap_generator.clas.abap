@@ -21,7 +21,7 @@ INHERITING FROM zdmo_cl_rap_generator_base
              object_name                  TYPE if_xco_gen_o_finding=>tv_object_name,
              hierarchy_distance_from_root TYPE int4,
              transport_request            TYPE sxco_transport,
-             is_released                  type abap_bool,
+             is_released                  TYPE abap_bool,
            END OF t_generated_repository_object.
 
     TYPES: t_generated_repository_objects TYPE STANDARD TABLE OF t_generated_repository_object WITH EMPTY KEY.
@@ -354,7 +354,7 @@ ENDCLASS.
 
 
 
-CLASS ZDMO_CL_RAP_GENERATOR IMPLEMENTATION.
+CLASS zdmo_cl_rap_generator IMPLEMENTATION.
 
 
   METHOD add_annotation_ui_facets.
@@ -4002,13 +4002,136 @@ CLASS ZDMO_CL_RAP_GENERATOR IMPLEMENTATION.
     ENDLOOP.
 
 
-    LOOP AT       io_rap_bo_node->lt_additional_fields INTO DATA(additional_fields) WHERE cds_projection_view = abap_true.
+    LOOP AT io_rap_bo_node->lt_additional_fields INTO DATA(additional_fields) WHERE cds_projection_view = abap_true.
 
       lo_field = lo_view->add_field( xco_cp_ddl=>expression->for( CONV #( additional_fields-cds_view_field ) )  ).
 
       IF additional_fields-localized = abap_true.
         lo_Field->set_localized( abap_true ).
       ENDIF.
+
+      DATA my_field_type  TYPE REF TO if_xco_gen_ddls_field_type.
+      DATA(blue_print) = my_field_type->get_blueprint( ).
+
+      "new for DT266
+      IF additional_fields-is_virtual_element = abap_true.
+        lo_Field->set_virtual( abap_true ).
+*        lo_field->set_type( xco_cp_abap_dictionary=>built_in_type->char( 30 ) ).
+        lo_field->add_annotation( 'ObjectModel.virtualElementCalculatedBy' )->value->build( )->add_string( |ABAP:{ additional_fields-virtual_element_calculated_by }|  ).
+        lo_field->add_annotation( 'EndUserText.label' )->value->build( )->add_string( |{ additional_fields-end_user_text_label }| ).
+
+
+*        field->set_type( xco_cp_abap_dictionary=>built_in_type->char( 30 ) ).
+
+*        database_table_field->set_type( xco_cp_abap_dictionary=>built_in_type->for(
+*                                        iv_type     = to_upper( table_field_line-built_in_type )
+*                                        iv_length   = table_field_line-built_in_type_length
+*                                        iv_decimals = table_field_line-built_in_type_decimals
+*                                        ) ).
+        CASE  to_lower( additional_fields-built_in_type ).
+          WHEN 'accp'.
+            lo_field->set_type( xco_cp_abap_dictionary=>built_in_type->accp ).
+          WHEN 'clnt'.
+            lo_field->set_type( xco_cp_abap_dictionary=>built_in_type->clnt ).
+          WHEN 'cuky'.
+            lo_field->set_type( xco_cp_abap_dictionary=>built_in_type->cuky ).
+          WHEN 'dats'.
+            lo_field->set_type( xco_cp_abap_dictionary=>built_in_type->dats ).
+          WHEN 'df16_raw'.
+            lo_field->set_type( xco_cp_abap_dictionary=>built_in_type->df16_raw ).
+          WHEN 'df34_raw'.
+            lo_field->set_type( xco_cp_abap_dictionary=>built_in_type->df34_raw ).
+          WHEN 'fltp'.
+            lo_field->set_type( xco_cp_abap_dictionary=>built_in_type->fltp ).
+          WHEN 'int1'.
+            lo_field->set_type( xco_cp_abap_dictionary=>built_in_type->int1 ).
+          WHEN 'int2'.
+            lo_field->set_type( xco_cp_abap_dictionary=>built_in_type->int2 ).
+          WHEN 'int4'.
+            lo_field->set_type( xco_cp_abap_dictionary=>built_in_type->int4 ).
+          WHEN 'int8'.
+            lo_field->set_type( xco_cp_abap_dictionary=>built_in_type->int8 ).
+          WHEN 'lang'.
+            lo_field->set_type( xco_cp_abap_dictionary=>built_in_type->lang ).
+          WHEN 'tims'.
+            lo_field->set_type( xco_cp_abap_dictionary=>built_in_type->tims ).
+          WHEN 'char'.
+            lo_field->set_type( xco_cp_abap_dictionary=>built_in_type->char( additional_fields-built_in_type_length ) ).
+          WHEN 'curr'.
+            lo_field->set_type( xco_cp_abap_dictionary=>built_in_type->curr(
+                                              iv_length   = additional_fields-built_in_type_length
+                                              iv_decimals = additional_fields-built_in_type_decimals
+                                            ) ).
+          WHEN 'dec'  .
+            lo_field->set_type( xco_cp_abap_dictionary=>built_in_type->dec(
+                                              iv_length   = additional_fields-built_in_type_length
+                                              iv_decimals = additional_fields-built_in_type_decimals
+                                            ) ).
+          WHEN 'df16_dec'.
+            lo_field->set_type( xco_cp_abap_dictionary=>built_in_type->df16_dec(
+                                              iv_length   = additional_fields-built_in_type_length
+                                              iv_decimals = additional_fields-built_in_type_decimals
+                                            ) ).
+          WHEN 'df34_dec'.
+            lo_field->set_type( xco_cp_abap_dictionary=>built_in_type->df34_dec(
+                                              iv_length   = additional_fields-built_in_type_length
+                                              iv_decimals = additional_fields-built_in_type_decimals
+                                            ) ).
+          WHEN 'lchr' .
+            lo_field->set_type( xco_cp_abap_dictionary=>built_in_type->lchr( additional_fields-built_in_type_length ) ).
+          WHEN 'lraw'  .
+            lo_field->set_type( xco_cp_abap_dictionary=>built_in_type->lraw( additional_fields-built_in_type_length ) ).
+          WHEN 'numc'   .
+            lo_field->set_type( xco_cp_abap_dictionary=>built_in_type->numc( additional_fields-built_in_type_length ) ).
+          WHEN 'quan' .
+            lo_field->set_type( xco_cp_abap_dictionary=>built_in_type->quan(
+                                              iv_length   = additional_fields-built_in_type_length
+                                              iv_decimals = additional_fields-built_in_type_decimals
+                                              ) ).
+          WHEN 'raw'  .
+            lo_field->set_type( xco_cp_abap_dictionary=>built_in_type->raw( additional_fields-built_in_type_length ) ).
+          WHEN 'rawstring'.
+            lo_field->set_type( xco_cp_abap_dictionary=>built_in_type->rawstring( additional_fields-built_in_type_length ) ).
+          WHEN 'sstring' .
+            lo_field->set_type( xco_cp_abap_dictionary=>built_in_type->sstring( additional_fields-built_in_type_length ) ).
+          WHEN 'string' .
+            lo_field->set_type( xco_cp_abap_dictionary=>built_in_type->string( additional_fields-built_in_type_length ) ).
+          WHEN 'unit'  .
+            lo_field->set_type( xco_cp_abap_dictionary=>built_in_type->unit( additional_fields-built_in_type_length ) ).
+          WHEN OTHERS.
+            lo_field->set_type( xco_cp_abap_dictionary=>built_in_type->for(
+                                              iv_type     = to_upper( additional_fields-built_in_type )
+                                              iv_length   = additional_fields-built_in_type_length
+                                              iv_decimals = additional_fields-built_in_type_decimals
+                                            ) ).
+        ENDCASE.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      ENDIF.
+
     ENDLOOP.
 
     "add alias
@@ -4374,7 +4497,7 @@ CLASS ZDMO_CL_RAP_GENERATOR IMPLEMENTATION.
 
     ENDLOOP.
 
-    LOOP AT       io_rap_bo_node->lt_additional_fields INTO DATA(additional_fields) WHERE cds_restricted_reuse_view = abap_true.
+    LOOP AT io_rap_bo_node->lt_additional_fields INTO DATA(additional_fields) WHERE cds_restricted_reuse_view = abap_true.
 
       lo_field = lo_view->add_field( xco_cp_ddl=>expression->for( additional_fields-name ) ).
       IF additional_fields-cds_view_field IS NOT INITIAL.

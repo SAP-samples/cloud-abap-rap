@@ -86,7 +86,7 @@ ENDCLASS.
 
 
 
-CLASS ZDMO_CL_RAP_XCO_JSON_VISITOR IMPLEMENTATION.
+CLASS zdmo_cl_rap_xco_json_visitor IMPLEMENTATION.
 
 
   METHOD constructor.
@@ -471,7 +471,7 @@ CLASS ZDMO_CL_RAP_XCO_JSON_VISITOR IMPLEMENTATION.
           root_node->set_create_table( iv_value ).
         WHEN 'mimicadtwizard'.
           root_node->set_mimic_adt_wizard( iv_value ).
-        when 'addsapobjecttype'  .
+        WHEN 'addsapobjecttype'  .
           root_node->set_add_sap_object_type( iv_value ).
         WHEN OTHERS.
 
@@ -510,6 +510,9 @@ CLASS ZDMO_CL_RAP_XCO_JSON_VISITOR IMPLEMENTATION.
             additional_field-cds_projection_view  = iv_value .
           WHEN 'drafttable'.
             additional_field-draft_table   = iv_value .
+          WHEN 'isvirtualelement'.
+            additional_field-is_virtual_element = iv_value .
+
           WHEN OTHERS.
             error_message = |{ last_visited_member } in entity { current_node->entityname } in objects with add. fields| ##NO_TEXT.
 
@@ -778,6 +781,10 @@ CLASS ZDMO_CL_RAP_XCO_JSON_VISITOR IMPLEMENTATION.
             additional_field-built_in_type_length = iv_value.
           WHEN 'builtintypedecimals'.
             additional_field-built_in_type_decimals = iv_value.
+          WHEN 'virtualelementcalculatedby'.
+            additional_field-virtual_element_calculated_by = iv_value.
+          WHEN 'endusertextlabel'.
+            additional_field-end_user_text_label = iv_value.
           WHEN OTHERS.
             error_message = |{ last_visited_member } in entity { current_node->entityname } in additional fields| ##NO_TEXT.
 

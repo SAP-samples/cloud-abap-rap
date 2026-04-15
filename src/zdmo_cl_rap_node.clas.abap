@@ -408,18 +408,21 @@ CLASS zdmo_cl_rap_node DEFINITION
 
     TYPES:
       BEGIN OF ts_additional_fields,
-        name                      TYPE string,
-        cds_view_field            TYPE sxco_ddef_alias_name,
-        data_element              TYPE sxco_ad_object_name,
-        built_in_type             TYPE cl_xco_ad_built_in_type=>tv_type,
-        built_in_type_length      TYPE cl_xco_ad_built_in_type=>tv_length,
-        built_in_type_decimals    TYPE cl_xco_ad_built_in_type=>tv_decimals,
-        is_hidden                 TYPE abap_bool,
-        localized                 TYPE abap_bool,
-        cds_interface_view        TYPE abap_bool,
-        cds_restricted_reuse_view TYPE abap_bool,
-        cds_projection_view       TYPE abap_bool,
-        draft_table               TYPE abap_bool,
+        name                          TYPE string,
+        cds_view_field                TYPE sxco_ddef_alias_name,
+        data_element                  TYPE sxco_ad_object_name,
+        built_in_type                 TYPE cl_xco_ad_built_in_type=>tv_type,
+        built_in_type_length          TYPE cl_xco_ad_built_in_type=>tv_length,
+        built_in_type_decimals        TYPE cl_xco_ad_built_in_type=>tv_decimals,
+        is_hidden                     TYPE abap_bool,
+        localized                     TYPE abap_bool,
+        cds_interface_view            TYPE abap_bool,
+        cds_restricted_reuse_view     TYPE abap_bool,
+        cds_projection_view           TYPE abap_bool,
+        draft_table                   TYPE abap_bool,
+        is_virtual_element            TYPE abap_bool,
+        virtual_element_calculated_by TYPE sxco_ad_object_name,
+        end_user_text_label           TYPE string,
       END OF ts_additional_fields,
 
       tt_additional_fields TYPE STANDARD TABLE OF ts_additional_fields WITH DEFAULT KEY.
@@ -1202,7 +1205,7 @@ ENDCLASS.
 
 
 
-CLASS ZDMO_CL_RAP_NODE IMPLEMENTATION.
+CLASS zdmo_cl_rap_node IMPLEMENTATION.
 
 
   METHOD add_additional_fields.
@@ -6353,12 +6356,12 @@ CLASS ZDMO_CL_RAP_NODE IMPLEMENTATION.
       DATA(record_object_changes) = xco_lib->get_package( me->package  )->read( )-property-record_object_changes.
 
       IF record_object_changes = abap_false AND iv_transport_request IS NOT INITIAL.
-         DATA(error_details) = |{ me->package } does not record changes.|.
-      "  RAISE EXCEPTION TYPE ZDMO_cx_rap_generator
-      "    EXPORTING
-      "      textid     = ZDMO_cx_rap_generator=>invalid_transport_request
-      "      mv_value   = CONV #( iv_transport_request )
-      "      mv_value_2 = error_details.
+        DATA(error_details) = |{ me->package } does not record changes.|.
+        "  RAISE EXCEPTION TYPE ZDMO_cx_rap_generator
+        "    EXPORTING
+        "      textid     = ZDMO_cx_rap_generator=>invalid_transport_request
+        "      mv_value   = CONV #( iv_transport_request )
+        "      mv_value_2 = error_details.
       ELSEIF record_object_changes = abap_false AND iv_transport_request IS INITIAL..
         EXIT.
       ENDIF.
