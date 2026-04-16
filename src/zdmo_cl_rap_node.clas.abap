@@ -421,6 +421,8 @@ CLASS zdmo_cl_rap_node DEFINITION
         cds_projection_view           TYPE abap_bool,
         draft_table                   TYPE abap_bool,
         is_virtual_element            TYPE abap_bool,
+        is_data_element               TYPE abap_bool,
+        is_built_in_type              TYPE abap_bool,
         virtual_element_calculated_by TYPE sxco_ad_object_name,
         end_user_text_label           TYPE string,
       END OF ts_additional_fields,

@@ -60,7 +60,7 @@ CLASS zdmo_cl_rap_xco_json_visitor DEFINITION
       in_conditions              TYPE abap_bool,
       in_mapping                 TYPE abap_bool,
       in_fields                  TYPE abap_bool,
-      "in_objects_with_add_fields TYPE abap_bool,
+      in_objects_with_add_fields TYPE abap_bool,
       in_additional_fields       TYPE abap_bool,
       in_keys                    TYPE abap_bool,
       additional_binding         TYPE ZDMO_cl_rap_node=>ts_additionalbinding,
@@ -504,7 +504,7 @@ CLASS zdmo_cl_rap_xco_json_visitor IMPLEMENTATION.
             additional_field-localized = iv_value.
           WHEN 'cdsinterfaceview'.
             additional_field-cds_interface_view = iv_value .
-          WHEN 'cdsRestrictedReuseView'.
+          WHEN 'cdsrestrictedreuseview'.
             additional_field-cds_restricted_reuse_view = iv_value .
           WHEN 'cdsprojectionview'.
             additional_field-cds_projection_view  = iv_value .
@@ -512,8 +512,11 @@ CLASS zdmo_cl_rap_xco_json_visitor IMPLEMENTATION.
             additional_field-draft_table   = iv_value .
           WHEN 'isvirtualelement'.
             additional_field-is_virtual_element = iv_value .
-
-          WHEN OTHERS.
+          WHEN 'isdataelement'.
+            additional_field-is_data_element =  iv_value .
+          WHEN 'isbuiltintype'.
+            additional_field-is_built_in_type =  iv_value .
+         WHEN OTHERS.
             error_message = |{ last_visited_member } in entity { current_node->entityname } in objects with add. fields| ##NO_TEXT.
 
             RAISE EXCEPTION TYPE ZDMO_cx_rap_generator
@@ -785,6 +788,10 @@ CLASS zdmo_cl_rap_xco_json_visitor IMPLEMENTATION.
             additional_field-virtual_element_calculated_by = iv_value.
           WHEN 'endusertextlabel'.
             additional_field-end_user_text_label = iv_value.
+
+
+
+
           WHEN OTHERS.
             error_message = |{ last_visited_member } in entity { current_node->entityname } in additional fields| ##NO_TEXT.
 
@@ -928,6 +935,10 @@ CLASS zdmo_cl_rap_xco_json_visitor IMPLEMENTATION.
           WHEN 'sapobjectnodetype'.
             current_node->set_name_sap_node_object_type( CONV #( iv_value )  ).
 
+*          WHEN 'isvirtualelement'.
+*          "do nothing
+*          WHEN 'virtualelementcalculatedby'.
+*"do nothing
           WHEN 'extensibilityelementsuffix'.
             current_node->set_ext_element_suffix(  iv_value ).
 

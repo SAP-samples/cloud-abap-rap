@@ -27,6 +27,9 @@ INHERITING FROM zdmo_cl_rap_generator_base
     "! <p class="shorttext synchronized" lang="en">Demo mode</p>
     DATA demo_mode TYPE abap_bool VALUE abap_true.
 
+    DATA global_log TYPE REF TO if_bali_log.
+
+
     METHODS constructor
       IMPORTING
         i_demo_mode TYPE abap_bool OPTIONAL
@@ -242,30 +245,56 @@ CLASS zdmo_cl_rap_bo_delete IMPLEMENTATION.
   METHOD if_apj_rt_run~execute.
 
     TRY.
-        DATA(l_log) = cl_bali_log=>create_with_header(
-                        header = cl_bali_header_setter=>create( object = 'ZDMO_RAP_GEN_LOG'
-                                                                subobject = 'ZDMO_RAP_GEN_SUBLOG'
-                         ) ).
+*        DATA(l_log) = cl_bali_log=>create_with_header(
+*                        header = cl_bali_header_setter=>create( object = 'ZDMO_RAP_GEN_LOG'
+*                                                                subobject = 'ZDMO_RAP_GEN_SUBLOG'
+*                         ) ).
 
         IF demo_mode = abap_true.
-          l_log->add_item( item = cl_bali_free_text_setter=>create( severity = if_bali_constants=>c_severity_information
+          global_log->add_item( item = cl_bali_free_text_setter=>create( severity = if_bali_constants=>c_severity_information
                                                                     text = 'demo mode' ) ).
         ENDIF.
 
-        IF delete_packages = abap_true AND package_names IS NOT INITIAL.
-          l_log->add_item( item = cl_bali_free_text_setter=>create( severity = if_bali_constants=>c_severity_status
-                                                                    text = 'Packages will be deleted as well' ) ).
+        IF delete_packages = abap_true .
+          IF demo_mode = abap_true.
+            global_log->add_item( item = cl_bali_free_text_setter=>create( severity = if_bali_constants=>c_severity_information
+                                                       text = 'Packages would be deleted as well' ) ).
+          ELSE.
+            global_log->add_item( item = cl_bali_free_text_setter=>create( severity = if_bali_constants=>c_severity_information
+                                                                      text = 'Packages will be deleted as well' ) ).
+          ENDIF.
         ENDIF.
 
-        cl_bali_log_db=>get_instance( )->save_log_2nd_db_connection( log = l_log
+        cl_bali_log_db=>get_instance( )->save_log_2nd_db_connection( log = global_log
                                                                      assign_to_current_appl_job = abap_true ).
       CATCH cx_bali_runtime INTO DATA(l_runtime_exception).
         " some error handling
         ASSERT 1 = 2.
     ENDTRY.
 
-    package  = package_names[ 1 ]-low.
-    start_deletion(  ).
+    SELECT * FROM I_CustABAPObjDirectoryEntry
+    WHERE ABAPObjectCategory = 'R3TR'
+    AND ABAPObject IN @package_names
+    AND ABAPObjectType = 'DEVC'
+    INTO TABLE @DATA(entries_for_packages).
+
+        add_text_to_app_log_or_console(
+          i_text     = | { sy-dbcnt } packages found.|
+          i_severity = 'I'
+        ).
+
+    LOOP AT entries_for_packages INTO  DATA(entry_for_package).
+      IF demo_mode = abap_true.
+        add_text_to_app_log_or_console(
+          i_text     = |Package { entry_for_package-ABAPObject } selected.|
+          i_severity = 'I'
+        ).
+      ELSE.
+        package  = entry_for_package-ABAPObject.
+        start_deletion(  ).
+      ENDIF.
+    ENDLOOP.
+
   ENDMETHOD.
 
   METHOD add_findings_to_output.
@@ -407,21 +436,21 @@ CLASS zdmo_cl_rap_bo_delete IMPLEMENTATION.
     ENDIF.
 
     TRY.
-        DATA(l_log) = cl_bali_log=>create_with_header(
-                        header = cl_bali_header_setter=>create( object = 'ZDMO_RAP_GEN_LOG'
-                                                                subobject = 'ZDMO_RAP_GEN_SUBLOG'
-                         ) ).
+*        DATA(l_log) = cl_bali_log=>create_with_header(
+*                        header = cl_bali_header_setter=>create( object = 'ZDMO_RAP_GEN_LOG'
+*                                                                subobject = 'ZDMO_RAP_GEN_SUBLOG'
+*                         ) ).
 
         LOOP AT log_entries INTO DATA(log_entry_line2).
 
-          l_log->add_item( item = cl_bali_free_text_setter=>create(
+          global_log->add_item( item = cl_bali_free_text_setter=>create(
           severity = i_severity
-           text = conv #( log_entry_line2-text ) ) ).
+           text = CONV #( log_entry_line2-text ) ) ).
 
         ENDLOOP.
 
 
-        cl_bali_log_db=>get_instance( )->save_log_2nd_db_connection( log = l_log
+        cl_bali_log_db=>get_instance( )->save_log_2nd_db_connection( log = global_log
                                                                      assign_to_current_appl_job = abap_true ).
       CATCH cx_bali_runtime INTO DATA(l_runtime_exception).
         " some error handling
@@ -478,6 +507,11 @@ CLASS zdmo_cl_rap_bo_delete IMPLEMENTATION.
   ( sequence_number = 4 object_TYPE = 'CLAS' )
   ( sequence_number = 4 object_TYPE = 'TABL' )
 ).
+
+    global_log = cl_bali_log=>create_with_header(
+                            header = cl_bali_header_setter=>create( object = 'ZDMO_RAP_GEN_LOG'
+                                                                    subobject = 'ZDMO_RAP_GEN_SUBLOG'
+                             ) ).
 
   ENDMETHOD.
 
@@ -1945,7 +1979,7 @@ CLASS zdmo_cl_rap_bo_delete IMPLEMENTATION.
           ELSE.
             add_text_to_app_log_or_console(
               i_text     = |Not all objects of { BoName } have been deleted. |
-              i_severity = if_bali_constants=>c_severity_error
+              i_severity = if_bali_constants=>c_severity_warning
             ).
           ENDIF.
         ENDIF.
@@ -1976,10 +2010,15 @@ CLASS zdmo_cl_rap_bo_delete IMPLEMENTATION.
                             RECEIVING
                             " TODO: variable is assigned but never used (ABAP cleaner)
                                       r_release_state_is_deleted = DATA(release_state_is_deleted) ).
-      add_text_to_app_log_or_console(
-          " TODO: check spelling: occured (typo) -> occurred (ABAP cleaner)
-          i_text     = |Delete release state { del_repository_object-object_type } { del_repository_object-object_name } - errors occured. |
-          i_severity = if_bali_constants=>c_severity_error ).
+
+      IF release_state_is_deleted = abap_false.
+
+        add_text_to_app_log_or_console(
+            " TODO: check spelling: occured (typo) -> occurred (ABAP cleaner)
+            i_text     = |Release state { del_repository_object-object_type } { del_repository_object-object_name } - not deleted. |
+            i_severity = if_bali_constants=>c_severity_error ).
+      ENDIF.
+
     ENDLOOP.
   ENDMETHOD.
 

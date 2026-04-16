@@ -4010,8 +4010,8 @@ CLASS zdmo_cl_rap_generator IMPLEMENTATION.
         lo_Field->set_localized( abap_true ).
       ENDIF.
 
-      DATA my_field_type  TYPE REF TO if_xco_gen_ddls_field_type.
-      DATA(blue_print) = my_field_type->get_blueprint( ).
+*      DATA my_field_type  TYPE REF TO if_xco_gen_ddls_field_type.
+*      DATA(blue_print) = my_field_type->get_blueprint( ).
 
       "new for DT266
       IF additional_fields-is_virtual_element = abap_true.

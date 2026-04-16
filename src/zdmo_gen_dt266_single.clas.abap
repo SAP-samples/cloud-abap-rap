@@ -411,7 +411,70 @@ CLASS zdmo_gen_dt266_single IMPLEMENTATION.
 |"serviceBinding":"ZUI_DT266_CARR_{ unique_suffix }_O4", \r\n| &&
 |"sapobjecttype":"ZDT266_Carrier_{ unique_suffix }", \r\n| &&
 
+*|"objectswithadditionalfields": [  \r\n| &&
+*'      { ' && | \r\n| &&
+*|        "object": "cds_projection_view", \r\n| &&
+|        "additionalfields": [ \r\n| &&
+'          { ' && | \r\n| &&
+|            "name": "AggregateSupplementPrice", \r\n| &&
+|            "cdsviewfield": "AggregateSupplementPrice", \r\n | &&
+|            "isvirtualelement": true, \r\n| &&
+|            "virtualelementcalculatedby": "ZCL_DT266_CARR_EXTENSION_000", \r\n| &&
+|            "isbuiltintype": true, \r\n| &&
+|            "builtintype": "INT8" ,\r\n| &&
+|            "cdsprojectionview": true ,\r\n| &&
+|            "endusertextlabel" : "AggregateSupplementsPrice"  \r\n| &&
+'          }    , ' &&     | \r\n| &&
 
+'          { ' && | \r\n| &&
+|            "name": "PercMeal", \r\n| &&
+|            "cdsviewfield": "PercMeal", \r\n | &&
+|            "isvirtualelement": true, \r\n| &&
+|            "virtualelementcalculatedby": "ZCL_DT266_CARR_EXTENSION_000", \r\n| &&
+|            "isbuiltintype": true, \r\n| &&
+|            "builtintype": "INT8" ,\r\n| &&
+|            "cdsprojectionview": true ,\r\n| &&
+|            "endusertextlabel" : "%Meals"  \r\n| &&
+'          }   ,  ' &&     | \r\n| &&
+
+'          { ' && | \r\n| &&
+|            "name": "PercBeverages", \r\n| &&
+|            "cdsviewfield": "PercBeverages", \r\n | &&
+|            "isvirtualelement": true, \r\n| &&
+|            "virtualelementcalculatedby": "ZCL_DT266_CARR_EXTENSION_000", \r\n| &&
+|            "isbuiltintype": true, \r\n| &&
+|            "builtintype": "INT8" ,\r\n| &&
+|            "cdsprojectionview": true ,\r\n| &&
+|            "endusertextlabel" : "%Beverages"  \r\n| &&
+'          }   ,  ' &&     | \r\n| &&
+
+'          { ' && | \r\n| &&
+|            "name": "PercLuggage", \r\n| &&
+|            "cdsviewfield": "PercLuggage", \r\n | &&
+|            "isvirtualelement": true, \r\n| &&
+|            "virtualelementcalculatedby": "ZCL_DT266_CARR_EXTENSION_000", \r\n| &&
+|            "isbuiltintype": true, \r\n| &&
+|            "builtintype": "INT8" ,\r\n| &&
+|            "cdsprojectionview": true ,\r\n| &&
+|            "endusertextlabel" : "%Luggage"  \r\n| &&
+'          }   ,  ' &&     | \r\n| &&
+
+'          { ' && | \r\n| &&
+|            "name": "AggregateFlightPrice", \r\n| &&
+|            "cdsviewfield": "AggregateFlightPrice", \r\n | &&
+|            "isvirtualelement": true, \r\n| &&
+|            "virtualelementcalculatedby": "ZCL_DT266_CARR_EXTENSION_000", \r\n| &&
+|            "isbuiltintype": true, \r\n| &&
+|            "builtintype": "INT8" ,\r\n| &&
+|            "cdsprojectionview": true ,\r\n| &&
+|            "endusertextlabel" : "AggregatedFlightPrice"  \r\n| &&
+'          }     ' &&     | \r\n| &&
+
+
+|        ] \r\n| &&
+*'      }  ' && |\r\n| &&
+*|] , \r\n| &&
+| , \r\n| &&
 
 ****************
 "removed for DT261
@@ -452,8 +515,11 @@ CLASS zdmo_gen_dt266_single IMPLEMENTATION.
 
 '        {' && |\r\n|  &&
 '            "abapfieldname": "CURRENCY_CODE",' && |\r\n|  &&
-'            "dataelement": "/dmo/currency_code",' && |\r\n|  &&
-'            "isdataelement": true,' && |\r\n|  &&
+*'            "dataelement": "/dmo/currency_code",' && |\r\n|  &&
+*'            "isdataelement": true,' && |\r\n|  &&
+'            "isbuiltintype": true,' && |\r\n|  &&
+'            "builtintype": "CUKY",' && |\r\n|  &&
+'            "builtintypelength": 5,' && |\r\n|  &&
 '            "cdsviewfieldname": "CurrencyCode"' && |\r\n|  &&
 '        },' && |\r\n|  &&
 
